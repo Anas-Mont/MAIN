@@ -53,12 +53,35 @@ let techThumbnails = [
     "new client 11 22 copy.jpg",
 ];
 
-// All Thumbnails - Mix of all categories
-let allThumbnails = [
-    ...gamingThumbnails,
-    ...socialThumbnails,
-    ...techThumbnails
-];
+// Function to mix arrays in round-robin fashion (gaming, tech, social, gaming, tech, social...)
+function mixThumbnails() {
+    const mixed = [];
+    const maxLength = Math.max(
+        gamingThumbnails.length,
+        socialThumbnails.length,
+        techThumbnails.length
+    );
+    
+    for (let i = 0; i < maxLength; i++) {
+        // Add gaming thumbnail if available
+        if (i < gamingThumbnails.length) {
+            mixed.push(gamingThumbnails[i]);
+        }
+        // Add tech thumbnail if available
+        if (i < techThumbnails.length) {
+            mixed.push(techThumbnails[i]);
+        }
+        // Add social thumbnail if available
+        if (i < socialThumbnails.length) {
+            mixed.push(socialThumbnails[i]);
+        }
+    }
+    
+    return mixed;
+}
+
+// All Thumbnails - Mix of all categories (gaming, tech, social rotation)
+let allThumbnails = mixThumbnails();
 
 let thumbnailsPerPageDesktop = 12;
 let thumbnailsPerPageMobile = 9;
@@ -143,6 +166,9 @@ function loadThumbnails(category = 'all') {
             const img = this.querySelector('img');
             const idxAttr = this.dataset.index;
             const resolvedIndex = idxAttr ? parseInt(idxAttr) : (currentIndex + i);
+            // Store clicked element and scroll position
+            clickedThumbnailElement = this;
+            scrollPositionBeforeLightbox = window.pageYOffset || document.documentElement.scrollTop;
             openLightbox(img.getAttribute('src'), img.getAttribute('alt') || 'Preview', resolvedIndex);
         });
         
@@ -275,6 +301,9 @@ let dragStartX = 0;
 let dragStartY = 0;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
+let lightboxStatePushed = false;
+let clickedThumbnailElement = null;
+let scrollPositionBeforeLightbox = 0;
 let reviews = [
     {
         name: "Billy YT",
@@ -322,11 +351,11 @@ function initializeWebsite() {
         const scrolled = window.scrollY;
         
         if (scrolled > 100) {
-            navbar.style.background = 'rgba(0, 20, 0, 0.95)';
+            navbar.style.background = 'rgba(0, 20, 0, 0.6)';
             navbar.style.boxShadow = '0 2px 20px rgba(34, 139, 34, 0.2)';
         } else {
-            navbar.style.background = 'rgba(0, 20, 0, 0.8)';
-            navbar.style.boxShadow = 'none';
+            navbar.style.background = 'rgba(0, 20, 0, 0.4)';
+            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
         }
     });
 
@@ -1205,6 +1234,9 @@ function initializeThumbnailGallery() {
             const img = this.querySelector('img');
             const idxAttr = this.dataset.index;
             const resolvedIndex = idxAttr ? parseInt(idxAttr) : index;
+            // Store clicked element and scroll position
+            clickedThumbnailElement = this;
+            scrollPositionBeforeLightbox = window.pageYOffset || document.documentElement.scrollTop;
             openLightbox(img.getAttribute('src'), img.getAttribute('alt') || 'Preview', resolvedIndex);
         });
         
@@ -1352,6 +1384,20 @@ function closeLightbox() {
     }
     unlockScroll();
     lightboxStatePushed = false;
+    
+    // Scroll back to clicked thumbnail
+    if (clickedThumbnailElement) {
+        setTimeout(() => {
+            clickedThumbnailElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            clickedThumbnailElement = null;
+        }, 100);
+    } else if (scrollPositionBeforeLightbox > 0) {
+        // Fallback: scroll to saved position
+        setTimeout(() => {
+            window.scrollTo({ top: scrollPositionBeforeLightbox, behavior: 'smooth' });
+            scrollPositionBeforeLightbox = 0;
+        }, 100);
+    }
 }
 
 function showLightboxAt(index) {
@@ -1804,7 +1850,12 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('popstate', function(e) {
         const modal = document.getElementById('lightboxModal');
         if (modal && modal.classList.contains('open')) {
+            // Close lightbox when back button is pressed
             closeLightbox();
+            // Prevent default back navigation
+            if (e.state && e.state.lightbox) {
+                e.preventDefault();
+            }
         }
     });
 });
