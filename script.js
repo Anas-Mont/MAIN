@@ -39,6 +39,8 @@ let socialThumbnails = [
     "client 7 copy.jpg",
     "new client 10 copy.jpg",
     "thumbnail prompt copy.jpg",
+    "comeback copy.jpg",
+    
 ];
 
 // Tech Thumbnails - Add your tech thumbnails here
