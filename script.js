@@ -53,6 +53,7 @@ let techThumbnails = [
     "new client 4 copy.jpg",
     "client 2.jpg",
     "new client 11 22 copy.jpg",
+    "huawei matebook 14 copy.jpg",
 ];
 
 // Function to mix arrays in round-robin fashion (gaming, tech, social, gaming, tech, social...)
