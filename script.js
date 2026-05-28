@@ -49,6 +49,7 @@ let techThumbnails = [
     "client 2.jpg",
     "new client 5 copy.jpg",
     "huawei matebook 14 copy.jpg",
+    "chromebook vs laptop copy.jpg",
     "new client 2 copy.jpg",
     "new client 4 copy.jpg",
     "new client 11 22 copy.jpg",
