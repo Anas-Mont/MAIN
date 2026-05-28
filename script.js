@@ -2,9 +2,9 @@
 let gamingThumbnails = [
     "part 1 thumbnail 2.png",
     "new 1.jpg",
+    "practice copy_compressed.png",
     "talha copy_compressed.jpg",
     "m1887 skin copy.jpg",
-    "practice copy_compressed.png",
     "kar981 copy.png",
     "new gun skin 3 copy_compressed.png",
     "enternal QBZ copy_compressed.png",
@@ -34,12 +34,14 @@ let socialThumbnails = [
     // Example format - add your social media thumbnail filenames here:
     // "social1.png",
     // "social2.jpg",
-    "Untitled-galssy copy.jpg",
-    "new client.jpg",
-    "client 7 copy.jpg",
+    "new one audio-Recovered copy.jpg",
     "new client 10 copy.jpg",
+    "claude fail copy.jpg",
     "thumbnail prompt copy.jpg",
     "comeback copy.jpg",
+    "Untitled-galssy copy.jpg",
+    "client 7 copy.jpg",
+    "new client.jpg",
     
 ];
 
@@ -48,12 +50,12 @@ let techThumbnails = [
     // Example format - add your tech thumbnail filenames here:
     // "tech1.png",
     // "tech2.jpg",
-    "new client 2 copy.jpg",
-    "new client 5 copy.jpg",
-    "new client 4 copy.jpg",
     "client 2.jpg",
-    "new client 11 22 copy.jpg",
+    "new client 5 copy.jpg",
     "huawei matebook 14 copy.jpg",
+    "new client 2 copy.jpg",
+    "new client 4 copy.jpg",
+    "new client 11 22 copy.jpg",
 ];
 
 // Function to mix arrays in round-robin fashion (gaming, tech, social, gaming, tech, social...)
