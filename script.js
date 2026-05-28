@@ -6,7 +6,6 @@ let gamingThumbnails = [
     "talha copy_compressed.jpg",
     "m1887 skin copy.jpg",
     "kar981 copy.png",
-    "new gun skin 3 copy_compressed.png",
     "enternal QBZ copy_compressed.png",
     "QBZ new copy_compressed.png",
     "ZERO STASH 1_compressed.png",
@@ -22,10 +21,7 @@ let gamingThumbnails = [
     "main1.png",
     "first .png",
     "new2.png",
-    "second copy.png",
-    "gpt1 copy.png",
     "main4 copy.png",
-    "new gun skin_compressed.png",
     
 ];
 
