@@ -16,7 +16,7 @@ let gamingThumbnails = [
     "uzi copy.jpg",
     "talha.png",
     "Untitled-1.png",
-    "test_copy.png",
+
     "vlcsnap-2025-02-07-22h28m37s077 copy.png",
     "main1.png",
     "first .png",
