@@ -30,6 +30,7 @@ let socialThumbnails = [
     // Example format - add your social media thumbnail filenames here:
     // "social1.png",
     // "social2.jpg",
+    "Worth Every Penny.jpg",
     "shoes.jpg",
     "GMKtec NucBox K15.jpg",
     "Traveling Gears copy.jpg",
@@ -49,6 +50,9 @@ let techThumbnails = [
     // Example format - add your tech thumbnail filenames here:
     // "tech1.png",
     // "tech2.jpg",
+    "flat one copy.jpg",
+    "flat lay style copy.jpg",
+    "Keyboard.jpg",
     "speaker.jpg",
     "MSI Claw 8.jpg",
     "Cycle sample  1022 copy.jpg",
