@@ -30,7 +30,6 @@ let socialThumbnails = [
     // Example format - add your social media thumbnail filenames here:
     // "social1.png",
     // "social2.jpg",
-    "Worth Every Penny.jpg",
     "shoes.jpg",
     "GMKtec NucBox K15.jpg",
     "Traveling Gears copy.jpg",
@@ -50,9 +49,6 @@ let techThumbnails = [
     // Example format - add your tech thumbnail filenames here:
     // "tech1.png",
     // "tech2.jpg",
-    "flat one copy.jpg",
-    "flat lay style copy.jpg",
-    "Keyboard.jpg",
     "speaker.jpg",
     "MSI Claw 8.jpg",
     "Cycle sample  1022 copy.jpg",
@@ -124,16 +120,32 @@ function getThumbnailListForCategory(category) {
     return lists[category] || [];
 }
 
-// Responsive rows: 4 / 3 / 2 / 1 based on viewport width
+const MOBILE_THUMBNAILS_PER_PAGE = window.MOBILE_THUMBNAILS_PER_PAGE || 15;
+
+function getViewportWidth() {
+    return Math.round(window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth);
+}
+
+function isSingleColumnThumbnailLayout() {
+    return window.matchMedia('(max-width: 768px)').matches
+        || window.matchMedia('(hover: none) and (pointer: coarse)').matches
+        || getViewportWidth() <= 768;
+}
+
 function getThumbnailGridLayout() {
-    const width = window.innerWidth;
-    if (width <= 768) return { cols: 1, rows: 1 };
+    if (isSingleColumnThumbnailLayout()) {
+        return { cols: 1, rows: MOBILE_THUMBNAILS_PER_PAGE };
+    }
+    const width = getViewportWidth();
     if (width <= 1023) return { cols: 2, rows: 2 };
     if (width <= 1399) return { cols: 3, rows: 3 };
     return { cols: 4, rows: 4 };
 }
 
 function getThumbnailsPerPage() {
+    if (isSingleColumnThumbnailLayout()) {
+        return MOBILE_THUMBNAILS_PER_PAGE;
+    }
     const { cols, rows } = getThumbnailGridLayout();
     return cols * rows;
 }
@@ -153,64 +165,62 @@ function preloadThumbnailBatch(sources) {
     sources.filter(Boolean).forEach(preloadThumbnail);
 }
 
+let dominantColorQueue = [];
+let dominantColorQueueActive = false;
+
 function scheduleDominantColor(img, item) {
-    const applyColor = () => {
+    dominantColorQueue.push({ img, item });
+    if (!dominantColorQueueActive) {
+        processDominantColorQueue();
+    }
+}
+
+function processDominantColorQueue() {
+    if (!dominantColorQueue.length) {
+        dominantColorQueueActive = false;
+        return;
+    }
+    dominantColorQueueActive = true;
+    const run = () => {
+        const next = dominantColorQueue.shift();
+        if (!next) {
+            dominantColorQueueActive = false;
+            return;
+        }
         try {
-            const { hex, rgb } = extractDominantColor(img);
+            const { hex, rgb } = extractDominantColor(next.img);
             if (hex && rgb) {
-                item.style.setProperty('--glow', hex);
-                item.style.setProperty('--glow-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+                next.item.style.setProperty('--glow', hex);
+                next.item.style.setProperty('--glow-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
             }
         } catch (_) {}
-    };
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(applyColor, { timeout: 1200 });
-    } else {
-        setTimeout(applyColor, 80);
-    }
-}
-
-function loadSingleThumbnailImage(img, src, item, { priority = 'auto', eager = true } = {}) {
-    const imageWrap = item.querySelector('.thumbnail-image');
-    const finish = () => {
-        img.classList.remove('is-loading');
-        img.classList.add('is-loaded');
-        item.classList.remove('thumbnail-loading');
-        if (imageWrap) imageWrap.classList.remove('is-loading');
-        item.classList.add('thumbnail-visible');
-        scheduleDominantColor(img, item);
-    };
-
-    img.decoding = 'async';
-    img.loading = eager ? 'eager' : 'lazy';
-    if ('fetchPriority' in img) {
-        img.fetchPriority = priority;
-    }
-
-    img.onload = () => {
-        if (img.decode) {
-            img.decode().then(finish).catch(finish);
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(run, { timeout: 2000 });
         } else {
-            finish();
+            setTimeout(run, 16);
         }
     };
-    img.onerror = finish;
-    img.src = src;
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(run, { timeout: 2500 });
+    } else {
+        setTimeout(run, 120);
+    }
 }
 
-function loadThumbnailBatchParallel(entries, cols) {
-    const preloadCount = Math.min(entries.length, cols * 2);
-    preloadThumbnailBatch(entries.slice(0, preloadCount).map((entry) => entry.src));
-
-    entries.forEach((entry, index) => {
-        const priority = index < cols ? 'high' : 'auto';
-        loadSingleThumbnailImage(entry.img, entry.src, entry.item, { priority, eager: true });
-    });
+function markThumbnailLoaded(img, item) {
+    if (img.classList.contains('is-loaded')) return;
+    const imageWrap = item.querySelector('.thumbnail-image');
+    img.classList.remove('is-loading');
+    img.classList.add('is-loaded');
+    item.classList.remove('thumbnail-loading');
+    if (imageWrap) imageWrap.classList.remove('is-loading');
+    item.classList.add('thumbnail-visible');
+    scheduleDominantColor(img, item);
 }
 
 function createThumbnailPlaceholder(thumbnailSrc, index, category) {
     const thumbnailItem = document.createElement('div');
-    thumbnailItem.classList.add('glass-card', 'thumbnail-item', 'thumbnail-loading');
+    thumbnailItem.classList.add('thumbnail-item', 'thumbnail-loading');
     thumbnailItem.dataset.index = String(index);
     thumbnailItem.dataset.category = category;
 
@@ -220,9 +230,23 @@ function createThumbnailPlaceholder(thumbnailSrc, index, category) {
     const img = document.createElement('img');
     img.className = 'thumbnail-img is-loading';
     img.alt = `${category} Thumbnail ${index + 1}`;
+    img.decoding = 'async';
+    img.loading = 'eager';
+    if ('fetchPriority' in img) {
+        img.fetchPriority = index < 6 ? 'high' : 'auto';
+    }
+
+    const reveal = () => markThumbnailLoaded(img, thumbnailItem);
+    img.onload = reveal;
+    img.onerror = reveal;
 
     imageWrap.appendChild(img);
     thumbnailItem.appendChild(imageWrap);
+    img.src = thumbnailSrc;
+
+    if (img.complete) {
+        reveal();
+    }
 
     return { item: thumbnailItem, img, src: thumbnailSrc };
 }
@@ -283,8 +307,10 @@ function loadThumbnails(category = 'all') {
         return;
     }
 
-    const { cols } = getThumbnailGridLayout();
-    const thumbnailsToLoad = getThumbnailsPerPage();
+    let thumbnailsToLoad = getThumbnailsPerPage();
+    if (isSingleColumnThumbnailLayout()) {
+        thumbnailsToLoad = MOBILE_THUMBNAILS_PER_PAGE;
+    }
     const currentIndex = currentThumbnailsDisplayed[category] || 0;
     const remainingThumbnails = thumbnailList.length - currentIndex;
     const numToAdd = Math.min(thumbnailsToLoad, remainingThumbnails);
@@ -296,17 +322,13 @@ function loadThumbnails(category = 'all') {
         }
     }
 
-    const batchEntries = [];
+    const fragment = document.createDocumentFragment();
     for (let i = 0; i < numToAdd; i++) {
         const thumbnailSrc = thumbnailList[currentIndex + i];
         const entry = createThumbnailPlaceholder(thumbnailSrc, currentIndex + i, category);
-        thumbnailGrid.appendChild(entry.item);
-        batchEntries.push(entry);
+        fragment.appendChild(entry.item);
     }
-
-    if (batchEntries.length) {
-        loadThumbnailBatchParallel(batchEntries, cols);
-    }
+    thumbnailGrid.appendChild(fragment);
 
     currentThumbnailsDisplayed[category] = currentIndex + numToAdd;
 
@@ -1889,11 +1911,14 @@ function setupThumbnailsNavHighlight() {
     link.addEventListener('click', settle, { once: true });
 }
 
+let galleryKickedOff = false;
+
 function kickoffThumbnailGallery() {
+    if (galleryKickedOff || !document.getElementById('allGrid')) return;
+    galleryKickedOff = true;
     setupThumbnailGridInteractions();
-    preloadThumbnailBatch(allThumbnails.slice(0, getThumbnailsPerPage()).map((src) => src));
-    loadThumbnails('all');
     setupShowMoreButton();
+    loadThumbnails('all');
     updateShowMoreButtonVisibility();
 }
 
@@ -2163,4 +2188,7 @@ function monitorDisqusLoading() {
 document.addEventListener('DOMContentLoaded', function() {
     enhanceCommentsSection();
 });
+
+// Grid exists at end of body — start loading immediately, no rAF delay
+kickoffThumbnailGallery();
 
