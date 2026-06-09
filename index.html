@@ -27,14 +27,18 @@
         <div class="nav-container">
             
             <div class="nav-logo">
-                <h2>Portfolio</h2>
+                <h2>Digital Jungle</h2>
             </div>
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#services" class="nav-link">Services</a></li>
-                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
-                <li><a href="#thumbnails" class="nav-link">Thumbnails</a></li>
+                <li><a href="#thumbnails" class="nav-link nav-thumbnails-highlight">
+                    <span class="nav-thumbnails-wrap">
+                        <span class="nav-thumbnails-text">Thumbnails</span>
+                        <span class="nav-thumbnails-new" aria-hidden="true">NEW</span>
+                    </span>
+                </a></li>
                 <li><a href="#reviews" class="nav-link">Reviews</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="#comments" class="nav-link">Comments<span class="comment-count">23</span></a></li>
@@ -88,7 +92,7 @@
                             <i class="fas fa-envelope"></i>
                             Get In Touch
                         </button>
-                        <button class="btn-secondary" onclick="scrollToSection('portfolio')">
+                        <button class="btn-secondary" onclick="scrollToSection('thumbnails')">
                             <i class="fas fa-eye"></i>
                             Explore Work
                         </button>
@@ -200,66 +204,9 @@
         </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="portfolio">
-        <div class="container">
-            <h2 class="section-title">Portfolio</h2>
-            <div class="portfolio-grid">
-                <div class="glass-card portfolio-item">
-                    <div class="portfolio-image">
-                        <div class="thumbnail-image">
-                            <image src="1_j0gjLpN1aaHuRowTKgr6yQ.jpg" alt="Thumbnail 1" class="thumbnail-img">
-                        </div>
-                    </div>
-                    <div class="portfolio-content">
-                        <h3>Custom Web Application</h3>
-                        <p>Interactive web application with modern UI/UX and responsive design</p>
-                        <div class="portfolio-tags">
-                            <span class="tag">HTML5</span>
-                            <span class="tag">CSS3</span>
-                            <span class="tag">JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card portfolio-item">
-                    <div class="portfolio-image">
-                        <div class="thumbnail-image">
-                            <image src="all thumbs.png" alt="Thumbnail 1" class="thumbnail-img">
-                        </div>
-                    </div>
-                    <div class="portfolio-content">
-                        <h3>YouTube Thumbnail Pack</h3>
-                        <p>High-converting thumbnail designs for tech YouTube channel</p>
-                        <div class="portfolio-tags">
-                            <span class="tag">Photoshop</span>
-                            <span class="tag">Design</span>
-                            <span class="tag">Branding</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card portfolio-item">
-                    <div class="portfolio-image">
-                        <div class="thumbnail-image">
-                            <image src="blog-header.png" alt="Thumbnail 1" class="thumbnail-img">
-                        </div>
-                    </div>
-                    <div class="portfolio-content">
-                        <h3>Social Media Graphics</h3>
-                        <p>Complete branding package for social media presence</p>
-                        <div class="portfolio-tags">
-                            <span class="tag">Illustrator</span>
-                            <span class="tag">Branding</span>
-                            <span class="tag">Social Media</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Thumbnail Gallery Section -->
     <section id="thumbnails" class="thumbnails">
-        <div class="container">
+        <div class="container thumbnails-intro">
             <h2 class="section-title">Thumbnail Gallery</h2>
             <p class="section-subtitle">Eye-catching designs that boost click-through rates</p>
 
@@ -278,7 +225,9 @@
                     <i class="fas fa-laptop-code"></i> Tech
                 </button>
             </div>
+        </div>
 
+        <div class="thumbnail-stage">
             <!-- All Thumbnails -->
             <div class="category-section" data-category="all">
                 <h3 class="category-title">
@@ -337,7 +286,9 @@
                     Show More
                 </button>
             </div>
+        </div>
 
+        <div class="container">
             <div class="add-thumbnail-section">
                 <div class="glass-card add-thumbnail-card">
                     <h3>Want to Add Your Thumbnails?</h3>

@@ -30,6 +30,7 @@ let socialThumbnails = [
     // Example format - add your social media thumbnail filenames here:
     // "social1.png",
     // "social2.jpg",
+    "Worth Every Penny.jpg",
     "shoes.jpg",
     "GMKtec NucBox K15.jpg",
     "Traveling Gears copy.jpg",
@@ -49,6 +50,9 @@ let techThumbnails = [
     // Example format - add your tech thumbnail filenames here:
     // "tech1.png",
     // "tech2.jpg",
+    "flat one copy.jpg",
+    "flat lay style copy.jpg",
+    "Keyboard.jpg",
     "speaker.jpg",
     "MSI Claw 8.jpg",
     "Cycle sample  1022 copy.jpg",
@@ -92,51 +96,199 @@ function mixThumbnails() {
 // All Thumbnails - Mix of all categories (gaming, tech, social rotation)
 let allThumbnails = mixThumbnails();
 
-let thumbnailsPerPageDesktop = 12;
-let thumbnailsPerPageMobile = 9;
 let currentThumbnailsDisplayed = {
     all: 0,
     gaming: 0,
     social: 0,
     tech: 0
 };
+let currentLightboxCategory = 'all';
+let thumbnailGridInteractionsBound = false;
+let thumbHoldTimer = null;
+let thumbHoldItem = null;
 
-// (DOMContentLoaded handler consolidated at bottom of file)
+const THUMBNAIL_GRID_IDS = {
+    all: 'allGrid',
+    gaming: 'gamingGrid',
+    social: 'socialGrid',
+    tech: 'techGrid'
+};
 
-// Load Thumbnails
-function loadThumbnails(category = 'all') {
-    // Define thumbnail arrays and their corresponding grid IDs
-    const thumbnailLists = {
+function getThumbnailListForCategory(category) {
+    const lists = {
         all: allThumbnails,
         gaming: gamingThumbnails,
         social: socialThumbnails,
         tech: techThumbnails
     };
-    
-    const gridIds = {
-        all: 'allGrid',
-        gaming: 'gamingGrid',
-        social: 'socialGrid',
-        tech: 'techGrid'
+    return lists[category] || [];
+}
+
+// Responsive rows: 4 / 3 / 2 / 1 based on viewport width
+function getThumbnailGridLayout() {
+    const width = window.innerWidth;
+    if (width <= 768) return { cols: 1, rows: 1 };
+    if (width <= 1023) return { cols: 2, rows: 2 };
+    if (width <= 1399) return { cols: 3, rows: 3 };
+    return { cols: 4, rows: 4 };
+}
+
+function getThumbnailsPerPage() {
+    const { cols, rows } = getThumbnailGridLayout();
+    return cols * rows;
+}
+
+function preloadThumbnail(src) {
+    if (!src) return;
+    const existing = document.querySelector(`link[rel="preload"][as="image"][href="${CSS.escape(src)}"]`);
+    if (existing) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    document.head.appendChild(link);
+}
+
+function preloadThumbnailBatch(sources) {
+    sources.filter(Boolean).forEach(preloadThumbnail);
+}
+
+function scheduleDominantColor(img, item) {
+    const applyColor = () => {
+        try {
+            const { hex, rgb } = extractDominantColor(img);
+            if (hex && rgb) {
+                item.style.setProperty('--glow', hex);
+                item.style.setProperty('--glow-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+            }
+        } catch (_) {}
     };
-    
-    const thumbnailList = thumbnailLists[category];
-    const thumbnailGrid = document.getElementById(gridIds[category]);
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(applyColor, { timeout: 1200 });
+    } else {
+        setTimeout(applyColor, 80);
+    }
+}
+
+function loadSingleThumbnailImage(img, src, item, { priority = 'auto', eager = true } = {}) {
+    const imageWrap = item.querySelector('.thumbnail-image');
+    const finish = () => {
+        img.classList.remove('is-loading');
+        img.classList.add('is-loaded');
+        item.classList.remove('thumbnail-loading');
+        if (imageWrap) imageWrap.classList.remove('is-loading');
+        item.classList.add('thumbnail-visible');
+        scheduleDominantColor(img, item);
+    };
+
+    img.decoding = 'async';
+    img.loading = eager ? 'eager' : 'lazy';
+    if ('fetchPriority' in img) {
+        img.fetchPriority = priority;
+    }
+
+    img.onload = () => {
+        if (img.decode) {
+            img.decode().then(finish).catch(finish);
+        } else {
+            finish();
+        }
+    };
+    img.onerror = finish;
+    img.src = src;
+}
+
+function loadThumbnailBatchParallel(entries, cols) {
+    const preloadCount = Math.min(entries.length, cols * 2);
+    preloadThumbnailBatch(entries.slice(0, preloadCount).map((entry) => entry.src));
+
+    entries.forEach((entry, index) => {
+        const priority = index < cols ? 'high' : 'auto';
+        loadSingleThumbnailImage(entry.img, entry.src, entry.item, { priority, eager: true });
+    });
+}
+
+function createThumbnailPlaceholder(thumbnailSrc, index, category) {
+    const thumbnailItem = document.createElement('div');
+    thumbnailItem.classList.add('glass-card', 'thumbnail-item', 'thumbnail-loading');
+    thumbnailItem.dataset.index = String(index);
+    thumbnailItem.dataset.category = category;
+
+    const imageWrap = document.createElement('div');
+    imageWrap.classList.add('thumbnail-image', 'is-loading');
+
+    const img = document.createElement('img');
+    img.className = 'thumbnail-img is-loading';
+    img.alt = `${category} Thumbnail ${index + 1}`;
+
+    imageWrap.appendChild(img);
+    thumbnailItem.appendChild(imageWrap);
+
+    return { item: thumbnailItem, img, src: thumbnailSrc };
+}
+
+function setupThumbnailGridInteractions() {
+    if (thumbnailGridInteractionsBound) return;
+    thumbnailGridInteractionsBound = true;
+
+    document.addEventListener('click', (e) => {
+        const item = e.target.closest('.thumbnail-item');
+        if (!item || !item.closest('.thumbnail-grid')) return;
+
+        const img = item.querySelector('img.thumbnail-img');
+        if (!img || !img.classList.contains('is-loaded')) return;
+
+        const category = item.dataset.category || 'all';
+        const resolvedIndex = parseInt(item.dataset.index, 10) || 0;
+        currentLightboxCategory = category;
+        clickedThumbnailElement = item;
+        scrollPositionBeforeLightbox = window.pageYOffset || document.documentElement.scrollTop;
+        openLightbox(img.getAttribute('src'), img.getAttribute('alt') || 'Preview', resolvedIndex);
+    });
+
+    const clearThumbHold = () => {
+        if (thumbHoldTimer) {
+            clearTimeout(thumbHoldTimer);
+            thumbHoldTimer = null;
+        }
+        if (thumbHoldItem) {
+            thumbHoldItem.classList.remove('holding');
+            thumbHoldItem = null;
+        }
+    };
+
+    const startThumbHold = (e) => {
+        const item = e.target.closest('.thumbnail-item');
+        if (!item || !item.closest('.thumbnail-grid')) return;
+        clearThumbHold();
+        thumbHoldItem = item;
+        thumbHoldTimer = setTimeout(() => item.classList.add('holding'), 120);
+    };
+
+    document.addEventListener('mousedown', startThumbHold);
+    document.addEventListener('touchstart', startThumbHold, { passive: true });
+    document.addEventListener('mouseup', clearThumbHold);
+    document.addEventListener('mouseleave', clearThumbHold, true);
+    document.addEventListener('touchend', clearThumbHold, { passive: true });
+    document.addEventListener('touchcancel', clearThumbHold, { passive: true });
+}
+
+// Load Thumbnails — placeholders first, images row-by-row (YouTube-style)
+function loadThumbnails(category = 'all') {
+    const thumbnailList = getThumbnailListForCategory(category);
+    const thumbnailGrid = document.getElementById(THUMBNAIL_GRID_IDS[category]);
     const showMoreContainer = document.getElementById('showMoreContainer');
 
     if (!thumbnailGrid || !thumbnailList) {
-        console.log('Element or list not found for category:', category);
         return;
     }
 
-    const isMobile = window.innerWidth <= 768;
-    const thumbnailsToLoad = isMobile ? thumbnailsPerPageMobile : thumbnailsPerPageDesktop;
-    
+    const { cols } = getThumbnailGridLayout();
+    const thumbnailsToLoad = getThumbnailsPerPage();
     const currentIndex = currentThumbnailsDisplayed[category] || 0;
     const remainingThumbnails = thumbnailList.length - currentIndex;
     const numToAdd = Math.min(thumbnailsToLoad, remainingThumbnails);
 
-    // Remove "Coming Soon" card if it exists and we have thumbnails
     if (thumbnailList.length > 0) {
         const comingSoonCard = thumbnailGrid.querySelector('.coming-soon-card');
         if (comingSoonCard) {
@@ -144,67 +296,40 @@ function loadThumbnails(category = 'all') {
         }
     }
 
+    const batchEntries = [];
     for (let i = 0; i < numToAdd; i++) {
         const thumbnailSrc = thumbnailList[currentIndex + i];
-        const thumbnailItem = document.createElement('div');
-        thumbnailItem.classList.add('glass-card', 'thumbnail-item');
-        thumbnailItem.dataset.index = String(currentIndex + i);
-        thumbnailItem.dataset.category = category;
-        thumbnailItem.innerHTML = `
-            <div class="thumbnail-image">
-                <img src="${thumbnailSrc}" alt="${category} Thumbnail ${currentIndex + i + 1}" class="thumbnail-img" loading="lazy" decoding="async">
-            </div>
-        `;
-        
-        // Set dynamic glow color
-        const imgEl = new Image();
-        imgEl.crossOrigin = 'anonymous';
-        imgEl.src = thumbnailSrc;
-        imgEl.onload = () => {
-            try {
-                const { hex, rgb } = extractDominantColor(imgEl);
-                if (hex && rgb) {
-                    thumbnailItem.style.setProperty('--glow', hex);
-                    thumbnailItem.style.setProperty('--glow-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-                }
-            } catch (_) {}
-        };
-        
-        // Lightbox functionality
-        thumbnailItem.addEventListener('click', function() {
-            const img = this.querySelector('img');
-            const idxAttr = this.dataset.index;
-            const resolvedIndex = idxAttr ? parseInt(idxAttr) : (currentIndex + i);
-            // Store clicked element and scroll position
-            clickedThumbnailElement = this;
-            scrollPositionBeforeLightbox = window.pageYOffset || document.documentElement.scrollTop;
-            openLightbox(img.getAttribute('src'), img.getAttribute('alt') || 'Preview', resolvedIndex);
-        });
-        
-        thumbnailGrid.appendChild(thumbnailItem);
+        const entry = createThumbnailPlaceholder(thumbnailSrc, currentIndex + i, category);
+        thumbnailGrid.appendChild(entry.item);
+        batchEntries.push(entry);
     }
 
-    currentThumbnailsDisplayed[category] = (currentThumbnailsDisplayed[category] || 0) + numToAdd;
+    if (batchEntries.length) {
+        loadThumbnailBatchParallel(batchEntries, cols);
+    }
 
-    // Show/hide "Show More" button based on current active category
+    currentThumbnailsDisplayed[category] = currentIndex + numToAdd;
+
     const activeButton = document.querySelector('.category-btn.active');
     const activeCategory = activeButton ? activeButton.getAttribute('data-category') : 'all';
-    
+
     if (activeCategory === category) {
-        // Only show for the active category
         if (currentThumbnailsDisplayed[category] >= thumbnailList.length) {
             if (showMoreContainer) showMoreContainer.style.display = 'none';
-        } else {
-            if (showMoreContainer) {
-                showMoreContainer.style.display = 'block';
-            }
+        } else if (showMoreContainer) {
+            showMoreContainer.style.display = 'block';
         }
     }
-    
-    // Update the button text
+
     const showMoreButton = document.getElementById('showMoreThumbnails');
     if (showMoreButton) {
-        showMoreButton.innerHTML = `Show More`;
+        showMoreButton.textContent = 'Show More';
+    }
+}
+
+function ensureCategoryThumbnailsLoaded(category) {
+    if ((currentThumbnailsDisplayed[category] || 0) === 0) {
+        loadThumbnails(category);
     }
 }
 
@@ -246,8 +371,6 @@ function setupShowMoreButton() {
             const category = activeButton ? activeButton.getAttribute('data-category') : 'all';
             
             loadThumbnails(category);
-            // Re-init click handlers for any new items (idempotent)
-            initializeThumbnailGallery();
         });
     }
 }
@@ -288,9 +411,9 @@ function setupCategoryFilter() {
                 }
             });
             
-            // Update Show More button visibility based on active category
+            ensureCategoryThumbnailsLoaded(category);
             updateShowMoreButtonVisibility();
-            
+
             // Scroll to top of gallery
             const thumbnailsSection = document.getElementById('thumbnails');
             if (thumbnailsSection) {
@@ -340,9 +463,61 @@ let reviews = [
     }
 ];
 
+function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function hasFinePointer() {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+}
+
+function onScrollRAF(callback) {
+    let ticking = false;
+    return function handleScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            callback();
+            ticking = false;
+        });
+    };
+}
+
+let scrollEffectsBound = false;
+
+function setupScrollEffects() {
+    if (scrollEffectsBound) return;
+    scrollEffectsBound = true;
+
+    const navbar = document.querySelector('.navbar');
+    const parallaxElements = document.querySelectorAll('.floating-card');
+    let lastNavbarScrolled = null;
+
+    const updateOnScroll = onScrollRAF(() => {
+        const scrolled = window.scrollY;
+
+        if (navbar) {
+            const isScrolled = scrolled > 100;
+            if (isScrolled !== lastNavbarScrolled) {
+                navbar.classList.toggle('navbar-scrolled', isScrolled);
+                lastNavbarScrolled = isScrolled;
+            }
+        }
+
+        if (!prefersReducedMotion() && parallaxElements.length) {
+            parallaxElements.forEach((element, index) => {
+                const speed = 0.5 + (index * 0.1);
+                element.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
+            });
+        }
+    });
+
+    window.addEventListener('scroll', updateOnScroll, { passive: true });
+    updateOnScroll();
+}
+
 // Initialize Website
 function initializeWebsite() {
-    // Add smooth scrolling for navigation links
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -352,97 +527,57 @@ function initializeWebsite() {
         });
     });
 
-    // (Hamburger setup handled in setupEventListeners to avoid duplicates)
+    setupScrollEffects();
 
-    // Enhanced scroll effect for navbar
-    window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        const scrolled = window.scrollY;
-        
-        if (scrolled > 100) {
-            navbar.style.background = 'rgba(0, 20, 0, 0.6)';
-            navbar.style.boxShadow = '0 2px 20px rgba(34, 139, 34, 0.2)';
-        } else {
-            navbar.style.background = 'rgba(0, 20, 0, 0.4)';
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-        }
-    });
+    if (prefersReducedMotion()) return;
 
-    // Enhanced animation on scroll with nature theme
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                
-                // Add nature-inspired entrance effects
-                if (entry.target.classList.contains('service-card')) {
-                    entry.target.style.animationDelay = Math.random() * 0.5 + 's';
-                    entry.target.classList.add('nature-entrance');
-                }
+            if (!entry.isIntersecting) return;
+            const card = entry.target;
+            card.classList.add('glass-card-visible');
+            if (card.classList.contains('service-card')) {
+                card.style.animationDelay = `${Math.random() * 0.5}s`;
+                card.classList.add('nature-entrance');
             }
+            obs.unobserve(card);
         });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    // Observe all glass cards
-    const glassCards = document.querySelectorAll('.glass-card');
-    glassCards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+    document.querySelectorAll('.glass-card:not(.thumbnail-item)').forEach((card, index) => {
+        card.classList.add('glass-card-enter');
+        card.style.setProperty('--enter-delay', `${Math.min(index * 0.08, 0.8)}s`);
         observer.observe(card);
-    });
-
-    // Parallax effect for hero section
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const parallaxElements = document.querySelectorAll('.floating-card');
-        
-        parallaxElements.forEach((element, index) => {
-            const speed = 0.5 + (index * 0.1);
-            element.style.transform = `translateY(${scrolled * speed}px)`;
-        });
     });
 }
 
 // Create Nature Effects
 function createNatureEffects() {
-    // Create floating particles
-    createFloatingParticles();
-    
-    // Add nature sounds trigger (visual feedback)
     addNatureSoundEffects();
-    
-    // Create organic cursor trail
-    createCursorTrail();
+
+    if (prefersReducedMotion()) return;
+
+    createFloatingParticles();
+
+    if (hasFinePointer()) {
+        createCursorTrail();
+    }
 }
 
 function createFloatingParticles() {
     const particleContainer = document.createElement('div');
     particleContainer.className = 'nature-particles';
-    particleContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    `;
-    
+    particleContainer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(particleContainer);
-    
-    // Create particles periodically
+
+    const maxParticles = 8;
     setInterval(() => {
-        if (Math.random() < 0.3) {
+        if (document.hidden || document.body.classList.contains('modal-open')) return;
+        if (particleContainer.childElementCount >= maxParticles) return;
+        if (Math.random() < 0.22) {
             createParticle(particleContainer);
         }
-    }, 2000);
+    }, 3500);
 }
 
 function createParticle(container) {
@@ -472,7 +607,7 @@ function createParticle(container) {
 }
 
 function addNatureSoundEffects() {
-    const buttons = document.querySelectorAll('button, .portfolio-item');
+    const buttons = document.querySelectorAll('button');
     
     buttons.forEach(button => {
         button.addEventListener('mouseenter', function() {
@@ -522,15 +657,16 @@ function createRippleEffect(element) {
 }
 
 function createCursorTrail() {
-    let mouseX = 0, mouseY = 0;
     let trail = [];
-    
-    document.addEventListener('mousemove', function(e) {
+    let lastSpawn = 0;
+
+    document.addEventListener('mousemove', (e) => {
         if (document.body.classList.contains('modal-open')) return;
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
-        // Create trail dot
+
+        const now = performance.now();
+        if (now - lastSpawn < 90) return;
+        lastSpawn = now;
+
         const dot = document.createElement('div');
         dot.className = 'cursor-trail';
         dot.style.cssText = `
@@ -541,29 +677,22 @@ function createCursorTrail() {
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            left: ${mouseX}px;
-            top: ${mouseY}px;
+            left: ${e.clientX}px;
+            top: ${e.clientY}px;
             animation: trailFade 1s ease-out forwards;
+            will-change: opacity, transform;
         `;
-        
+
         document.body.appendChild(dot);
         trail.push(dot);
-        
-        // Limit trail length
-        if (trail.length > 10) {
+
+        if (trail.length > 6) {
             const oldDot = trail.shift();
-            if (oldDot.parentNode) {
-                oldDot.parentNode.removeChild(oldDot);
-            }
+            oldDot.remove();
         }
-        
-        // Remove dot after animation
-        setTimeout(() => {
-            if (dot.parentNode) {
-                dot.parentNode.removeChild(dot);
-            }
-        }, 1000);
-    });
+
+        setTimeout(() => dot.remove(), 1000);
+    }, { passive: true });
 }
 
 // Setup Event Listeners
@@ -653,7 +782,7 @@ function handleKeyboardNavigation(e) {
     
     // Navigate sections with arrow keys (when not in input)
     if (!e.target.matches('input, textarea')) {
-        const sections = ['home', 'about', 'services', 'portfolio', 'reviews', 'contact'];
+        const sections = ['home', 'about', 'services', 'thumbnails', 'reviews', 'contact'];
         const currentSection = getCurrentSection();
         const currentIndex = sections.indexOf(currentSection);
         
@@ -822,18 +951,6 @@ function getCurrentSection() {
     
     return currentSection;
 }
-
-// Portfolio Item Click Handler (enhanced)
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.portfolio-item')) {
-        const portfolioItem = e.target.closest('.portfolio-item');
-        const title = portfolioItem.querySelector('h3').textContent;
-        
-        // Create enhanced visual feedback
-        createRippleEffect(portfolioItem);
-        showNatureNotification(`Exploring: ${title}. Contact me to see more details! 🌟`, 'info');
-    }
-});
 
 // Add CSS animations dynamically
 const style = document.createElement('style');
@@ -1046,69 +1163,68 @@ function createInteractiveSkillBars() {
 
 // Enhanced Scroll Animations
 function createScrollAnimations() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
+    if (prefersReducedMotion()) return;
+
+    const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-                
-                // Special animations for different elements
-                if (entry.target.classList.contains('glass-card')) {
-                    entry.target.style.animation = 'glassCardSlideIn 0.8s ease-out forwards';
-                }
-                
-                if (entry.target.classList.contains('skill-bar')) {
-                    const skillFill = entry.target.querySelector('.skill-fill');
-                    const level = skillFill.dataset.level;
-                    setTimeout(() => {
-                        skillFill.style.width = level + '%';
-                    }, 300);
+            if (!entry.isIntersecting) return;
+            const target = entry.target;
+            target.classList.add('animate-in');
+
+            if (target.classList.contains('skill-bar')) {
+                const skillFill = target.querySelector('.skill-fill');
+                const level = skillFill?.dataset.level;
+                if (skillFill && level) {
+                    requestAnimationFrame(() => {
+                        skillFill.style.width = `${level}%`;
+                    });
                 }
             }
+
+            obs.unobserve(target);
         });
-    }, observerOptions);
-    
-    // Observe all glass cards and skill bars
-    document.querySelectorAll('.glass-card, .skill-bar').forEach(el => {
-        observer.observe(el);
-    });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.skill-bar').forEach(el => observer.observe(el));
 }
 
 // Interactive Background Particles
 function enhanceBackgroundParticles() {
     const particlesContainer = document.querySelector('.particles');
-    if (!particlesContainer) return;
-    
-    // Create interactive particles that respond to mouse
-    let mouseX = 0, mouseY = 0;
-    
+    if (!particlesContainer || !hasFinePointer() || prefersReducedMotion()) return;
+
+    const particles = particlesContainer.querySelectorAll('.particle');
+    if (!particles.length) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let pending = false;
+
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        
-        // Move existing particles towards mouse
-        const particles = particlesContainer.querySelectorAll('.particle');
-        particles.forEach((particle, index) => {
-            const rect = particle.getBoundingClientRect();
-            const particleX = rect.left + rect.width / 2;
-            const particleY = rect.top + rect.height / 2;
-            
-            const distance = Math.sqrt(Math.pow(mouseX - particleX, 2) + Math.pow(mouseY - particleY, 2));
-            
-            if (distance < 100) {
-                const angle = Math.atan2(mouseY - particleY, mouseX - particleX);
-                const force = (100 - distance) / 100;
-                
-                particle.style.transform = `translate(${Math.cos(angle) * force * 20}px, ${Math.sin(angle) * force * 20}px)`;
-            } else {
-                particle.style.transform = 'translate(0, 0)';
-            }
+        if (pending || document.body.classList.contains('modal-open')) return;
+        pending = true;
+        requestAnimationFrame(() => {
+            particles.forEach((particle) => {
+                const rect = particle.getBoundingClientRect();
+                const particleX = rect.left + rect.width / 2;
+                const particleY = rect.top + rect.height / 2;
+                const dx = mouseX - particleX;
+                const dy = mouseY - particleY;
+                const distance = Math.hypot(dx, dy);
+
+                if (distance < 100) {
+                    const force = (100 - distance) / 100;
+                    const angle = Math.atan2(dy, dx);
+                    particle.style.transform = `translate3d(${Math.cos(angle) * force * 20}px, ${Math.sin(angle) * force * 20}px, 0)`;
+                } else {
+                    particle.style.transform = 'translate3d(0, 0, 0)';
+                }
+            });
+            pending = false;
         });
-    });
+    }, { passive: true });
 }
 
 // Typing Animation for Hero Text
@@ -1138,40 +1254,11 @@ function createTypingAnimation() {
     setTimeout(typeWriter, 1000);
 }
 
-// Interactive Portfolio Hover Effects
-function enhancePortfolioItems() {
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    
-    portfolioItems.forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            item.style.transform = 'translateY(-10px) scale(1.02)';
-            item.style.boxShadow = '0 20px 40px rgba(34, 139, 34, 0.3)';
-            
-            // Add glow effect
-            const glowEffect = document.createElement('div');
-            glowEffect.className = 'portfolio-glow';
-            item.appendChild(glowEffect);
-        });
-        
-        item.addEventListener('mouseleave', () => {
-            item.style.transform = 'translateY(0) scale(1)';
-            item.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3)';
-            
-            // Remove glow effect
-            const glowEffect = item.querySelector('.portfolio-glow');
-            if (glowEffect) {
-                glowEffect.remove();
-            }
-        });
-    });
-}
-
 // Initialize all new interactive elements
 function initializeInteractiveElements() {
     createScrollAnimations();
     enhanceBackgroundParticles();
     createTypingAnimation();
-    enhancePortfolioItems();
 }
 
 // Update the main initialization
@@ -1196,64 +1283,6 @@ function copyToClipboard(text, button) {
     }).catch(function(err) {
         console.error('Failed to copy: ', err);
         showNatureNotification('Failed to copy to clipboard', 'error');
-    });
-}
-
-// Simplified Thumbnail Gallery
-function initializeThumbnailGallery() {
-    const thumbnailItems = document.querySelectorAll('.thumbnail-item');
-    
-    thumbnailItems.forEach((item, index) => {
-        // Add hover effects
-        item.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px) scale(1.02)';
-            const rgb = getComputedStyle(this).getPropertyValue('--glow-rgb') || '34, 197, 94';
-            this.style.boxShadow = `0 20px 40px rgba(${rgb}, 0.35)`;
-        });
-        
-        item.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-            this.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.37)';
-        });
-
-        // Touch and mouse hold to show stronger side glow
-        let holdTimer = null;
-        const startHold = () => {
-            if (holdTimer) return;
-            holdTimer = setTimeout(() => {
-                item.classList.add('holding');
-            }, 120);
-        };
-        const endHold = () => {
-            if (holdTimer) {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-            }
-            item.classList.remove('holding');
-        };
-        item.addEventListener('mousedown', startHold);
-        item.addEventListener('touchstart', startHold, { passive: true });
-        item.addEventListener('mouseup', endHold);
-        item.addEventListener('mouseleave', endHold);
-        item.addEventListener('touchend', endHold);
-        item.addEventListener('touchcancel', endHold);
-        
-        // Open lightbox on click
-        item.addEventListener('click', function() {
-            const img = this.querySelector('img');
-            const idxAttr = this.dataset.index;
-            const resolvedIndex = idxAttr ? parseInt(idxAttr) : index;
-            // Store clicked element and scroll position
-            clickedThumbnailElement = this;
-            scrollPositionBeforeLightbox = window.pageYOffset || document.documentElement.scrollTop;
-            openLightbox(img.getAttribute('src'), img.getAttribute('alt') || 'Preview', resolvedIndex);
-        });
-        
-        // Animate items on load
-        setTimeout(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateY(0)';
-        }, index * 100);
     });
 }
 
@@ -1410,10 +1439,12 @@ function closeLightbox() {
 }
 
 function showLightboxAt(index) {
-    if (index < 0) index = allThumbnails.length - 1;
-    if (index >= allThumbnails.length) index = 0;
+    const list = getThumbnailListForCategory(currentLightboxCategory);
+    if (!list.length) return;
+    if (index < 0) index = list.length - 1;
+    if (index >= list.length) index = 0;
     lightboxIndex = index;
-    const src = allThumbnails[index];
+    const src = list[index];
     
     // Reset zoom when changing images
     currentZoom = 1;
@@ -1808,8 +1839,7 @@ function setupEventListeners() {
         });
     }
     
-    // Initialize thumbnail gallery - simplified version
-    initializeThumbnailGallery();
+    setupThumbnailGridInteractions();
     setupLightboxControls();
     setupZoomControls(); // Add this line to initialize zoom controls
     
@@ -1826,28 +1856,72 @@ function setupEventListeners() {
     });
 }
 
+function setupThumbnailsNewBadge() {
+    const badge = document.querySelector('.nav-thumbnails-new');
+    if (!badge) return;
+
+    const hideBadge = () => {
+        if (badge.classList.contains('is-gone')) return;
+        badge.classList.add('is-hiding');
+        badge.addEventListener('animationend', () => badge.classList.add('is-gone'), { once: true });
+    };
+
+    setTimeout(hideBadge, 10000);
+    badge.closest('.nav-thumbnails-highlight')?.addEventListener('click', hideBadge, { once: true });
+}
+
+function setupThumbnailsNavHighlight() {
+    const link = document.querySelector('.nav-thumbnails-highlight');
+    const section = document.getElementById('thumbnails');
+    if (!link || !section) return;
+
+    setupThumbnailsNewBadge();
+
+    const settle = () => link.classList.add('settled');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+            settle();
+            observer.disconnect();
+        }
+    }, { threshold: 0.12 });
+
+    observer.observe(section);
+    link.addEventListener('click', settle, { once: true });
+}
+
+function kickoffThumbnailGallery() {
+    setupThumbnailGridInteractions();
+    preloadThumbnailBatch(allThumbnails.slice(0, getThumbnailsPerPage()).map((src) => src));
+    loadThumbnails('all');
+    setupShowMoreButton();
+    updateShowMoreButtonVisibility();
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    kickoffThumbnailGallery();
+    setupThumbnailsNavHighlight();
+
     initializeWebsite();
     loadReviews();
     setupEventListeners();
-    createNatureEffects();
-    initializeInteractiveElements();
-    
-    // Load thumbnails for all categories
-    loadThumbnails('all');
-    loadThumbnails('gaming');
-    loadThumbnails('social');
-    loadThumbnails('tech');
-    
-    // Highlight active nav link on scroll
     setupActiveNavHighlight();
-    setTimeout(setupShowMoreButton, 100);
-    // Ensure newly added thumbnails have lightbox behavior
-    initializeThumbnailGallery();
-    
-    // Initial update for Show More button visibility
-    setTimeout(updateShowMoreButtonVisibility, 200);
+
+    const runDeferredEffects = () => {
+        createNatureEffects();
+        initializeInteractiveElements();
+    };
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(runDeferredEffects, { timeout: 1500 });
+    } else {
+        setTimeout(runDeferredEffects, 200);
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateShowMoreButtonVisibility, 150);
+    }, { passive: true });
     // Create sticky mobile CTA without editing HTML directly
     createMobileCTA();
     createHireModal();
@@ -1874,7 +1948,8 @@ function setupActiveNavHighlight() {
     const navLinks = Array.from(document.querySelectorAll('.nav-link'));
     const sectionIds = navLinks.map(l => l.getAttribute('href')).filter(Boolean).map(h => h.replace('#', ''));
     const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
-    function updateActive() {
+
+    const updateActive = onScrollRAF(() => {
         let current = sections[0]?.id;
         sections.forEach(sec => {
             const rect = sec.getBoundingClientRect();
@@ -1884,9 +1959,10 @@ function setupActiveNavHighlight() {
             const id = link.getAttribute('href')?.replace('#', '');
             link.classList.toggle('active', id === current);
         });
-    }
+    });
+
     updateActive();
-    document.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('scroll', updateActive, { passive: true });
 }
 
 // Sticky Mobile CTA (injected via JS so no HTML change needed)
