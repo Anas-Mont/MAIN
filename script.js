@@ -50,6 +50,7 @@ let techThumbnails = [
     // Example format - add your tech thumbnail filenames here:
     // "tech1.png",
     // "tech2.jpg",
+    "Intel - Arc B580.jpg",
     "flat one copy.jpg",
     "flat lay style copy.jpg",
     "Keyboard.jpg",
