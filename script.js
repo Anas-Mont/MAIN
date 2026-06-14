@@ -1,5 +1,6 @@
 // Thumbnail arrays organized by category
 let gamingThumbnails = [
+    "Roblox.webp",
     "part 1 thumbnail 2.png",
     "new 1.jpg",
     "practice copy_compressed.png",
@@ -16,7 +17,6 @@ let gamingThumbnails = [
     "uzi copy.jpg",
     "talha.png",
     "Untitled-1.png",
-
     "vlcsnap-2025-02-07-22h28m37s077 copy.png",
     "main1.png",
     "first .png",
@@ -32,13 +32,11 @@ let socialThumbnails = [
     // "social2.jpg",
     "Worth Every Penny.jpg",
     "shoes.jpg",
-    "GMKtec NucBox K15.jpg",
     "Traveling Gears copy.jpg",
     "new one audio-Recovered copy.jpg",
     "new client 10 copy.jpg",
     "claude fail copy.jpg",
     "thumbnail prompt copy.jpg",
-    "comeback copy.jpg",
     "Untitled-galssy copy.jpg",
     "client 7 copy.jpg",
     "new client.jpg",
