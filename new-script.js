@@ -5,9 +5,9 @@
 
 // ─── Thumbnail Data ───
 const thumbnailData = [
-  { src: 'Roblox.webp',                    title: 'Roblox Gaming',         category: 'gaming' },
+  { src: 'Roblox.webp',                     title: 'Roblox',                category: 'gaming' },
   { src: 'part 1 thumbnail 2.png',          title: 'Gaming Series Pt.1',    category: 'gaming' },
-  { src: 'Part 1 thumbnail 3.png',          title: 'Gaming Series Pt.2',    category: 'gaming' },
+  { src: 'Roblox 12.webp',                  title: 'Roblox',                category: 'gaming' },
   { src: 'FARLIGHT copy_compressed.png',    title: 'Farlight 84',           category: 'gaming' },
   { src: 'QBZ new copy_compressed.png',     title: 'QBZ New Skin',          category: 'gaming' },
   { src: 'ZERO STASH 1_compressed.png',     title: 'Zero Stash',            category: 'gaming' },
