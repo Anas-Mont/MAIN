@@ -115,6 +115,7 @@
       .gallery-item,
       .filter-btn,
       input,
+      select,
       textarea,
       .star {
         cursor: none;
@@ -242,6 +243,18 @@
       line-height: 1;
       box-shadow: 0 0 10px var(--neon-glow);
       flex-shrink: 0;
+      animation: badgePulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes badgePulseGlow {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 8px var(--neon-glow);
+      }
+      50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 18px var(--neon-glow);
+      }
     }
 
     .nav-offer-link {
@@ -272,16 +285,19 @@
     }
 
     .offer-new-stamp--btn {
-      font-size: 0.5rem;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      font-size: 0.55rem;
       padding: 3px 6px;
-      margin-right: 4px;
-      transform: none;
+      transform: rotate(5deg);
+      z-index: 10;
       vertical-align: middle;
+      animation: badgePulseGlow 1.5s infinite ease-in-out;
     }
 
     .open-contact-modal .offer-new-stamp--btn {
-      position: relative;
-      top: -1px;
+      position: absolute;
     }
 
     .hamburger {
@@ -886,21 +902,79 @@
       opacity: 0.5;
     }
 
+    /* June Offer Box: Heavy Glow + Breathe outline */
     .offer-card {
       position: relative;
       margin-top: 48px;
       padding: 48px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(212, 255, 0, 0.35);
       background: var(--dark-2);
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 40px;
       align-items: center;
-      transition: border-color 0.4s var(--ease);
+      transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 255, 0, 0.15);
+      animation: offerPulseGlow 2.5s infinite ease-in-out;
+      overflow: hidden; /* Contains the reflective metallic sweep overlay */
+    }
+
+    /* A luxurious silver light beam sweep effect across the discount card */
+    .offer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 80%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(212, 255, 0, 0.05) 15%,
+        rgba(212, 255, 0, 0.45) 50%,
+        rgba(212, 255, 0, 0.05) 85%,
+        transparent 100%
+      );
+      transform: skewX(-25deg);
+      animation: shineSweep 3.5s infinite ease-in-out;
+      pointer-events: none;
+      z-index: 2;
     }
 
     .offer-card:hover {
-      border-color: rgba(212, 255, 0, 0.3);
+      border-color: rgba(212, 255, 0, 0.9) !important;
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.7), 0 0 45px rgba(212, 255, 0, 0.55) !important;
+    }
+
+    @keyframes shineSweep {
+      0% { left: -150%; }
+      22% { left: 150%; }
+      100% { left: 150%; }
+    }
+
+    @keyframes offerPulseGlow {
+      0%, 100% {
+        border-color: rgba(212, 255, 0, 0.35);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 255, 0, 0.15);
+      }
+      50% {
+        border-color: rgba(212, 255, 0, 0.95);
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 35px rgba(212, 255, 0, 0.45);
+      }
+    }
+
+    /* Dropdown text selection breath text shadow */
+    @keyframes pulseGlowText {
+      0%, 100% {
+        opacity: 0.75;
+        text-shadow: 0 0 2px rgba(212, 255, 0, 0.2);
+        transform: scale(0.98);
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 8px rgba(212, 255, 0, 0.8);
+        transform: scale(1);
+      }
     }
 
     .offer-badge {
@@ -1286,6 +1360,7 @@
       border: none;
       transition: all 0.3s var(--ease);
       white-space: nowrap;
+      position: relative; /* Absolute elements like badges position safely */
     }
 
     .btn-primary {
@@ -1426,9 +1501,11 @@
 
     .form-group {
       margin-bottom: 12px;
+      position: relative;
     }
 
     .form-group input,
+    .form-group select,
     .form-group textarea {
       width: 100%;
       padding: 12px 14px;
@@ -1438,12 +1515,34 @@
       font-family: var(--ff-mono);
       font-size: 0.8rem;
       outline: none;
-      transition: border-color 0.3s;
+      transition: all 0.3s var(--ease);
+      border-radius: 4px;
     }
 
     .form-group input:focus,
+    .form-group select:focus,
     .form-group textarea:focus {
       border-color: var(--neon);
+    }
+
+    .form-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4ff00' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .form-group select option {
+      background: var(--dark-3);
+      color: var(--white);
+    }
+
+    .form-group select option:disabled {
+      color: var(--gray-4);
+      background: var(--dark-2);
     }
 
     .form-group textarea {
@@ -1933,6 +2032,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      border-radius: 4px;
     }
 
     .toast.show {
@@ -2053,6 +2153,7 @@
       padding: 40px 32px;
       transform: translateY(30px) scale(0.97);
       transition: transform 0.4s var(--ease);
+      border-radius: 6px;
     }
 
     .contact-modal.active .contact-modal-box {
@@ -2074,6 +2175,7 @@
       justify-content: center;
       transition: all 0.3s;
       z-index: 1;
+      border-radius: 4px;
     }
 
     .contact-modal-close:hover {
@@ -2736,6 +2838,17 @@
                 <input type="email" id="contactEmail" placeholder="Your Email" required>
               </div>
             </div>
+            <!-- Added Pricing Dropdown inside the main contact form -->
+            <div class="form-group">
+              <select id="contactService" required>
+                <option value="" disabled selected>Select Package / Budget</option>
+                <option value="single">Single Custom Thumbnail ($20)</option>
+                <option value="june-offer">June Offer ($15/thumbnail) — 25% OFF 🔥</option>
+                <option value="bulk-5">Bulk Pack of 5 ($85 — Save 15%)</option>
+                <option value="bulk-10">Bulk Pack of 10 ($160 — Save 20%)</option>
+                <option value="custom">Long-term Creator Partnership</option>
+              </select>
+            </div>
             <div class="form-group">
               <input type="text" id="contactSubject" placeholder="Subject" required>
             </div>
@@ -2846,6 +2959,17 @@
           <div class="form-group">
             <input type="email" id="modalContactEmail" placeholder="Your Email" required>
           </div>
+        </div>
+        <!-- Added Package Dropdown to modal form -->
+        <div class="form-group">
+          <select id="modalContactService" required>
+            <option value="" disabled selected>Select Package / Budget</option>
+            <option value="single">Single Custom Thumbnail ($20)</option>
+            <option value="june-offer">June Offer ($15/thumbnail) — 25% OFF 🔥</option>
+            <option value="bulk-5">Bulk Pack of 5 ($85 — Save 15%)</option>
+            <option value="bulk-10">Bulk Pack of 10 ($160 — Save 20%)</option>
+            <option value="custom">Long-term Creator Partnership</option>
+          </select>
         </div>
         <div class="form-group">
           <input type="text" id="modalContactSubject" placeholder="Subject" required>
@@ -2968,6 +3092,39 @@
       visibleCount = getPerPage();
     }
 
+    // Helper to highlight select boxes with a beautiful neon glow when the June Offer is active
+    function handleServiceGlow(selectEl) {
+      let indicator = selectEl.parentElement.querySelector('.june-offer-indicator');
+      
+      if (selectEl.value === 'june-offer') {
+        selectEl.style.borderColor = 'var(--neon)';
+        selectEl.style.boxShadow = '0 0 15px var(--neon-glow)';
+        
+        if (!indicator) {
+          indicator = document.createElement('div');
+          indicator.className = 'june-offer-indicator';
+          indicator.style.color = 'var(--neon)';
+          indicator.style.fontFamily = 'var(--ff-mono)';
+          indicator.style.fontSize = '0.72rem';
+          indicator.style.marginTop = '6px';
+          indicator.style.textTransform = 'uppercase';
+          indicator.style.letterSpacing = '1px';
+          indicator.style.display = 'flex';
+          indicator.style.alignItems = 'center';
+          indicator.style.gap = '6px';
+          indicator.style.animation = 'pulseGlowText 1.5s infinite ease-in-out';
+          indicator.innerHTML = '<i class="fas fa-fire"></i> June Discount Applied — 25% OFF Saved!';
+          selectEl.parentElement.appendChild(indicator);
+        }
+      } else {
+        selectEl.style.borderColor = '';
+        selectEl.style.boxShadow = '';
+        if (indicator) {
+          indicator.remove();
+        }
+      }
+    }
+
     // ─── Mobile-Friendly Virtual History State Overlay Stack ───
     const overlayStack = [];
 
@@ -3033,12 +3190,23 @@
       initBrushCursor();
       initOfferCountdown();
       initSeeThumbnails();
+      updateSelectDropdownsForExpiredOffer();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
         if (visibleCount < perPage) visibleCount = perPage;
         renderGallery();
       }, 200));
+
+      // Hook select changes to make June Offer stand out
+      const contactService = document.getElementById('contactService');
+      const modalContactService = document.getElementById('modalContactService');
+      if (contactService) {
+        contactService.addEventListener('change', (e) => handleServiceGlow(e.target));
+      }
+      if (modalContactService) {
+        modalContactService.addEventListener('change', (e) => handleServiceGlow(e.target));
+      }
     });
 
     function initNavbar() {
@@ -3425,14 +3593,31 @@
       const closeBtn = modal.querySelector('.contact-modal-close');
       const form = document.getElementById('modalContactForm');
 
-      const open = (prefillSubject = '') => {
+      // Enhanced modal opening logic to support package auto-selection and glowing attention
+      const open = (prefillSubject = '', prefillPackage = '') => {
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+
         if (prefillSubject) {
           const subject = document.getElementById('modalContactSubject');
           if (subject) subject.value = prefillSubject;
         }
+
+        const serviceSelect = document.getElementById('modalContactService');
+        if (prefillPackage) {
+          if (serviceSelect) {
+            serviceSelect.value = prefillPackage;
+            handleServiceGlow(serviceSelect); // Apply immediate neon glow highlight
+          }
+        } else {
+          // Reset select box if opened standardly
+          if (serviceSelect) {
+            serviceSelect.selectedIndex = 0;
+            handleServiceGlow(serviceSelect);
+          }
+        }
+
         setTimeout(() => document.getElementById('modalContactName')?.focus(), 300);
 
         // Register overlay closure callback with state manager
@@ -3446,8 +3631,12 @@
       document.querySelectorAll('.open-contact-modal').forEach(btn => {
         btn.addEventListener('click', e => {
           e.preventDefault();
-          const isOffer = isOfferActive() && (btn.closest('.offer-card') || btn.textContent.includes('Claim'));
-          open(isOffer ? 'June Offer — $15 Thumbnail' : '');
+          const isOffer = isOfferActive() && (btn.closest('.offer-card') || btn.textContent.includes('Claim') || btn.closest('#offer'));
+          if (isOffer) {
+            open('Claiming June Offer — $15 Thumbnail Discount', 'june-offer');
+          } else {
+            open('', '');
+          }
         });
       });
 
@@ -3463,15 +3652,16 @@
           e.preventDefault();
           const name = document.getElementById('modalContactName')?.value.trim();
           const email = document.getElementById('modalContactEmail')?.value.trim();
+          const service = document.getElementById('modalContactService')?.value;
           const subject = document.getElementById('modalContactSubject')?.value.trim();
           const message = document.getElementById('modalContactMessage')?.value.trim();
 
-          if (!name || !email || !subject || !message) {
+          if (!name || !email || !service || !subject || !message) {
             showToast('Please fill in all fields', 'error');
             return;
           }
 
-          sendContactEmail({ name, email, subject, message });
+          sendContactEmail({ name, email, service, subject, message });
           form.reset();
           close();
         });
@@ -3480,8 +3670,9 @@
       window.openContactModal = open;
     }
 
-    function sendContactEmail({ name, email, subject, message }) {
-      const bodyText = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+    function sendContactEmail({ name, email, service, subject, message }) {
+      const packageLabel = getServiceLabel(service);
+      const bodyText = `Name: ${name}\nEmail: ${email}\nSelected Package/Budget: ${packageLabel}\n\nMessage:\n${message}`;
       const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
       if (isMobile) {
@@ -3493,6 +3684,17 @@
       }
 
       showToast('Opening email to send your message...', 'success');
+    }
+
+    function getServiceLabel(val) {
+      switch(val) {
+        case 'single': return 'Single Custom Thumbnail ($20)';
+        case 'june-offer': return 'June Offer ($15/thumbnail)';
+        case 'bulk-5': return 'Bulk Pack of 5 ($85)';
+        case 'bulk-10': return 'Bulk Pack of 10 ($160)';
+        case 'custom': return 'Long-term Creator Partnership';
+        default: return 'General Request / Unspecified';
+      }
     }
 
     function getOfferEndDate() {
@@ -3518,6 +3720,19 @@
       if (section) section.classList.add('offer-expired');
       if (header) header.hidden = true;
       if (navOffer) navOffer.textContent = 'Offer';
+
+      updateSelectDropdownsForExpiredOffer();
+    }
+
+    function updateSelectDropdownsForExpiredOffer() {
+      const active = isOfferActive();
+      if (!active) {
+        const offerOptions = document.querySelectorAll('option[value="june-offer"]');
+        offerOptions.forEach(opt => {
+          opt.textContent = "June Offer ($15/thumbnail) — EXPIRED";
+          opt.disabled = true;
+        });
+      }
     }
 
     function initOfferCountdown() {
@@ -3587,7 +3802,7 @@
 
       document.documentElement.addEventListener('mouseenter', show);
 
-      const interactive = 'a, button, .gallery-item, .filter-btn, input, textarea, .star, .open-contact-modal, .hamburger';
+      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger';
       document.addEventListener('mouseover', e => {
         if (e.target.closest(interactive)) cursor.classList.add('hovering');
       });
@@ -3607,12 +3822,13 @@
         e.preventDefault();
         const name = document.getElementById('contactName')?.value.trim();
         const email = document.getElementById('contactEmail')?.value.trim();
+        const service = document.getElementById('contactService')?.value;
         const subject = document.getElementById('contactSubject')?.value.trim();
         const message = document.getElementById('contactMessage')?.value.trim();
 
-        if (!name || !email || !subject || !message) { showToast('Please fill in all fields', 'error'); return; }
+        if (!name || !email || !service || !subject || !message) { showToast('Please fill in all fields', 'error'); return; }
 
-        sendContactEmail({ name, email, subject, message });
+        sendContactEmail({ name, email, service, subject, message });
         form.reset();
       });
     }
