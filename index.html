@@ -461,6 +461,7 @@
     /* ─── HERO PROFILE PHOTO (landscape 4K image) ─── */
     .hero-photo {
       position: absolute;
+      opacity: 0.7;
       right: 230px;
       top: 0;
       bottom: 0;
@@ -490,6 +491,7 @@
     @media (min-width: 1400px) {
       .hero-photo {
         height: 650px;
+        opacity: 0.7;
         top: 40px;
         right: 230px;
         width: 62%;
@@ -504,6 +506,11 @@
       .hero-photo {
         width: 55%;
         right: 230px;
+    
+        opacity: 0.8;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
+        mask-image: linear-gradient(to right, transparent 0%, black 35%);
+        height: 90vh;
       }
     }
 
@@ -521,12 +528,13 @@
     /* Tablet portrait / large mobile ≤768px */
     @media (max-width: 768px) {
       .hero-photo {
-        width: 100%;
+width: 100%;
         max-width: none;
-        height: 70vh;
-        top: 58px;
+        height: 50vh;
+        top: 130px;
         bottom: auto;
         opacity: 0.8;
+        left: 7vh;
         /* Fade bottom so text stays readable */
         -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
         mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
@@ -540,9 +548,13 @@
     /* Small mobile ≤480px */
     @media (max-width: 480px) {
       .hero-photo {
-        height: 50vh;
+height: 40vh;
+        top: 160px;
+        /* height: 50vh; */
         opacity: 0.8;
+        left: 7vh;
       }
+
 
       .hero-photo img {
         object-position: 18% 25%;
@@ -552,8 +564,11 @@
     /* Very small phones ≤360px */
     @media (max-width: 360px) {
       .hero-photo {
-        height: 50vh;
+  height: 40vh;
+        top: 160px;
+        /* height: 50vh; */
         opacity: 0.8;
+        left: 2vh;
       }
     }
 
