@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Digital Jungle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --dark: #0a0a0a;
+      --dark-2: #111111;
+      --dark-3: #181818;
+      --neon: #d4ff00;
+      --neon-dim: rgba(212, 255, 0, 0.12);
+      --white: #ffffff;
+      --gray-2: #aaaaaa;
+      --gray-3: #777777;
+      --border: rgba(255, 255, 255, 0.1);
+      --red: #ff4d4d;
+      --ff-display: 'Bebas Neue', 'Impact', sans-serif;
+      --ff-body: 'Space Grotesk', 'Inter', sans-serif;
+      --ff-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--ff-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrap { width: 100%; max-width: 560px; margin: 40px auto; }
+
+    h1 {
+      font-family: var(--ff-display);
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .sub { color: var(--gray-3); font-size: 0.85rem; margin-bottom: 28px; }
+
+    .card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gray-2);
+      margin-bottom: 8px;
+      margin-top: 18px;
+    }
+
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-family: var(--ff-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus { border-color: var(--neon); }
+
+    select { cursor: pointer; }
+
+    .drop {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .drop:hover, .drop.dragover { border-color: var(--neon); background: var(--neon-dim); }
+
+    .drop p { color: var(--gray-3); font-size: 0.85rem; }
+
+    .drop input { display: none; }
+
+    #preview {
+      display: none;
+      margin-top: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    #preview img { width: 100%; display: block; }
+
+    .meta-line {
+      font-family: var(--ff-mono);
+      font-size: 0.72rem;
+      color: var(--gray-3);
+      padding: 8px 12px;
+      background: var(--dark);
+    }
+
+    button {
+      font-family: var(--ff-body);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--neon);
+      color: var(--black);
+      padding: 14px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 22px;
+    }
+
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .status {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .status.ok { display: block; background: rgba(212,255,0,0.1); color: var(--neon); }
+    .status.err { display: block; background: rgba(255,77,77,0.12); color: var(--red); }
+
+    .panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .lock-btn {
+      background: none;
+      color: var(--gray-3);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 0;
+    }
+
+    .lock-btn:hover { color: var(--white); }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+
+    .list-item img {
+      width: 64px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .list-item .info { flex: 1; min-width: 0; }
+    .list-item .title { font-size: 0.85rem; }
+    .list-item .cat {
+      font-family: var(--ff-mono);
+      font-size: 0.68rem;
+      color: var(--gray-3);
+      text-transform: uppercase;
+    }
+
+    .del-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--red);
+      width: 30px;
+      height: 30px;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .del-btn:hover { background: rgba(255,77,77,0.12); }
+
+    .empty { color: var(--gray-3); font-size: 0.85rem; padding: 8px 0; }
+
+    a.back { color: var(--gray-3); font-size: 0.8rem; text-decoration: none; }
+    a.back:hover { color: var(--neon); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- ═══ LOCK SCREEN ═══ -->
+    <div id="lockScreen">
+      <h1>Admin</h1>
+      <p class="sub">Digital Jungle — thumbnail uploader</p>
+      <div class="card">
+        <label for="pwInput">Password</label>
+        <input type="password" id="pwInput" placeholder="Enter password" autocomplete="current-password">
+        <div id="lockStatus" class="status err"></div>
+        <button class="btn-primary" id="unlockBtn">Unlock</button>
+      </div>
+      <a class="back" href="/index.html">&larr; back to site</a>
+    </div>
+
+    <!-- ═══ MAIN PANEL (hidden until unlocked) ═══ -->
+    <div id="panel" style="display:none;">
+      <div class="panel-head">
+        <h1>Upload</h1>
+        <button class="lock-btn" id="lockBtn">Lock</button>
+      </div>
+      <p class="sub">Drop in a thumbnail, fill the details, hit upload. It's live in seconds.</p>
+
+      <div class="card">
+        <label>Image</label>
+        <div class="drop" id="dropZone">
+          <p id="dropText">Click to choose a file, or drag one in<br>(auto-resized &amp; compressed for you)</p>
+          <input type="file" id="fileInput" accept="image/*">
+        </div>
+        <div id="preview">
+          <img id="previewImg" alt="preview">
+          <div class="meta-line" id="metaLine"></div>
+        </div>
+
+        <label for="titleInput">Title</label>
+        <input type="text" id="titleInput" placeholder="e.g. Roblox Update Pt.3" maxlength="120">
+
+        <label for="catInput">Category</label>
+        <select id="catInput">
+          <option value="gaming">Gaming</option>
+          <option value="tech">Tech</option>
+          <option value="social">Social</option>
+        </select>
+
+        <button class="btn-primary" id="uploadBtn" disabled>Add Thumbnail</button>
+        <div id="uploadStatus" class="status"></div>
+      </div>
+
+      <div class="card">
+        <h1 style="font-size:1.3rem;">Manage</h1>
+        <p class="sub" style="margin-bottom:14px;">Thumbnails added through this page. (The original set baked into the site isn't shown here — edit the code for those, same as before.)</p>
+        <div id="listWrap"><div class="empty">Loading…</div></div>
+      </div>
+
+      <a class="back" href="/index.html">&larr; back to site</a>
+    </div>
+
+  </div>
+
+  <script>
+    const PW_KEY = 'djAdminPassword';
+    const lockScreen = document.getElementById('lockScreen');
+    const panel = document.getElementById('panel');
+    const lockStatus = document.getElementById('lockStatus');
+
+    function getPw() { return sessionStorage.getItem(PW_KEY) || ''; }
+    function setPw(pw) { sessionStorage.setItem(PW_KEY, pw); }
+    function clearPw() { sessionStorage.removeItem(PW_KEY); }
+
+    function showPanel() {
+      lockScreen.style.display = 'none';
+      panel.style.display = 'block';
+      loadList();
+    }
+
+    function showLock(message) {
+      clearPw();
+      panel.style.display = 'none';
+      lockScreen.style.display = 'block';
+      if (message) {
+        lockStatus.textContent = message;
+        lockStatus.style.display = 'block';
+      }
+    }
+
+    document.getElementById('unlockBtn').addEventListener('click', () => {
+      const pw = document.getElementById('pwInput').value;
+      if (!pw) return;
+      setPw(pw);
+      lockStatus.style.display = 'none';
+      showPanel();
+    });
+
+    document.getElementById('pwInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('unlockBtn').click();
+    });
+
+    document.getElementById('lockBtn').addEventListener('click', () => showLock());
+
+    // Auto-enter if a password is already remembered for this tab session
+    if (getPw()) showPanel();
+
+    // ─── Image picking + client-side compression ───
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg');
+    const metaLine = document.getElementById('metaLine');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    let compressedBase64 = null;
+    let compressedType = 'image/jpeg';
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) return;
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => { img.src = e.target.result; };
+      img.onload = () => {
+        const maxW = 1280;
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => {
+          const r2 = new FileReader();
+          r2.onload = (e2) => {
+            compressedBase64 = e2.target.result;
+            compressedType = 'image/jpeg';
+            previewImg.src = compressedBase64;
+            preview.style.display = 'block';
+            metaLine.textContent = `${w}×${h} · ${(blob.size / 1024).toFixed(0)} KB (compressed from ${(file.size / 1024).toFixed(0)} KB)`;
+            checkReady();
+          };
+          r2.readAsDataURL(blob);
+        }, 'image/jpeg', 0.85);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    const titleInput = document.getElementById('titleInput');
+    titleInput.addEventListener('input', checkReady);
+
+    function checkReady() {
+      uploadBtn.disabled = !(compressedBase64 && titleInput.value.trim());
+    }
+
+    // ─── Upload ───
+    const uploadStatus = document.getElementById('uploadStatus');
+
+    uploadBtn.addEventListener('click', async () => {
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = 'Uploading…';
+      uploadStatus.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: getPw(),
+            title: titleInput.value.trim(),
+            category: document.getElementById('catInput').value,
+            imageBase64: compressedBase64,
+            contentType: compressedType,
+          }),
+        });
+
+        if (res.status === 401) {
+          showLock('Wrong password — try again.');
+          return;
+        }
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+        uploadStatus.className = 'status ok';
+        uploadStatus.textContent = 'Added! It\'s live on the site now.';
+        uploadStatus.style.display = 'block';
+
+        // reset form
+        compressedBase64 = null;
+        preview.style.display = 'none';
+        titleInput.value = '';
+        fileInput.value = '';
+
+        prependToList(data.entry);
+      } catch (err) {
+        uploadStatus.className = 'status err';
+        uploadStatus.textContent = err.message || 'Something went wrong.';
+        uploadStatus.style.display = 'block';
+      } finally {
+        uploadBtn.textContent = 'Add Thumbnail';
+        checkReady();
+      }
+    });
+
+    // ─── Manage list ───
+    const listWrap = document.getElementById('listWrap');
+
+    function renderItem(t) {
+      const div = document.createElement('div');
+      div.className = 'list-item';
+      div.id = 'item-' + t.id;
+      div.innerHTML = `
+        <img src="${t.src}" alt="">
+        <div class="info">
+          <div class="title">${escapeHtml(t.title)}</div>
+          <div class="cat">${escapeHtml(t.category)}</div>
+        </div>
+        <button class="del-btn" title="Delete">&times;</button>
+      `;
+      div.querySelector('.del-btn').addEventListener('click', () => deleteItem(t.id, t.title));
+      return div;
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function prependToList(entry) {
+      const empty = listWrap.querySelector('.empty');
+      if (empty) empty.remove();
+      listWrap.prepend(renderItem(entry));
+    }
+
+    async function loadList() {
+      try {
+        const res = await fetch('/api/thumbnails', { cache: 'no-store' });
+        const data = await res.json();
+        listWrap.innerHTML = '';
+        if (!data.length) {
+          listWrap.innerHTML = '<div class="empty">Nothing uploaded yet — add your first one above.</div>';
+          return;
+        }
+        data.forEach((t) => listWrap.appendChild(renderItem(t)));
+      } catch (err) {
+        listWrap.innerHTML = '<div class="empty">Couldn\'t load the list.</div>';
+      }
+    }
+
+    async function deleteItem(id, title) {
+      if (!confirm(`Delete "${title}"? This can't be undone.`)) return;
+      try {
+        const res = await fetch('/api/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: getPw(), id }),
+        });
+        if (res.status === 401) {
+          showLock('Wrong password — try again.');
+          return;
+        }
+        if (!res.ok) throw new Error('Delete failed');
+        const el = document.getElementById('item-' + id);
+        if (el) el.remove();
+        if (!listWrap.children.length) {
+          listWrap.innerHTML = '<div class="empty">Nothing uploaded yet — add your first one above.</div>';
+        }
+      } catch (err) {
+        alert('Could not delete. Try again.');
+      }
+    }
+  </script>
+</body>
+
+</html>
