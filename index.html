@@ -3126,7 +3126,9 @@ height: 40vh;
   <!-- ═══ SCRIPTS ═══ -->
   <script>
     // ─── Thumbnail Data ───
-    const thumbnailData = [
+    // Anything uploaded through admin.html gets fetched from /api/thumbnails
+    // and merged in front of this list automatically — no code edits needed.
+    let thumbnailData = [
       { src: 'Roblox.webp', title: 'Roblox', category: 'gaming' },
       { src: 'part 1 thumbnail 2.png', title: 'Gaming Series Pt.1', category: 'gaming' },
       { src: 'Roblox 12.webp', title: 'Roblox', category: 'gaming' },
@@ -3293,7 +3295,20 @@ height: 40vh;
       document.body.style.overflow = '';
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Pull in anything uploaded via admin.html and merge it with the
+      // baked-in list. Fails silently (falls back to baked-in list only)
+      // if the API isn't set up yet or the request fails.
+      try {
+        const res = await fetch('/api/thumbnails', { cache: 'no-store' });
+        if (res.ok) {
+          const uploaded = await res.json();
+          if (Array.isArray(uploaded) && uploaded.length) {
+            thumbnailData = [...uploaded, ...thumbnailData];
+          }
+        }
+      } catch (_) { /* offline or not deployed yet — ignore */ }
+
       // Randomize thumbnails for a premium look
       for (let i = thumbnailData.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
