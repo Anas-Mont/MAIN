@@ -3299,21 +3299,39 @@ height: 40vh;
       // Pull in anything uploaded via admin.html and merge it with the
       // baked-in list. Fails silently (falls back to baked-in list only)
       // if the API isn't set up yet or the request fails.
+      let uploadedThumbs = [];
       try {
         const res = await fetch('/api/thumbnails', { cache: 'no-store' });
         if (res.ok) {
           const uploaded = await res.json();
           if (Array.isArray(uploaded) && uploaded.length) {
-            thumbnailData = [...uploaded, ...thumbnailData];
+            uploadedThumbs = uploaded;
           }
         }
       } catch (_) { /* offline or not deployed yet — ignore */ }
 
-      // Randomize thumbnails for a premium look
+      // Newest admin-panel upload first. If each uploaded item carries a
+      // timestamp field, sort by it descending; otherwise fall back to
+      // reversing (covers the common case where the API appends new
+      // uploads to the end of the list).
+      if (uploadedThumbs.length > 1) {
+        const getTime = (t) => t.uploadedAt || t.createdAt || t.timestamp || t.uploaded_at || 0;
+        const hasTimestamps = uploadedThumbs.some(t => getTime(t));
+        uploadedThumbs = hasTimestamps
+          ? [...uploadedThumbs].sort((a, b) => getTime(b) - getTime(a))
+          : [...uploadedThumbs].reverse();
+      }
+
+      // Randomize only the original baked-in thumbnails for variety —
+      // admin-panel uploads are kept out of the shuffle entirely so the
+      // newest one is always shown first.
       for (let i = thumbnailData.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [thumbnailData[i], thumbnailData[j]] = [thumbnailData[j], thumbnailData[i]];
       }
+
+      // Recent uploads always lead, untouched by the shuffle above.
+      thumbnailData = [...uploadedThumbs, ...thumbnailData];
 
       resetVisibleCount();
       initNavbar();
