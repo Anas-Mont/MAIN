@@ -3129,7 +3129,7 @@ height: 40vh;
     // Anything uploaded through admin.html gets fetched from /api/thumbnails
     // and merged in front of this list automatically — no code edits needed.
     let thumbnailData = [
-      // { src: 'Roblox.webp', title: 'Roblox', category: 'gaming' },
+      { src: 'Roblox.webp', title: 'Roblox', category: 'gaming' },
       { src: 'part 1 thumbnail 2.png', title: 'Gaming Series Pt.1', category: 'gaming' },
       { src: 'Roblox 12.webp', title: 'Roblox', category: 'gaming' },
       { src: 'FARLIGHT copy_compressed.png', title: 'Farlight 84', category: 'gaming' },
@@ -3144,23 +3144,23 @@ height: 40vh;
       { src: 'practice copy_compressed.png', title: 'Practice Mode', category: 'gaming' },
       { src: 'vlcsnap-2025-02-07-22h28m37s077 copy.png', title: 'Gameplay Capture', category: 'gaming' },
       { src: 'Intel - Arc B580.jpg', title: 'Intel Arc B580', category: 'tech' },
-      // { src: 'MSI Claw 8.jpg', title: 'MSI Claw Review', category: 'tech' },
+      { src: 'MSI Claw 8.jpg', title: 'MSI Claw Review', category: 'tech' },
       { src: 'Keyboard.jpg', title: 'Keyboard Review', category: 'tech' },
       { src: 'chromebook vs laptop copy.jpg', title: 'Chromebook vs Laptop', category: 'tech' },
       { src: 'huawei matebook 14 copy.jpg', title: 'Huawei MateBook 14', category: 'tech' },
       { src: 'speaker.jpg', title: 'Speaker Review', category: 'tech' },
       { src: 'shoes.jpg', title: 'Product Showcase', category: 'tech' },
-      // { src: 'claude fail copy.jpg', title: 'Claude AI Fail', category: 'tech' },
-      // { src: 'flat lay style copy.jpg', title: 'Flat Lay Style', category: 'tech' },
+      { src: 'claude fail copy.jpg', title: 'Claude AI Fail', category: 'tech' },
+      { src: 'flat lay style copy.jpg', title: 'Flat Lay Style', category: 'tech' },
       { src: 'flat one copy.jpg', title: 'Flat Design', category: 'tech' },
       { src: 'thumbnail prompt copy.jpg', title: 'Thumbnail Prompt', category: 'tech' },
       { src: 'Worth Every Penny.jpg', title: 'Worth Every Penny', category: 'social' },
       { src: 'Traveling Gears copy.jpg', title: 'Traveling Gears', category: 'social' },
-      // { src: 'Cycle sample  1022 copy.jpg', title: 'Cycle Sample', category: 'social' },
+      { src: 'Cycle sample  1022 copy.jpg', title: 'Cycle Sample', category: 'social' },
       { src: 'Samcux sample 1321 copy.jpg', title: 'Samcux Sample', category: 'social' },
       { src: 'new one audio-Recovered copy.jpg', title: 'Audio Thumbnail', category: 'social' },
       { src: 'talha copy_compressed.jpg', title: 'Client Work — Talha', category: 'social' },
-      // { src: 'client 2.jpg', title: 'Client Work 2', category: 'social' },
+      { src: 'client 2.jpg', title: 'Client Work 2', category: 'social' },
       { src: 'client 7 copy.jpg', title: 'Client Work 7', category: 'social' },
       { src: 'new client.jpg', title: 'New Client Design', category: 'social' },
       { src: 'new client 2 copy.jpg', title: 'Client Redesign', category: 'social' },
@@ -3296,25 +3296,24 @@ height: 40vh;
     };
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // Shuffle the baked-in set only, for variety — uploads from
-      // admin.html are never shuffled in; they always show first, newest first.
-      for (let i = thumbnailData.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [thumbnailData[i], thumbnailData[j]] = [thumbnailData[j], thumbnailData[i]];
-      }
-
-      // Pull in anything uploaded via admin.html and put it in front,
-      // newest first. Fails silently (falls back to baked-in list only)
+      // Pull in anything uploaded via admin.html and merge it with the
+      // baked-in list. Fails silently (falls back to baked-in list only)
       // if the API isn't set up yet or the request fails.
       try {
         const res = await fetch('/api/thumbnails', { cache: 'no-store' });
         if (res.ok) {
-          const uploaded = await res.json(); // already newest-first
+          const uploaded = await res.json();
           if (Array.isArray(uploaded) && uploaded.length) {
             thumbnailData = [...uploaded, ...thumbnailData];
           }
         }
       } catch (_) { /* offline or not deployed yet — ignore */ }
+
+      // Randomize thumbnails for a premium look
+      for (let i = thumbnailData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [thumbnailData[i], thumbnailData[j]] = [thumbnailData[j], thumbnailData[i]];
+      }
 
       resetVisibleCount();
       initNavbar();
