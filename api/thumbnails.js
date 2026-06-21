@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       return res.status(200).json([]);
     }
 
-    const fileRes = await fetch(match.url, { cache: 'no-store' });
+    const fileRes = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
     const data = fileRes.ok ? await fileRes.json() : [];
     return res.status(200).json(Array.isArray(data) ? data : []);
   } catch (err) {

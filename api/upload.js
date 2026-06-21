@@ -7,7 +7,9 @@ async function readData() {
   const { blobs } = await list({ prefix: DATA_PATH, limit: 10 });
   const match = blobs.find((b) => b.pathname === DATA_PATH);
   if (!match) return [];
-  const res = await fetch(match.url, { cache: 'no-store' });
+  // Vercel Blob's CDN can take up to ~60s to propagate an overwrite. A
+  // unique query param forces a fresh fetch instead of a stale cached one.
+  const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) return [];
   const data = await res.json();
   return Array.isArray(data) ? data : [];
@@ -19,7 +21,7 @@ async function writeData(data) {
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,
-    cacheControlMaxAge: 0,
+    cacheControlMaxAge: 60, // 60s is Vercel Blob's documented minimum
   });
 }
 
