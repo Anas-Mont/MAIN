@@ -3171,6 +3171,17 @@ height: 40vh;
       { src: 'new 10 copy_compressed.png', title: 'Design Concept', category: 'social' },
       { src: 'new 1.jpg', title: 'Fresh Design', category: 'social' },
       { src: 'Untitled-galssy copy.jpg', title: 'Glassy Style', category: 'social' },
+
+      // Added — newly confirmed files already in the project folder
+      { src: 'hahahahahaha.png', title: 'Gaming Moment', category: 'gaming' },
+      { src: 'talha.png', title: 'Talha Project', category: 'gaming' },
+      { src: 'Untitled-1.png', title: 'Untitled Design', category: 'gaming' },
+      { src: 'main1.png', title: 'Main Thumbnail', category: 'gaming' },
+      { src: 'first .png', title: 'First Upload', category: 'gaming' },
+      { src: 'new2.png', title: 'New Design', category: 'gaming' },
+      { src: 'main4 copy.png', title: 'Main Series 4', category: 'gaming' },
+      { src: 'GMKtec NucBox K15.jpg', title: 'GMKtec NucBox K15', category: 'social' },
+      { src: 'comeback copy.jpg', title: 'Comeback', category: 'social' },
     ];
 
     // ─── Reviews Data ───
@@ -3296,11 +3307,11 @@ height: 40vh;
     };
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // Pull in anything uploaded via admin.html and merge it with the
-      // baked-in list. Fails silently (falls back to baked-in list only)
-      // if the API isn't set up yet or the request fails.
+      // Pull in anything uploaded via admin.html — always newest-first.
+      // The ?t= cache-buster forces phones/incognito to always ask the
+      // server fresh instead of reusing a stale cached response.
       try {
-        const res = await fetch('/api/thumbnails', { cache: 'no-store' });
+        const res = await fetch('/api/thumbnails?t=' + Date.now(), { cache: 'no-store' });
         if (res.ok) {
           const uploaded = await res.json();
           if (Array.isArray(uploaded) && uploaded.length) {
@@ -3309,11 +3320,17 @@ height: 40vh;
         }
       } catch (_) { /* offline or not deployed yet — ignore */ }
 
-      // Randomize thumbnails for a premium look
-      for (let i = thumbnailData.length - 1; i > 0; i--) {
+      // Keep the first 5 rows (4 columns × 5 rows = 20) in stable order so
+      // recent uploads are never shuffled away from the top. Only the
+      // thumbnails after that get randomized, for variety on repeat visits.
+      const PINNED_COUNT = 20;
+      const pinned = thumbnailData.slice(0, PINNED_COUNT);
+      const rest = thumbnailData.slice(PINNED_COUNT);
+      for (let i = rest.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [thumbnailData[i], thumbnailData[j]] = [thumbnailData[j], thumbnailData[i]];
+        [rest[i], rest[j]] = [rest[j], rest[i]];
       }
+      thumbnailData = [...pinned, ...rest];
 
       resetVisibleCount();
       initNavbar();

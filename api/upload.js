@@ -45,6 +45,9 @@ export default async function handler(req, res) {
     if (buffer.length > MAX_BYTES) {
       return res.status(413).json({ error: 'Image is too large even after compression. Try a smaller image.' });
     }
+    if (buffer.length < 500) {
+      return res.status(400).json({ error: 'That image looks corrupt or empty. Try a different file.' });
+    }
 
     const ext = ((contentType || 'image/jpeg').split('/')[1] || 'jpg').replace('jpeg', 'jpg');
     const filename = `thumbs/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
