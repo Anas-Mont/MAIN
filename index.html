@@ -97,8 +97,7 @@
     .brush-cursor,
     .gallery-item,
     .gallery-item img,
-    .reveal,
-    .offer-new-stamp {
+    .reveal {
       transform: translateZ(0);
       will-change: transform;
       backface-visibility: hidden;
@@ -227,77 +226,6 @@
     .nav-cta:hover {
       box-shadow: 0 0 20px var(--neon-glow) !important;
       transform: translateY(-1px);
-    }
-
-    /* Offer stamp & badges */
-    .offer-new-stamp {
-      display: inline-block;
-      font-family: var(--ff-display);
-      font-size: 0.58rem;
-      letter-spacing: 2px;
-      color: var(--black);
-      background: var(--neon);
-      padding: 4px 8px;
-      border-radius: 4px;
-      transform: none;
-      line-height: 1;
-      box-shadow: 0 0 10px var(--neon-glow);
-      flex-shrink: 0;
-      animation: badgePulseGlow 2s infinite ease-in-out;
-    }
-
-    @keyframes badgePulseGlow {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 8px var(--neon-glow);
-      }
-      50% {
-        transform: scale(1.06);
-        box-shadow: 0 0 18px var(--neon-glow);
-      }
-    }
-
-    .nav-offer-link {
-      display: inline-flex !important;
-      flex-direction: column;
-      align-items: center;
-      gap: 1px;
-      padding-bottom: 6px !important;
-    }
-
-    .nav-offer-link .offer-new-stamp {
-      font-size: 0.48rem;
-      padding: 2px 7px 3px;
-      margin-top: -1px;
-    }
-
-    .offer-heading-wrap {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .offer-new-stamp--heading {
-      font-size: 0.85rem;
-      padding: 4px 10px;
-      transform: none;
-    }
-
-    .offer-new-stamp--btn {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      font-size: 0.55rem;
-      padding: 3px 6px;
-      transform: rotate(5deg);
-      z-index: 10;
-      vertical-align: middle;
-      animation: badgePulseGlow 1.5s infinite ease-in-out;
-    }
-
-    .open-contact-modal .offer-new-stamp--btn {
-      position: absolute;
     }
 
     .hamburger {
@@ -996,327 +924,6 @@ height: 40vh;
       height: 6px;
       background: var(--neon);
       flex-shrink: 0;
-    }
-
-    .offer-section {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .offer-section::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, var(--neon-dim) 0%, transparent 70%);
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      opacity: 0.5;
-    }
-
-    /* June Offer Box: Heavy Glow + Breathe outline */
-    .offer-card {
-      position: relative;
-      margin-top: 48px;
-      padding: 48px;
-      border: 1px solid rgba(212, 255, 0, 0.35);
-      background: var(--dark-2);
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 40px;
-      align-items: center;
-      transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 255, 0, 0.15);
-      animation: offerPulseGlow 2.5s infinite ease-in-out;
-      overflow: hidden; /* Contains the reflective metallic sweep overlay */
-    }
-
-    /* A luxurious silver light beam sweep effect across the discount card */
-    .offer-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -150%;
-      width: 80%;
-      height: 100%;
-      background: linear-gradient(
-        to right,
-        transparent 0%,
-        rgba(212, 255, 0, 0.05) 15%,
-        rgba(212, 255, 0, 0.45) 50%,
-        rgba(212, 255, 0, 0.05) 85%,
-        transparent 100%
-      );
-      transform: skewX(-25deg);
-      animation: shineSweep 3.5s infinite ease-in-out;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .offer-card:hover {
-      border-color: rgba(212, 255, 0, 0.9) !important;
-      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.7), 0 0 45px rgba(212, 255, 0, 0.55) !important;
-    }
-
-    @keyframes shineSweep {
-      0% { left: -150%; }
-      22% { left: 150%; }
-      100% { left: 150%; }
-    }
-
-    @keyframes offerPulseGlow {
-      0%, 100% {
-        border-color: rgba(212, 255, 0, 0.35);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 255, 0, 0.15);
-      }
-      50% {
-        border-color: rgba(212, 255, 0, 0.95);
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 35px rgba(212, 255, 0, 0.45);
-      }
-    }
-
-    /* Dropdown text selection breath text shadow */
-    @keyframes pulseGlowText {
-      0%, 100% {
-        opacity: 0.75;
-        text-shadow: 0 0 2px rgba(212, 255, 0, 0.2);
-        transform: scale(0.98);
-      }
-      50% {
-        opacity: 1;
-        text-shadow: 0 0 8px rgba(212, 255, 0, 0.8);
-        transform: scale(1);
-      }
-    }
-
-    .offer-badge {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 120px;
-      height: 120px;
-      background: var(--neon);
-      color: var(--black);
-      font-family: var(--ff-display);
-      font-size: 1.8rem;
-      letter-spacing: 1px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      animation: offerBadgePop 0.6s var(--ease) both;
-    }
-
-    .offer-badge-pulse {
-      position: absolute;
-      inset: -8px;
-      border: 2px solid var(--neon);
-      border-radius: 50%;
-      animation: offerPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes offerPulse {
-
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-
-      50% {
-        transform: scale(1.15);
-        opacity: 0;
-      }
-    }
-
-    @keyframes offerBadgePop {
-      from {
-        transform: scale(0.5);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .offer-content {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .offer-pricing {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .offer-old {
-      font-family: var(--ff-display);
-      font-size: 2rem;
-      color: var(--gray-4);
-      text-decoration: line-through;
-      text-decoration-color: var(--neon);
-      text-decoration-thickness: 2px;
-    }
-
-    .offer-new {
-      font-family: var(--ff-display);
-      font-size: clamp(3rem, 8vw, 5rem);
-      color: var(--neon);
-      line-height: 1;
-    }
-
-    .offer-per {
-      font-family: var(--ff-mono);
-      font-size: 0.8rem;
-      color: var(--gray-3);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .offer-features {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 10px;
-    }
-
-    .offer-features li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--ff-mono);
-      font-size: 0.78rem;
-      color: var(--gray-2);
-    }
-
-    .offer-features li i {
-      color: var(--neon);
-      font-size: 0.7rem;
-      flex-shrink: 0;
-    }
-
-    .offer-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
-
-    .offer-countdown {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .countdown-label {
-      font-family: var(--ff-mono);
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--gray-3);
-    }
-
-    .countdown-timer {
-      font-family: var(--ff-display);
-      font-size: 1.4rem;
-      color: var(--white);
-      letter-spacing: 1px;
-    }
-
-    @media (max-width: 768px) {
-      .offer-card {
-        grid-template-columns: 1fr;
-        padding: 32px 24px;
-        text-align: center;
-      }
-
-      .offer-badge {
-        margin: 0 auto;
-        width: 100px;
-        height: 100px;
-        font-size: 1.4rem;
-      }
-
-      .offer-pricing {
-        justify-content: center;
-      }
-
-      .offer-features {
-        grid-template-columns: 1fr;
-        text-align: left;
-      }
-
-      .offer-footer {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .offer-footer .btn {
-        justify-content: center;
-      }
-    }
-
-    .offer-unavailable {
-      margin-top: 48px;
-      padding: 56px 40px;
-      border: 1px solid var(--border);
-      background: var(--dark-2);
-      text-align: center;
-    }
-
-    .offer-unavailable-icon {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 20px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-3);
-      font-size: 1.2rem;
-    }
-
-    .offer-unavailable h3 {
-      font-family: var(--ff-display);
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    .offer-unavailable p {
-      font-family: var(--ff-mono);
-      font-size: 0.82rem;
-      color: var(--gray-3);
-      max-width: 420px;
-      margin: 0 auto 24px;
-      line-height: 1.7;
-    }
-
-    .offer-section.offer-expired .offer-section-header-active {
-      display: none;
-    }
-
-    .offer-section.offer-expired::before {
-      display: none;
-    }
-
-    .offer-section.offer-expired .section-label::before {
-      background: var(--gray-4);
-    }
-
-    @media (max-width: 768px) {
-      .offer-unavailable {
-        padding: 40px 24px;
-      }
     }
 
     .gallery-filters {
@@ -2585,7 +2192,6 @@ height: 40vh;
       <a href="#home" class="nav-brand">MOHAMMED ANAS</a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#portfolio">Portfolio</a></li>
-        <li><a href="#offer" class="nav-offer-link">Offer<span class="offer-new-stamp">NEW</span></a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#comments">Comments</a></li>
@@ -2752,60 +2358,6 @@ height: 40vh;
     </div>
   </section>
 
-  <!-- ═══ OFFER ═══ -->
-  <section id="offer" class="section offer-section">
-    <div class="container">
-      <div class="reveal offer-section-header-active" id="offerSectionHeader">
-        <span class="section-label">Limited Time</span>
-        <h2 class="section-heading offer-heading-wrap">JUNE <span class="neon">OFFER</span><span
-            class="offer-new-stamp offer-new-stamp--heading">NEW</span></h2>
-        <p class="section-desc">Grab a custom thumbnail at a special price — ends June 30th.</p>
-      </div>
-
-      <div class="offer-active" id="offerActive">
-        <div class="offer-card reveal reveal-delay-1">
-          <div class="offer-badge">
-            <span class="offer-badge-pulse"></span>
-            25% OFF
-          </div>
-          <div class="offer-content">
-            <div class="offer-pricing">
-              <span class="offer-old">$20</span>
-              <span class="offer-new">$15</span>
-              <span class="offer-per">/ thumbnail</span>
-            </div>
-            <ul class="offer-features">
-              <li><i class="fas fa-check"></i> Custom YouTube thumbnail</li>
-              <li><i class="fas fa-check"></i> High-resolution original quality</li>
-              <li><i class="fas fa-check"></i> 2 revisions included</li>
-              <li><i class="fas fa-check"></i> Fast 24–48hr delivery</li>
-              <li><i class="fas fa-check"></i> CTR-optimized design</li>
-            </ul>
-            <div class="offer-footer">
-              <div class="offer-countdown" id="offerCountdown">
-                <span class="countdown-label">Ends in</span>
-                <span class="countdown-timer" id="countdownTimer">--d --h --m</span>
-              </div>
-              <button type="button" class="btn btn-primary open-contact-modal">
-                <span class="offer-new-stamp offer-new-stamp--btn">NEW</span>
-                <i class="fas fa-paper-plane"></i> Claim Offer
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="offer-unavailable reveal" id="offerUnavailable" hidden>
-        <div class="offer-unavailable-icon"><i class="fas fa-clock"></i></div>
-        <h3>NO OFFER AVAILABLE RIGHT NOW</h3>
-        <p>The June deal has ended. Check back later or reach out for custom thumbnail pricing.</p>
-        <button type="button" class="btn btn-primary open-contact-modal">
-          <i class="fas fa-paper-plane"></i> Get a Quote
-        </button>
-      </div>
-    </div>
-  </section>
-
   <!-- ═══ PORTFOLIO / GALLERY ═══ -->
   <section id="portfolio" class="section">
     <div class="container">
@@ -2968,10 +2520,9 @@ height: 40vh;
             <div class="form-group">
               <select id="contactService" required>
                 <option value="" disabled selected>Select Package / Budget</option>
-                <option value="single">Single Custom Thumbnail ($20)</option>
-                <option value="june-offer">June Offer ($15/thumbnail) — 25% OFF 🟢</option>
-                <option value="bulk-5">Bulk Pack of 5 ($85 — Save 15%)</option>
-                <option value="bulk-10">Bulk Pack of 10 ($160 — Save 20%)</option>
+                <option value="single">Single Custom Thumbnail ($15)</option>
+                <option value="bulk-5">Bulk Pack of 5 ($65 — Save 13%)</option>
+                <option value="bulk-10">Bulk Pack of 10 ($120 — Save 20%)</option>
                 <option value="custom">Long-term Creator Partnership</option>
               </select>
             </div>
@@ -3035,7 +2586,6 @@ height: 40vh;
         <div class="footer-links">
           <a href="#home">Home</a>
           <a href="#portfolio">Portfolio</a>
-          <a href="#offer">Offer</a>
           <a href="#contact">Contact</a>
         </div>
       </div>
@@ -3090,10 +2640,9 @@ height: 40vh;
         <div class="form-group">
           <select id="modalContactService" required>
             <option value="" disabled selected>Select Package / Budget</option>
-            <option value="single">Single Custom Thumbnail ($20)</option>
-            <option value="june-offer">June Offer ($15/thumbnail) — 25% OFF 🟢</option>
-            <option value="bulk-5">Bulk Pack of 5 ($85 — Save 15%)</option>
-            <option value="bulk-10">Bulk Pack of 10 ($160 — Save 20%)</option>
+            <option value="single">Single Custom Thumbnail ($15)</option>
+            <option value="bulk-5">Bulk Pack of 5 ($65 — Save 13%)</option>
+            <option value="bulk-10">Bulk Pack of 10 ($120 — Save 20%)</option>
             <option value="custom">Long-term Creator Partnership</option>
           </select>
         </div>
@@ -3224,39 +2773,6 @@ height: 40vh;
       visibleCount = getPerPage();
     }
 
-    // Helper to highlight select boxes with a beautiful neon glow when the June Offer is active
-    function handleServiceGlow(selectEl) {
-      let indicator = selectEl.parentElement.querySelector('.june-offer-indicator');
-      
-      if (selectEl.value === 'june-offer') {
-        selectEl.style.borderColor = 'var(--neon)';
-        selectEl.style.boxShadow = '0 0 15px var(--neon-glow)';
-        
-        if (!indicator) {
-          indicator = document.createElement('div');
-          indicator.className = 'june-offer-indicator';
-          indicator.style.color = 'var(--neon)';
-          indicator.style.fontFamily = 'var(--ff-mono)';
-          indicator.style.fontSize = '0.72rem';
-          indicator.style.marginTop = '6px';
-          indicator.style.textTransform = 'uppercase';
-          indicator.style.letterSpacing = '1px';
-          indicator.style.display = 'flex';
-          indicator.style.alignItems = 'center';
-          indicator.style.gap = '6px';
-          indicator.style.animation = 'pulseGlowText 1.5s infinite ease-in-out';
-          indicator.innerHTML = '<i class="fas fa-fire"></i> June Discount Applied — 25% OFF Saved!';
-          selectEl.parentElement.appendChild(indicator);
-        }
-      } else {
-        selectEl.style.borderColor = '';
-        selectEl.style.boxShadow = '';
-        if (indicator) {
-          indicator.remove();
-        }
-      }
-    }
-
     // ─── Mobile-Friendly Virtual History State Overlay Stack ───
     const overlayStack = [];
 
@@ -3339,25 +2855,13 @@ height: 40vh;
       initSmoothScroll();
       initLightbox();
       initBrushCursor();
-      initOfferCountdown();
       initSeeThumbnails();
-      updateSelectDropdownsForExpiredOffer();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
         if (visibleCount < perPage) visibleCount = perPage;
         renderGallery();
       }, 200));
-
-      // Hook select changes to make June Offer stand out
-      const contactService = document.getElementById('contactService');
-      const modalContactService = document.getElementById('modalContactService');
-      if (contactService) {
-        contactService.addEventListener('change', (e) => handleServiceGlow(e.target));
-      }
-      if (modalContactService) {
-        modalContactService.addEventListener('change', (e) => handleServiceGlow(e.target));
-      }
     });
 
     function initNavbar() {
@@ -3759,13 +3263,11 @@ height: 40vh;
         if (prefillPackage) {
           if (serviceSelect) {
             serviceSelect.value = prefillPackage;
-            handleServiceGlow(serviceSelect); // Apply immediate neon glow highlight
           }
         } else {
           // Reset select box if opened standardly
           if (serviceSelect) {
             serviceSelect.selectedIndex = 0;
-            handleServiceGlow(serviceSelect);
           }
         }
 
@@ -3782,12 +3284,7 @@ height: 40vh;
       document.querySelectorAll('.open-contact-modal').forEach(btn => {
         btn.addEventListener('click', e => {
           e.preventDefault();
-          const isOffer = isOfferActive() && (btn.closest('.offer-card') || btn.textContent.includes('Claim') || btn.closest('#offer'));
-          if (isOffer) {
-            open('Claiming June Offer — $15 Thumbnail Discount', 'june-offer');
-          } else {
-            open('', '');
-          }
+          open('', '');
         });
       });
 
@@ -3839,83 +3336,12 @@ height: 40vh;
 
     function getServiceLabel(val) {
       switch(val) {
-        case 'single': return 'Single Custom Thumbnail ($20)';
-        case 'june-offer': return 'June Offer ($15/thumbnail)';
-        case 'bulk-5': return 'Bulk Pack of 5 ($85)';
-        case 'bulk-10': return 'Bulk Pack of 10 ($160)';
+        case 'single': return 'Single Custom Thumbnail ($15)';
+        case 'bulk-5': return 'Bulk Pack of 5 ($65)';
+        case 'bulk-10': return 'Bulk Pack of 10 ($120)';
         case 'custom': return 'Long-term Creator Partnership';
         default: return 'General Request / Unspecified';
       }
-    }
-
-    function getOfferEndDate() {
-      return new Date(new Date().getFullYear(), 5, 30, 23, 59, 59);
-    }
-
-    function isOfferActive() {
-      return Date.now() < getOfferEndDate().getTime();
-    }
-
-    function showOfferExpired() {
-      const section = document.querySelector('.offer-section');
-      const active = document.getElementById('offerActive');
-      const unavailable = document.getElementById('offerUnavailable');
-      const header = document.getElementById('offerSectionHeader');
-      const navOffer = document.querySelector('.nav-links a[href="#offer"]');
-
-      if (active) active.hidden = true;
-      if (unavailable) {
-        unavailable.hidden = false;
-        unavailable.classList.add('visible');
-      }
-      if (section) section.classList.add('offer-expired');
-      if (header) header.hidden = true;
-      if (navOffer) navOffer.textContent = 'Offer';
-
-      updateSelectDropdownsForExpiredOffer();
-    }
-
-    function updateSelectDropdownsForExpiredOffer() {
-      const active = isOfferActive();
-      if (!active) {
-        const offerOptions = document.querySelectorAll('option[value="june-offer"]');
-        offerOptions.forEach(opt => {
-          opt.textContent = "June Offer ($15/thumbnail) — EXPIRED";
-          opt.disabled = true;
-        });
-      }
-    }
-
-    function initOfferCountdown() {
-      const timer = document.getElementById('countdownTimer');
-      const countdownWrap = document.getElementById('offerCountdown');
-      if (!timer) return;
-
-      const endDate = getOfferEndDate();
-
-      const update = () => {
-        if (!isOfferActive()) {
-          showOfferExpired();
-          return;
-        }
-
-        const diff = endDate - Date.now();
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const mins = Math.floor((diff / (1000 * 60)) % 60);
-        const secs = Math.floor((diff / 1000) % 60);
-
-        timer.textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
-      };
-
-      if (!isOfferActive()) {
-        showOfferExpired();
-        if (countdownWrap) countdownWrap.style.display = 'none';
-        return;
-      }
-
-      update();
-      setInterval(update, 1000);
     }
 
     function initBrushCursor() {
