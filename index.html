@@ -839,6 +839,171 @@ height: 40vh;
       line-height: 1.7;
     }
 
+    /* ---------- SOCIAL ORBIT SECTION ---------- */
+    .social-section {
+      overflow: hidden;
+    }
+
+    .social-orbit-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 980px;
+      height: clamp(280px, 42vw, 460px);
+      margin: 64px auto 0;
+      cursor: grab;
+      touch-action: pan-y;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .social-orbit-wrap.dragging {
+      cursor: grabbing;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 92%;
+      height: 68%;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .orbit-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, var(--neon-dim) 0%, transparent 70%);
+      opacity: 0.5;
+    }
+
+    .orbit-item {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 76px;
+      height: 76px;
+      margin: -38px 0 0 -38px;
+      border-radius: 50%;
+      pointer-events: auto;
+      cursor: pointer;
+      will-change: transform, opacity;
+    }
+
+    .orbit-item-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      color: var(--white);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      pointer-events: none;
+    }
+
+    .orbit-item-inner svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .orbit-item:hover .orbit-item-inner {
+      transform: scale(1.12);
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55), 0 0 0 3px var(--neon-glow);
+    }
+
+    .orbit-brand-youtube {
+      background: #ff0000;
+      border-radius: 20px;
+    }
+
+    .orbit-brand-github {
+      background: #171717;
+    }
+
+    .orbit-brand-discord {
+      background: #5865f2;
+    }
+
+    .orbit-brand-x {
+      background: #000000;
+    }
+
+    .orbit-brand-instagram {
+      background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
+    }
+
+    .social-orbit-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 28px;
+      font-family: var(--ff-mono);
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray-4);
+    }
+
+    .social-orbit-hint i {
+      color: var(--neon);
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 768px) {
+      .social-orbit-wrap {
+        height: clamp(220px, 60vw, 340px);
+        max-width: 100%;
+      }
+
+      .orbit-item {
+        width: 58px;
+        height: 58px;
+        margin: -29px 0 0 -29px;
+      }
+
+      .orbit-item-inner {
+        font-size: 1.3rem;
+      }
+
+      .orbit-item-inner svg {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .orbit-item {
+        width: 48px;
+        height: 48px;
+        margin: -24px 0 0 -24px;
+      }
+
+      .orbit-item-inner {
+        font-size: 1.1rem;
+      }
+
+      .orbit-item-inner svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .social-orbit-wrap .orbit-item {
+        transition: none;
+      }
+    }
+
     /* ---------- ABOUT SECTION ---------- */
     .about-grid {
       display: grid;
@@ -1370,35 +1535,6 @@ height: 40vh;
     .copy-email-btn.copied {
       border-color: var(--neon);
       color: var(--neon);
-    }
-
-    .social-links-row {
-      display: flex;
-      gap: 2px;
-      margin-top: 28px;
-    }
-
-    .social-link {
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-3);
-      font-size: 1rem;
-      transition: all 0.3s var(--ease);
-    }
-
-    .social-link:hover {
-      background: var(--neon);
-      border-color: var(--neon);
-      color: var(--black);
-    }
-
-    .social-link svg {
-      width: 16px;
-      height: 16px;
     }
 
     .contact-form-card {
@@ -2194,6 +2330,7 @@ height: 40vh;
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#social">Social</a></li>
         <li><a href="#comments">Comments</a></li>
         <li><a href="#" class="nav-cta open-contact-modal">Let's Talk</a></li>
       </ul>
@@ -2482,27 +2619,6 @@ height: 40vh;
             <div class="ci-icon"><i class="fas fa-globe"></i></div>
             <span>Available Worldwide</span>
           </div>
-
-          <div class="social-links-row">
-            <a href="https://www.youtube.com/@Montagespctips" target="_blank" class="social-link" title="YouTube">
-              <i class="fab fa-youtube"></i>
-            </a>
-            <a href="https://github.com/Anas-Mont" target="_blank" class="social-link" title="GitHub">
-              <i class="fab fa-github"></i>
-            </a>
-            <a href="https://discord.com/users/1253956146566533203" target="_blank" class="social-link" title="Discord">
-              <i class="fab fa-discord"></i>
-            </a>
-            <a href="https://x.com/AYANOKOJI0099" target="_blank" class="social-link" title="X (Twitter)">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/ayanokoji0009" target="_blank" class="social-link" title="Instagram">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </div>
         </div>
 
         <div class="contact-form-card reveal reveal-delay-2">
@@ -2537,6 +2653,56 @@ height: 40vh;
             </button>
           </form>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL ═══ -->
+  <section id="social" class="section social-section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Connect</span>
+        <h2 class="section-heading">SOCIAL <span class="neon">LINKS</span></h2>
+        <p class="section-desc">Follow the work, join the server, or say hi — pick your platform.</p>
+      </div>
+
+      <div class="social-orbit-wrap reveal reveal-delay-1" id="socialOrbit">
+        <div class="orbit-ring" aria-hidden="true"></div>
+
+        <a class="orbit-item" data-url="https://www.youtube.com/@Montagespctips" target="_blank"
+          rel="noopener noreferrer" title="YouTube" aria-label="YouTube">
+          <div class="orbit-item-inner orbit-brand-youtube"><i class="fas fa-play"></i></div>
+        </a>
+
+        <a class="orbit-item" data-url="https://github.com/Anas-Mont" target="_blank" rel="noopener noreferrer"
+          title="GitHub" aria-label="GitHub">
+          <div class="orbit-item-inner orbit-brand-github"><i class="fab fa-github"></i></div>
+        </a>
+
+        <a class="orbit-item" data-url="https://discord.com/users/1253956146566533203" target="_blank"
+          rel="noopener noreferrer" title="Discord" aria-label="Discord">
+          <div class="orbit-item-inner orbit-brand-discord"><i class="fab fa-discord"></i></div>
+        </a>
+
+        <a class="orbit-item" data-url="https://x.com/AYANOKOJI0099" target="_blank" rel="noopener noreferrer"
+          title="X (Twitter)" aria-label="X (Twitter)">
+          <div class="orbit-item-inner orbit-brand-x">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </div>
+        </a>
+
+        <a class="orbit-item" data-url="https://www.instagram.com/ayanokoji0009" target="_blank"
+          rel="noopener noreferrer" title="Instagram" aria-label="Instagram">
+          <div class="orbit-item-inner orbit-brand-instagram"><i class="fab fa-instagram"></i></div>
+        </a>
+      </div>
+
+      <div class="social-orbit-hint reveal reveal-delay-2">
+        <i class="fas fa-arrows-left-right"></i>
+        <span>Drag to spin &middot; Click an icon to open</span>
       </div>
     </div>
   </section>
@@ -2856,6 +3022,7 @@ height: 40vh;
       initLightbox();
       initBrushCursor();
       initSeeThumbnails();
+      initSocialOrbit();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
@@ -3238,6 +3405,129 @@ height: 40vh;
         renderReviews();
         showToast('Thank you for your review!', 'success');
       });
+    }
+
+    /* ---------- SOCIAL ORBIT ---------- */
+    function initSocialOrbit() {
+      const wrap = document.getElementById('socialOrbit');
+      if (!wrap) return;
+
+      const items = Array.from(wrap.querySelectorAll('.orbit-item'));
+      if (!items.length) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const count = items.length;
+      const baseAngles = items.map((_, i) => (360 / count) * i);
+
+      let angle = -90; // start with an icon centered at the front/bottom
+      const AUTO_SPEED = reduceMotion ? 0 : -0.028; // deg per ms, slow constant drift
+      let velocity = AUTO_SPEED;
+
+      let rx = 0, ry = 0, cx = 0, cy = 0;
+
+      function measure() {
+        const rect = wrap.getBoundingClientRect();
+        cx = rect.width / 2;
+        cy = rect.height / 2;
+        rx = rect.width / 2 * 0.94;
+        ry = rect.height / 2 * 0.9;
+      }
+      measure();
+      window.addEventListener('resize', debounce(measure, 150));
+
+      function render() {
+        for (let i = 0; i < count; i++) {
+          const rad = (baseAngles[i] + angle) * Math.PI / 180;
+          const x = cx + rx * Math.cos(rad);
+          const y = cy + ry * Math.sin(rad);
+          const depth = (Math.sin(rad) + 1) / 2; // 0 = back, 1 = front
+          const scale = 0.72 + depth * 0.42;
+          const opacity = 0.45 + depth * 0.55;
+          const z = Math.round(depth * 100);
+
+          const el = items[i];
+          el.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+          el.style.opacity = opacity;
+          el.style.zIndex = z;
+        }
+      }
+
+      // Pointer / drag interaction
+      let dragging = false;
+      let pointerId = null;
+      let lastX = 0;
+      let lastTime = 0;
+      let moved = 0;
+      const SENSITIVITY = 0.28; // deg per px
+
+      function onPointerDown(e) {
+        dragging = true;
+        pointerId = e.pointerId;
+        wrap.classList.add('dragging');
+        wrap.setPointerCapture(pointerId);
+        lastX = e.clientX;
+        lastTime = performance.now();
+        velocity = 0;
+        moved = 0;
+      }
+
+      function onPointerMove(e) {
+        if (!dragging) return;
+        const now = performance.now();
+        const dx = e.clientX - lastX;
+        const dt = Math.max(now - lastTime, 1);
+        angle += dx * SENSITIVITY;
+        velocity = (dx * SENSITIVITY) / dt * 16.67; // deg per ~frame, carried as momentum
+        lastX = e.clientX;
+        lastTime = now;
+        moved += Math.abs(dx);
+      }
+
+      function onPointerUp(e) {
+        if (!dragging) return;
+        dragging = false;
+        wrap.classList.remove('dragging');
+        try { wrap.releasePointerCapture(pointerId); } catch (err) { /* noop */ }
+
+        // If barely moved, treat as a click on whatever icon is under the pointer
+        if (moved < 6) {
+          const target = document.elementFromPoint(e.clientX, e.clientY);
+          const link = target && target.closest ? target.closest('.orbit-item') : null;
+          if (link && link.dataset.url) {
+            window.open(link.dataset.url, '_blank', 'noopener,noreferrer');
+          }
+        }
+      }
+
+      wrap.addEventListener('pointerdown', onPointerDown);
+      wrap.addEventListener('pointermove', onPointerMove);
+      wrap.addEventListener('pointerup', onPointerUp);
+      wrap.addEventListener('pointercancel', onPointerUp);
+      wrap.addEventListener('pointerleave', (e) => { if (dragging && e.buttons === 0) onPointerUp(e); });
+
+      // Prevent the default click/navigation since we handle it ourselves via pointerup
+      items.forEach(item => {
+        item.addEventListener('click', (e) => e.preventDefault());
+        item.addEventListener('dragstart', (e) => e.preventDefault());
+      });
+
+      let lastFrame = performance.now();
+      function tick(now) {
+        const dt = Math.min(now - lastFrame, 48);
+        lastFrame = now;
+
+        if (!dragging) {
+          // ease velocity back toward the base autoplay speed for a smooth,
+          // premium glide after the user releases a drag
+          velocity += (AUTO_SPEED - velocity) * 0.02;
+          angle += velocity * (dt / 16.67);
+        }
+
+        render();
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     }
 
     function initContactModal() {
