@@ -1194,71 +1194,8 @@ height: 40vh;
       letter-spacing: 1px;
     }
 
-    .ba-showcase-dots {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding-top: 4px;
-      flex-shrink: 0;
-    }
-
-    .ba-showcase-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      border: 1px solid rgba(212, 255, 0, 0.35);
-      background: rgba(212, 255, 0, 0.12);
-      cursor: pointer;
-      padding: 0;
-      animation: baDotPulse 3.4s ease-in-out infinite;
-    }
-
-    .ba-showcase-dot:nth-child(1) { animation-delay: 0s; }
-    .ba-showcase-dot:nth-child(2) { animation-delay: 1.15s; }
-    .ba-showcase-dot:nth-child(3) { animation-delay: 2.3s; }
-
-    @keyframes baDotPulse {
-      0%, 100% {
-        opacity: 0.2;
-        transform: scale(0.82);
-        box-shadow: 0 0 0 rgba(212, 255, 0, 0);
-      }
-      50% {
-        opacity: 0.95;
-        transform: scale(1.18);
-        box-shadow: 0 0 10px rgba(212, 255, 0, 0.65), 0 0 22px rgba(212, 255, 0, 0.2);
-      }
-    }
-
-    .ba-showcase-dot.active {
-      background: var(--neon);
-      border-color: var(--neon);
-      animation: baDotPulseActive 3.4s ease-in-out infinite;
-    }
-
-    .ba-showcase-dot.active:nth-child(1) { animation-delay: 0s; }
-    .ba-showcase-dot.active:nth-child(2) { animation-delay: 1.15s; }
-    .ba-showcase-dot.active:nth-child(3) { animation-delay: 2.3s; }
-
-    @keyframes baDotPulseActive {
-      0%, 100% {
-        opacity: 0.55;
-        transform: scale(0.95);
-        box-shadow: 0 0 4px rgba(212, 255, 0, 0.35);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.3);
-        box-shadow: 0 0 14px rgba(212, 255, 0, 0.95), 0 0 30px rgba(212, 255, 0, 0.4);
-      }
-    }
-
     .ba-showcase-nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 8px 0 4px;
+      display: none;
     }
 
     .ba-showcase-hint {
@@ -1283,7 +1220,7 @@ height: 40vh;
       border-radius: 12px;
       overflow: hidden;
       cursor: ew-resize;
-      touch-action: none;
+      touch-action: pan-y;
       user-select: none;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: var(--dark-2);
@@ -3526,17 +3463,8 @@ height: 40vh;
         return ((clientX - rect.left) / rect.width) * 100;
       };
 
-      const onMove = (e) => {
-        if (dragging) {
-          moved = true;
-          setPos(posFromEvent(e));
-          e.preventDefault();
-        }
-
-        // 3D tilt — only when cursor is inside the slider bounds
+      const applyTilt = (clientX, clientY) => {
         const rect = slider.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         const inside = clientX >= rect.left && clientX <= rect.right &&
                        clientY >= rect.top && clientY <= rect.bottom;
         if (inside) {
@@ -3544,33 +3472,98 @@ height: 40vh;
           const ny = ((clientY - rect.top) / rect.height - 0.5) * 2;
           slider.style.setProperty('--ba-tilt-y', (nx * 4).toFixed(2) + 'deg');
           slider.style.setProperty('--ba-tilt-x', (-ny * 3).toFixed(2) + 'deg');
-        } else if (!dragging) {
+        } else {
           slider.style.setProperty('--ba-tilt-y', '0deg');
           slider.style.setProperty('--ba-tilt-x', '0deg');
         }
       };
 
-      const startDrag = (e) => {
+      // ---- Mouse (desktop): instant drag + subtle 3D tilt ----
+      const onMouseMove = (e) => {
+        if (dragging) {
+          moved = true;
+          setPos(posFromEvent(e));
+        }
+        applyTilt(e.clientX, e.clientY);
+      };
+
+      const onMouseUp = () => {
+        dragging = false;
+        slider.classList.remove('is-dragging');
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+
+      slider.addEventListener('mousedown', (e) => {
         dragging = true;
         moved = false;
         slider.classList.add('is-dragging');
         setPos(posFromEvent(e));
         e.preventDefault();
         e.stopPropagation(); // don't trigger carousel swipe
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+
+      slider.addEventListener('mouseleave', () => {
+        if (!dragging) applyTilt(-9999, -9999);
+      });
+
+      // ---- Touch (mobile): don't hijack the gesture until we know it's
+      // horizontal. If the finger is moving mostly vertically, do nothing
+      // and let the page scroll normally — this is what fixes scroll
+      // getting "stuck" on the before/after cards.
+      let touchDeciding = false;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      const onTouchMove = (e) => {
+        const t = e.touches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+
+        if (touchDeciding) {
+          if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+          touchDeciding = false;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            dragging = true;
+            moved = true;
+            slider.classList.add('is-dragging');
+            e.stopPropagation(); // don't trigger carousel swipe
+          } else {
+            return; // vertical intent — let the page scroll, we're done here
+          }
+        }
+
+        if (dragging) {
+          setPos(posFromEvent(e));
+          e.preventDefault();
+          e.stopPropagation();
+        }
       };
 
-      const endDrag = () => {
+      const onTouchEnd = () => {
         dragging = false;
+        touchDeciding = false;
         slider.classList.remove('is-dragging');
+        slider.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+        window.removeEventListener('touchcancel', onTouchEnd);
       };
 
-      slider.addEventListener('mousedown', startDrag);
-      slider.addEventListener('touchstart', startDrag, { passive: false });
+      slider.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        dragging = false;
+        moved = false;
+        touchDeciding = true;
+        slider.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd);
+        window.addEventListener('touchcancel', onTouchEnd);
+      }, { passive: true });
+
       slider.addEventListener('click', (e) => { if (moved) e.stopPropagation(); });
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('touchmove', onMove, { passive: false });
-      window.addEventListener('mouseup', endDrag);
-      window.addEventListener('touchend', endDrag);
 
       slider.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') setPos(pos - 3);
@@ -3608,16 +3601,13 @@ height: 40vh;
         const card = document.createElement('div');
         card.className = 'ba-showcase-card';
 
-        // Meta row (title + dots)
+        // Meta row (title only — no dots here anymore)
         const meta = document.createElement('div');
         meta.className = 'ba-showcase-meta';
         meta.innerHTML = `
           <div>
             <h4>${escapeHTML(pair.title)}</h4>
             <span>${escapeHTML(pair.category || 'transformation')}</span>
-          </div>
-          <div class="ba-showcase-dots" aria-hidden="true">
-            ${pairs.map((_, di) => `<span class="ba-showcase-dot${di === i ? ' active' : ''}"></span>`).join('')}
           </div>
         `;
         card.appendChild(meta);
@@ -3642,18 +3632,9 @@ height: 40vh;
         track.appendChild(slide);
       });
 
-      // ── Nav dots (centered below) ──
-      if (nav) {
-        pairs.forEach((_, i) => {
-          const dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'ba-showcase-dot' + (i === showcaseIndex ? ' active' : '');
-          dot.setAttribute('aria-label', `Show transformation ${i + 1}`);
-          dot.dataset.idx = i;
-          dot.addEventListener('click', () => goToShowcase(i));
-          nav.appendChild(dot);
-        });
-      }
+      // Bottom nav pagination dots removed — the single top-right blink dot
+      // on each card is now the only "dot" indicator anywhere in this section.
+      if (nav) nav.innerHTML = '';
 
       // ── Position slides ──
       positionShowcaseSlides(pairs.length);
@@ -3694,21 +3675,6 @@ height: 40vh;
           slide.classList.add('is-hidden');
         }
       });
-
-      // Sync card-internal dots (each card shows which is active)
-      slides.forEach((slide) => {
-        slide.querySelectorAll('.ba-showcase-dots .ba-showcase-dot').forEach((d, di) => {
-          d.classList.toggle('active', di === showcaseIndex);
-        });
-      });
-
-      // Sync bottom nav dots
-      const nav = document.getElementById('baShowcaseNav');
-      if (nav) {
-        nav.querySelectorAll('.ba-showcase-dot').forEach((d, di) => {
-          d.classList.toggle('active', di === showcaseIndex);
-        });
-      }
     }
 
     function goToShowcase(idx) {
