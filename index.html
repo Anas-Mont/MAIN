@@ -1040,390 +1040,6 @@ height: 40vh;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
-    /* ─── Before / After Showcase Carousel ─── */
-    .ba-showcase {
-      margin-top: 36px;
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-
-    .ba-showcase-header {
-      text-align: center;
-      margin-bottom: clamp(16px, 3vw, 28px);
-    }
-
-    .ba-showcase-title {
-      font-family: var(--ff-display);
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .ba-showcase-stage {
-      position: relative;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .ba-showcase-viewport {
-      position: relative;
-      overflow: visible;
-      perspective: 1400px;
-      perspective-origin: 50% 50%;
-      padding: clamp(8px, 2vw, 20px) 0 clamp(28px, 4vw, 48px);
-      touch-action: pan-y;
-      cursor: grab;
-      user-select: none;
-    }
-
-    .ba-showcase-viewport.is-swipping {
-      cursor: grabbing;
-    }
-
-    .ba-showcase-track {
-      position: relative;
-      width: 100%;
-      min-height: clamp(280px, 52vw, 520px);
-      transform-style: preserve-3d;
-    }
-
-    .ba-showcase-slide {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      width: min(920px, 88vw);
-      transform: translateX(-50%) scale(0.72) rotateY(0deg);
-      opacity: 0;
-      filter: blur(6px);
-      z-index: 1;
-      pointer-events: none;
-      transition:
-        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-        filter 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: transform, opacity, filter;
-    }
-
-    .ba-showcase-slide.is-active {
-      transform: translateX(-50%) scale(1) rotateY(0deg);
-      opacity: 1;
-      filter: blur(0);
-      z-index: 5;
-      pointer-events: auto;
-    }
-
-    .ba-showcase-slide.is-prev {
-      transform: translateX(calc(-50% - clamp(260px, 42vw, 480px))) scale(0.78) rotateY(14deg);
-      opacity: 0.42;
-      filter: blur(4px);
-      z-index: 3;
-      pointer-events: auto;
-      cursor: pointer;
-    }
-
-    .ba-showcase-slide.is-next {
-      transform: translateX(calc(-50% + clamp(260px, 42vw, 480px))) scale(0.78) rotateY(-14deg);
-      opacity: 0.42;
-      filter: blur(4px);
-      z-index: 3;
-      pointer-events: auto;
-      cursor: pointer;
-    }
-
-    .ba-showcase-slide.is-hidden {
-      transform: translateX(-50%) scale(0.55);
-      opacity: 0;
-      filter: blur(10px);
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .ba-showcase-slide.is-swipe-out-left {
-      transform: translateX(calc(-50% - 120px)) scale(0.9) rotateY(8deg);
-      opacity: 0;
-    }
-
-    .ba-showcase-slide.is-swipe-out-right {
-      transform: translateX(calc(-50% + 120px)) scale(0.9) rotateY(-8deg);
-      opacity: 0;
-    }
-
-    .ba-showcase-card {
-      padding: clamp(12px, 2vw, 20px);
-      border-radius: 16px;
-      border: 1px solid rgba(212, 255, 0, 0.15);
-      background: linear-gradient(145deg, rgba(17, 17, 17, 0.97), rgba(10, 10, 10, 0.99));
-      box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      transform-style: preserve-3d;
-    }
-
-    .ba-showcase-slide.is-active .ba-showcase-card {
-      box-shadow:
-        0 40px 100px rgba(0, 0, 0, 0.65),
-        0 0 60px rgba(212, 255, 0, 0.06),
-        0 0 0 1px rgba(212, 255, 0, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-
-    .ba-showcase-meta {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .ba-showcase-meta h4 {
-      font-family: var(--ff-body);
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .ba-showcase-meta span {
-      display: block;
-      margin-top: 4px;
-      font-family: var(--ff-mono);
-      font-size: 0.68rem;
-      color: var(--gray-3);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .ba-showcase-nav {
-      display: none;
-    }
-
-    .ba-showcase-hint {
-      text-align: center;
-      margin-top: 4px;
-      font-family: var(--ff-mono);
-      font-size: 0.62rem;
-      color: var(--gray-3);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      opacity: 0.7;
-    }
-
-    /* ─── Before / After Slider (shared) ─── */
-    .ba-slider {
-      --ba-pos: 50%;
-      --ba-tilt-x: 0deg;
-      --ba-tilt-y: 0deg;
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: ew-resize;
-      touch-action: pan-y;
-      user-select: none;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: var(--dark-2);
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
-
-    .ba-slider__stage {
-      position: absolute;
-      inset: 0;
-      transform: rotateX(var(--ba-tilt-x)) rotateY(var(--ba-tilt-y));
-      transform-style: preserve-3d;
-      transition: transform 0.12s ease-out;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    }
-
-    .ba-slider__layer {
-      position: absolute;
-      inset: 0;
-    }
-
-    .ba-slider__layer img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      pointer-events: none;
-      -webkit-user-drag: none;
-    }
-
-    .ba-slider__after {
-      clip-path: inset(0 0 0 var(--ba-pos));
-    }
-
-    .ba-slider__handle {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: var(--ba-pos);
-      width: 3px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, transparent, var(--neon) 20%, var(--neon) 80%, transparent);
-      box-shadow: 0 0 18px rgba(212, 255, 0, 0.65), 0 0 40px rgba(212, 255, 0, 0.25);
-      z-index: 4;
-      pointer-events: none;
-    }
-
-    .ba-slider__knob {
-      position: absolute;
-      top: 50%;
-      left: var(--ba-pos);
-      width: 46px;
-      height: 46px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid var(--neon);
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.5),
-        0 0 20px rgba(212, 255, 0, 0.35),
-        inset 0 0 12px rgba(212, 255, 0, 0.12);
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      pointer-events: none;
-      transition: box-shadow 0.25s, transform 0.25s;
-    }
-
-    .ba-slider__knob::before,
-    .ba-slider__knob::after {
-      content: '';
-      width: 0;
-      height: 0;
-      border-top: 5px solid transparent;
-      border-bottom: 5px solid transparent;
-    }
-
-    .ba-slider__knob::before {
-      border-right: 6px solid var(--neon);
-      margin-right: 2px;
-    }
-
-    .ba-slider__knob::after {
-      border-left: 6px solid var(--neon);
-      margin-left: 2px;
-    }
-
-    .ba-slider:hover .ba-slider__knob,
-    .ba-slider.is-dragging .ba-slider__knob {
-      box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.6),
-        0 0 28px rgba(212, 255, 0, 0.55),
-        inset 0 0 16px rgba(212, 255, 0, 0.18);
-      transform: translate(-50%, -50%) scale(1.06);
-    }
-
-    .ba-slider__label {
-      position: absolute;
-      top: 12px;
-      padding: 4px 10px;
-      font-family: var(--ff-mono);
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      border-radius: 4px;
-      z-index: 3;
-      pointer-events: none;
-      backdrop-filter: blur(6px);
-    }
-
-    .ba-slider__label--before {
-      left: 12px;
-      background: rgba(0, 0, 0, 0.65);
-      color: var(--gray-2);
-      border: 1px solid var(--border);
-    }
-
-    .ba-slider__label--after {
-      right: 12px;
-      background: rgba(212, 255, 0, 0.15);
-      color: var(--neon);
-      border: 1px solid rgba(212, 255, 0, 0.35);
-    }
-
-    .ba-slider--lightbox {
-      max-width: 90vw;
-      max-height: 75vh;
-      aspect-ratio: 16/9;
-      width: min(90vw, calc(75vh * 16 / 9));
-      cursor: ew-resize;
-    }
-
-    .ba-slider--lightbox .ba-slider__layer img {
-      object-fit: contain;
-      background: #000;
-    }
-
-    .ba-slider--card {
-      position: absolute;
-      inset: 0;
-      border-radius: 6px;
-      border: none;
-    }
-
-    /* Single blinking indicator dot — used ONLY on the dedicated Before/After
-       showcase cards (never in the main All/Gaming/Tech/Social grid). Sits in
-       the top-right corner, one per card, and hard-blinks on/off (no smooth
-       fade) like a status light. */
-    .ba-showcase-card {
-      position: relative;
-    }
-
-    .ba-blink-dot {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 6;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--neon);
-      box-shadow: 0 0 8px rgba(212, 255, 0, 0.9);
-      pointer-events: none;
-      animation: baBlinkOnOff 1.2s steps(1, end) infinite;
-    }
-
-    @keyframes baBlinkOnOff {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
-    }
-
-    .img-skeleton {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, var(--dark-2) 20%, var(--dark-3) 50%, var(--dark-2) 80%);
-      background-size: 200% 100%;
-      animation: imgShimmer 1.3s ease-in-out infinite;
-      z-index: 1;
-    }
-
-    @keyframes imgShimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    .gallery-item img.is-loading {
-      opacity: 0;
-    }
-
-    .gallery-item img.is-loaded {
-      opacity: 1;
-      transition: opacity 0.35s ease;
-    }
-
-    .gallery-item img.img-failed {
-      opacity: 0.35;
-      filter: grayscale(1);
-    }
-
     .show-more-wrap {
       text-align: center;
       margin-top: 32px;
@@ -1756,6 +1372,35 @@ height: 40vh;
       color: var(--neon);
     }
 
+    .social-links-row {
+      display: flex;
+      gap: 2px;
+      margin-top: 28px;
+    }
+
+    .social-link {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-3);
+      font-size: 1rem;
+      transition: all 0.3s var(--ease);
+    }
+
+    .social-link:hover {
+      background: var(--neon);
+      border-color: var(--neon);
+      color: var(--black);
+    }
+
+    .social-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
     .contact-form-card {
       padding: 40px;
       background: var(--dark);
@@ -1954,14 +1599,6 @@ height: 40vh;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .lightbox-img-wrap.is-ba-mode #lightboxImg {
-      display: none;
-    }
-
-    .lightbox-img-wrap.is-ba-mode #lightboxBa {
-      display: block !important;
     }
 
     .lightbox-img-wrap img {
@@ -2376,40 +2013,6 @@ height: 40vh;
         border: 1px solid var(--border);
       }
 
-      .ba-showcase-card {
-        padding: 10px;
-        border-radius: 12px;
-      }
-
-      .ba-showcase-slide {
-        width: min(920px, 94vw);
-      }
-
-      .ba-showcase-slide.is-prev {
-        transform: translateX(calc(-50% - 72vw)) scale(0.72) rotateY(12deg);
-        opacity: 0.28;
-        filter: blur(5px);
-      }
-
-      .ba-showcase-slide.is-next {
-        transform: translateX(calc(-50% + 72vw)) scale(0.72) rotateY(-12deg);
-        opacity: 0.28;
-        filter: blur(5px);
-      }
-
-      .ba-showcase-track {
-        min-height: clamp(220px, 58vw, 380px);
-      }
-
-      .ba-showcase-hint {
-        font-size: 0.58rem;
-      }
-
-      .ba-slider__knob {
-        width: 38px;
-        height: 38px;
-      }
-
       .form-row {
         grid-template-columns: 1fr;
       }
@@ -2578,142 +2181,6 @@ height: 40vh;
       transition-duration: 0.25s !important;
       animation-duration: 0.25s !important;
     }
-
-    /* ---------- SOCIAL ORBIT SECTION ---------- */
-    .orbit-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      margin: 20px auto 0;
-    }
-
-    .orbit-stage {
-      position: relative;
-      width: 100%;
-      height: clamp(210px, 32vw, 400px);
-      touch-action: pan-y;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-user-drag: none;
-      /* fallback layout in case JS hasn't run yet */
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-    }
-
-    .orbit-track {
-      position: absolute;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 50%;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.7s var(--ease);
-    }
-
-    .orbit-track.orbit-track-visible {
-      opacity: 1;
-    }
-
-    .orbit-icon {
-      position: relative;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
-      transition: box-shadow 0.3s var(--ease);
-      flex-shrink: 0;
-    }
-
-    .orbit-stage.orbit-ready {
-      display: block;
-    }
-
-    .orbit-stage.orbit-ready .orbit-icon {
-      position: absolute;
-      top: 0;
-      left: 0;
-      will-change: transform, opacity;
-    }
-
-    .orbit-stage.dragging,
-    .orbit-stage.dragging .orbit-icon {
-      transition: none;
-    }
-
-    .orbit-icon:hover,
-    .orbit-icon:focus-visible {
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 3px var(--neon-dim);
-    }
-
-    .orbit-icon:focus-visible {
-      outline: 2px solid var(--neon);
-      outline-offset: 3px;
-    }
-
-    .orbit-icon i {
-      font-size: 1em;
-      line-height: 1;
-    }
-
-    .orbit-icon svg {
-      width: 1em;
-      height: 1em;
-      fill: currentColor;
-      display: block;
-    }
-
-    .orbit-icon--youtube {
-      background: #ff0000;
-    }
-
-    .orbit-icon--github {
-      background: #17181c;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .orbit-icon--discord {
-      background: #5865f2;
-    }
-
-    .orbit-icon--x {
-      background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-    }
-
-    .orbit-icon--instagram {
-      background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
-    }
-
-    .orbit-hint {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: var(--ff-mono);
-      font-size: 0.7rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray-3);
-      margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .orbit-wrap {
-        margin-top: 8px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .orbit-icon {
-        transition: none !important;
-      }
-    }
   </style>
 </head>
 
@@ -2727,7 +2194,6 @@ height: 40vh;
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#social">Social</a></li>
         <li><a href="#comments">Comments</a></li>
         <li><a href="#" class="nav-cta open-contact-modal">Let's Talk</a></li>
       </ul>
@@ -2908,25 +2374,6 @@ height: 40vh;
         <button class="filter-btn" data-category="social">Social</button>
       </div>
 
-      <div class="ba-showcase reveal" id="baShowcase" aria-label="Before and after transformations">
-        <div class="ba-showcase-header">
-          <span class="section-label">Transformations</span>
-          <h3 class="ba-showcase-title">BEFORE <span class="neon">&</span> AFTER</h3>
-          <p class="section-desc" style="margin-top:8px;">Drag the slider to compare original vs redesigned thumbnails.</p>
-        </div>
-        <div class="ba-showcase-stage" id="baShowcaseStage">
-          <div class="ba-showcase-viewport" id="baShowcaseViewport">
-            <div class="ba-showcase-track" id="baShowcaseTrack">
-              <!-- Slides injected by JS -->
-            </div>
-          </div>
-          <div class="ba-showcase-nav" id="baShowcaseNav">
-            <!-- Dots injected by JS -->
-          </div>
-          <p class="ba-showcase-hint">Swipe or click sides to browse &bull; Drag handle to compare</p>
-        </div>
-      </div>
-
       <div class="gallery-grid-wrap reveal">
         <div class="gallery-grid" id="galleryGrid">
           <!-- Dynamically populated -->
@@ -3035,6 +2482,27 @@ height: 40vh;
             <div class="ci-icon"><i class="fas fa-globe"></i></div>
             <span>Available Worldwide</span>
           </div>
+
+          <div class="social-links-row">
+            <a href="https://www.youtube.com/@Montagespctips" target="_blank" class="social-link" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://github.com/Anas-Mont" target="_blank" class="social-link" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://discord.com/users/1253956146566533203" target="_blank" class="social-link" title="Discord">
+              <i class="fab fa-discord"></i>
+            </a>
+            <a href="https://x.com/AYANOKOJI0099" target="_blank" class="social-link" title="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/ayanokoji0009" target="_blank" class="social-link" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
         </div>
 
         <div class="contact-form-card reveal reveal-delay-2">
@@ -3069,49 +2537,6 @@ height: 40vh;
             </button>
           </form>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ SOCIAL ═══ -->
-  <section id="social" class="section social-orbit-section">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-label">Connect</span>
-        <h2 class="section-heading">STAY <span class="neon">SOCIAL</span></h2>
-        <p class="section-desc">Client work, behind-the-scenes, and the occasional meme — pick a platform.</p>
-      </div>
-
-      <div class="orbit-wrap reveal reveal-delay-1">
-        <div class="orbit-stage" id="orbitStage" role="group" aria-label="Social media links">
-          <div class="orbit-track" id="orbitTrack" aria-hidden="true"></div>
-
-          <a href="https://www.youtube.com/@Montagespctips" target="_blank" rel="noopener"
-            class="orbit-icon orbit-icon--youtube" title="YouTube" aria-label="YouTube — opens in a new tab">
-            <i class="fas fa-play"></i>
-          </a>
-          <a href="https://github.com/Anas-Mont" target="_blank" rel="noopener" class="orbit-icon orbit-icon--github"
-            title="GitHub" aria-label="GitHub — opens in a new tab">
-            <i class="fab fa-github"></i>
-          </a>
-          <a href="https://discord.com/users/1253956146566533203" target="_blank" rel="noopener"
-            class="orbit-icon orbit-icon--discord" title="Discord" aria-label="Discord — opens in a new tab">
-            <i class="fab fa-discord"></i>
-          </a>
-          <a href="https://x.com/AYANOKOJI0099" target="_blank" rel="noopener" class="orbit-icon orbit-icon--x"
-            title="X (Twitter)" aria-label="X, formerly Twitter — opens in a new tab">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/ayanokoji0009" target="_blank" rel="noopener"
-            class="orbit-icon orbit-icon--instagram" title="Instagram" aria-label="Instagram — opens in a new tab">
-            <i class="fab fa-instagram"></i>
-          </a>
-        </div>
-
-        <p class="orbit-hint">↔ Drag the ring, or just let it roll</p>
       </div>
     </div>
   </section>
@@ -3171,9 +2596,8 @@ height: 40vh;
   <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
     <button class="lightbox-close" aria-label="Close">&times;</button>
     <button class="lightbox-nav-btn lightbox-prev" aria-label="Previous">❮</button>
-    <div class="lightbox-img-wrap" id="lightboxImgWrap">
+    <div class="lightbox-img-wrap">
       <img id="lightboxImg" src="" alt="Preview" />
-      <div id="lightboxBa" class="ba-slider ba-slider--lightbox" style="display:none" aria-hidden="true"></div>
       <div id="lightboxCaption" class="lightbox-caption"></div>
     </div>
     <button class="lightbox-nav-btn lightbox-next" aria-label="Next">❯</button>
@@ -3302,13 +2726,6 @@ height: 40vh;
       { src: 'main4 copy.png', title: 'Main Series 4', category: 'gaming' },
     ];
 
-    // Featured before/after pairs (shown in the showcase slider)
-    const beforeAfterShowcase = [
-      { before: 'thumbnail0003.jpg', after: 'Getorli GT103.jpg', title: 'Client Channel Redesign', category: 'social' },
-      // { before: 'talha copy_compressed.jpg', after: 'talha.png', title: 'Talha — Full Refresh', category: 'gaming' },
-      // { before: 'new client 4 copy.jpg', after: 'new client 5 copy.jpg', title: 'Creator Makeover', category: 'social' },
-    ];
-
     // ─── Reviews Data ───
     const reviewsData = [
       {
@@ -3350,411 +2767,6 @@ height: 40vh;
 
     function getPerPage() {
       return window.innerWidth <= MOBILE_BREAKPOINT ? MOBILE_PER_PAGE : DESKTOP_PER_PAGE;
-    }
-
-    function sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    function cacheBustUrl(url, attempt) {
-      if (!url || url.startsWith('data:')) return url;
-      const sep = url.includes('?') ? '&' : '?';
-      return `${url}${sep}_r=${Date.now()}-${attempt}`;
-    }
-
-    async function fetchThumbnailsWithRetry(maxAttempts = 4) {
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        try {
-          const res = await fetch('/api/thumbnails?t=' + Date.now(), {
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data)) return data;
-          }
-        } catch (_) { /* retry */ }
-        if (attempt < maxAttempts - 1) await sleep(500 * (attempt + 1));
-      }
-      return [];
-    }
-
-    function attachImageRetry(img, src, options = {}) {
-      const maxRetries = options.maxRetries ?? 4;
-      let attempts = 0;
-      const skeleton = options.skeleton;
-
-      const clearLoading = () => {
-        img.classList.remove('is-loading');
-        img.classList.add('is-loaded');
-        if (skeleton) skeleton.remove();
-        if (options.onLoad) options.onLoad();
-      };
-
-      const fail = () => {
-        img.classList.remove('is-loading');
-        img.classList.add('img-failed');
-        if (skeleton) skeleton.remove();
-        if (options.onFail) options.onFail();
-      };
-
-      const tryLoad = () => {
-        img.classList.add('is-loading');
-        img.onload = clearLoading;
-        img.onerror = () => {
-          attempts += 1;
-          if (attempts <= maxRetries) {
-            setTimeout(() => {
-              img.src = cacheBustUrl(src, attempts);
-            }, 350 * attempts);
-          } else {
-            fail();
-          }
-        };
-        img.src = attempts === 0 ? src : cacheBustUrl(src, attempts);
-      };
-
-      tryLoad();
-    }
-
-    function buildBeforeAfterSlider(beforeSrc, afterSrc, className = '') {
-      const slider = document.createElement('div');
-      slider.className = `ba-slider ${className}`.trim();
-      slider.innerHTML = `
-        <div class="ba-slider__stage">
-          <div class="ba-slider__layer ba-slider__before">
-            <img src="" alt="Before" draggable="false" decoding="async">
-          </div>
-          <div class="ba-slider__layer ba-slider__after">
-            <img src="" alt="After" draggable="false" decoding="async">
-          </div>
-        </div>
-        <span class="ba-slider__label ba-slider__label--before">Before</span>
-        <span class="ba-slider__label ba-slider__label--after">After</span>
-        <div class="ba-slider__handle" aria-hidden="true"></div>
-        <div class="ba-slider__knob" aria-hidden="true"></div>
-      `;
-
-      const beforeImg = slider.querySelector('.ba-slider__before img');
-      const afterImg = slider.querySelector('.ba-slider__after img');
-      attachImageRetry(beforeImg, beforeSrc);
-      attachImageRetry(afterImg, afterSrc);
-
-      initBeforeAfterSlider(slider);
-      return slider;
-    }
-
-    function initBeforeAfterSlider(slider) {
-      if (!slider || slider.dataset.baInit === '1') return;
-      slider.dataset.baInit = '1';
-
-      let pos = 50;
-      let dragging = false;
-      let moved = false;
-
-      const setPos = (pct) => {
-        pos = Math.min(Math.max(pct, 2), 98);
-        slider.style.setProperty('--ba-pos', pos + '%');
-      };
-
-      const posFromEvent = (e) => {
-        const rect = slider.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        return ((clientX - rect.left) / rect.width) * 100;
-      };
-
-      const applyTilt = (clientX, clientY) => {
-        const rect = slider.getBoundingClientRect();
-        const inside = clientX >= rect.left && clientX <= rect.right &&
-                       clientY >= rect.top && clientY <= rect.bottom;
-        if (inside) {
-          const nx = ((clientX - rect.left) / rect.width - 0.5) * 2;
-          const ny = ((clientY - rect.top) / rect.height - 0.5) * 2;
-          slider.style.setProperty('--ba-tilt-y', (nx * 4).toFixed(2) + 'deg');
-          slider.style.setProperty('--ba-tilt-x', (-ny * 3).toFixed(2) + 'deg');
-        } else {
-          slider.style.setProperty('--ba-tilt-y', '0deg');
-          slider.style.setProperty('--ba-tilt-x', '0deg');
-        }
-      };
-
-      // ---- Mouse (desktop): instant drag + subtle 3D tilt ----
-      const onMouseMove = (e) => {
-        if (dragging) {
-          moved = true;
-          setPos(posFromEvent(e));
-        }
-        applyTilt(e.clientX, e.clientY);
-      };
-
-      const onMouseUp = () => {
-        dragging = false;
-        slider.classList.remove('is-dragging');
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
-      };
-
-      slider.addEventListener('mousedown', (e) => {
-        dragging = true;
-        moved = false;
-        slider.classList.add('is-dragging');
-        setPos(posFromEvent(e));
-        e.preventDefault();
-        e.stopPropagation(); // don't trigger carousel swipe
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-      });
-
-      slider.addEventListener('mouseleave', () => {
-        if (!dragging) applyTilt(-9999, -9999);
-      });
-
-      // ---- Touch (mobile): don't hijack the gesture until we know it's
-      // horizontal. If the finger is moving mostly vertically, do nothing
-      // and let the page scroll normally — this is what fixes scroll
-      // getting "stuck" on the before/after cards.
-      let touchDeciding = false;
-      let touchStartX = 0;
-      let touchStartY = 0;
-
-      const onTouchMove = (e) => {
-        const t = e.touches[0];
-        const dx = t.clientX - touchStartX;
-        const dy = t.clientY - touchStartY;
-
-        if (touchDeciding) {
-          if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-          touchDeciding = false;
-          if (Math.abs(dx) > Math.abs(dy)) {
-            dragging = true;
-            moved = true;
-            slider.classList.add('is-dragging');
-            e.stopPropagation(); // don't trigger carousel swipe
-          } else {
-            return; // vertical intent — let the page scroll, we're done here
-          }
-        }
-
-        if (dragging) {
-          setPos(posFromEvent(e));
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      };
-
-      const onTouchEnd = () => {
-        dragging = false;
-        touchDeciding = false;
-        slider.classList.remove('is-dragging');
-        slider.removeEventListener('touchmove', onTouchMove);
-        window.removeEventListener('touchend', onTouchEnd);
-        window.removeEventListener('touchcancel', onTouchEnd);
-      };
-
-      slider.addEventListener('touchstart', (e) => {
-        const t = e.touches[0];
-        touchStartX = t.clientX;
-        touchStartY = t.clientY;
-        dragging = false;
-        moved = false;
-        touchDeciding = true;
-        slider.addEventListener('touchmove', onTouchMove, { passive: false });
-        window.addEventListener('touchend', onTouchEnd);
-        window.addEventListener('touchcancel', onTouchEnd);
-      }, { passive: true });
-
-      slider.addEventListener('click', (e) => { if (moved) e.stopPropagation(); });
-
-      slider.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') setPos(pos - 3);
-        if (e.key === 'ArrowRight') setPos(pos + 3);
-      });
-
-      setPos(50);
-    }
-
-    let showcaseIndex = 0;
-    let showcaseAutoTimer = null;
-
-    function renderBeforeAfterShowcase() {
-      const showcase = document.getElementById('baShowcase');
-      const track = document.getElementById('baShowcaseTrack');
-      const nav = document.getElementById('baShowcaseNav');
-      const viewport = document.getElementById('baShowcaseViewport');
-      if (!track || !showcase) return;
-
-      const pairs = beforeAfterShowcase.filter((p) => p.before && p.after);
-      if (!pairs.length) {
-        showcase.style.display = 'none';
-        return;
-      }
-
-      // ── Build all slides ──
-      track.innerHTML = '';
-      if (nav) nav.innerHTML = '';
-
-      pairs.forEach((pair, i) => {
-        const slide = document.createElement('div');
-        slide.className = 'ba-showcase-slide';
-        slide.dataset.idx = i;
-
-        const card = document.createElement('div');
-        card.className = 'ba-showcase-card';
-
-        // Meta row (title only — no dots here anymore)
-        const meta = document.createElement('div');
-        meta.className = 'ba-showcase-meta';
-        meta.innerHTML = `
-          <div>
-            <h4>${escapeHTML(pair.title)}</h4>
-            <span>${escapeHTML(pair.category || 'transformation')}</span>
-          </div>
-        `;
-        card.appendChild(meta);
-
-        // Single blinking "before/after" indicator dot — top-right corner only.
-        const blinkDot = document.createElement('span');
-        blinkDot.className = 'ba-blink-dot';
-        blinkDot.setAttribute('aria-hidden', 'true');
-        card.appendChild(blinkDot);
-
-        // Before / After slider
-        const slider = buildBeforeAfterSlider(pair.before, pair.after);
-        slider.setAttribute('tabindex', '0');
-        slider.setAttribute('role', 'slider');
-        slider.setAttribute('aria-label', `${pair.title} before and after comparison`);
-        slider.setAttribute('aria-valuemin', '0');
-        slider.setAttribute('aria-valuemax', '100');
-        slider.setAttribute('aria-valuenow', '50');
-        card.appendChild(slider);
-
-        slide.appendChild(card);
-        track.appendChild(slide);
-      });
-
-      // Bottom nav pagination dots removed — the single top-right blink dot
-      // on each card is now the only "dot" indicator anywhere in this section.
-      if (nav) nav.innerHTML = '';
-
-      // ── Position slides ──
-      positionShowcaseSlides(pairs.length);
-
-      // ── Click on prev/next slides to navigate ──
-      track.querySelectorAll('.ba-showcase-slide').forEach((slide) => {
-        slide.addEventListener('click', (e) => {
-          const idx = parseInt(slide.dataset.idx, 10);
-          if (idx === showcaseIndex) return; // active — let slider handle it
-          e.stopPropagation();
-          goToShowcase(idx);
-        });
-      });
-
-      // ── Swipe on viewport ──
-      initShowcaseSwipe(viewport, pairs.length);
-
-      // ── Auto-advance ──
-      startShowcaseAuto(pairs.length);
-    }
-
-    function positionShowcaseSlides(total) {
-      const track = document.getElementById('baShowcaseTrack');
-      if (!track) return;
-
-      const slides = track.querySelectorAll('.ba-showcase-slide');
-      slides.forEach((slide) => {
-        const idx = parseInt(slide.dataset.idx, 10);
-        slide.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden');
-
-        if (idx === showcaseIndex) {
-          slide.classList.add('is-active');
-        } else if (idx === ((showcaseIndex - 1) + total) % total) {
-          slide.classList.add('is-prev');
-        } else if (idx === (showcaseIndex + 1) % total) {
-          slide.classList.add('is-next');
-        } else {
-          slide.classList.add('is-hidden');
-        }
-      });
-    }
-
-    function goToShowcase(idx) {
-      const pairs = beforeAfterShowcase.filter((p) => p.before && p.after);
-      if (!pairs.length) return;
-      showcaseIndex = ((idx % pairs.length) + pairs.length) % pairs.length;
-      positionShowcaseSlides(pairs.length);
-      resetShowcaseAuto(pairs.length);
-    }
-
-    function startShowcaseAuto(total) {
-      clearInterval(showcaseAutoTimer);
-      showcaseAutoTimer = setInterval(() => {
-        goToShowcase(showcaseIndex + 1);
-      }, 8000);
-    }
-
-    function resetShowcaseAuto(total) {
-      clearInterval(showcaseAutoTimer);
-      startShowcaseAuto(total);
-    }
-
-    function initShowcaseSwipe(viewport, total) {
-      if (!viewport || viewport.dataset.swipeInit === '1') return;
-      viewport.dataset.swipeInit = '1';
-
-      let startX = 0;
-      let startY = 0;
-      let swiping = false;
-      let moved = false;
-
-      const onStart = (e) => {
-        const t = e.touches ? e.touches[0] : e;
-        startX = t.clientX;
-        startY = t.clientY;
-        swiping = true;
-        moved = false;
-        viewport.classList.add('is-swipping');
-      };
-
-      const onMove = (e) => {
-        if (!swiping) return;
-        const t = e.touches ? e.touches[0] : e;
-        const dx = t.clientX - startX;
-        const dy = t.clientY - startY;
-        // If scrolling vertically, abort swipe
-        if (!moved && Math.abs(dy) > Math.abs(dx) + 5) {
-          swiping = false;
-          viewport.classList.remove('is-swipping');
-          return;
-        }
-        if (Math.abs(dx) > 12) moved = true;
-      };
-
-      const onEnd = (e) => {
-        if (!swiping) return;
-        viewport.classList.remove('is-swipping');
-        swiping = false;
-        if (!moved) return;
-        const t = e.changedTouches ? e.changedTouches[0] : e;
-        const dx = t.clientX - startX;
-        const pairs = beforeAfterShowcase.filter((p) => p.before && p.after);
-        if (Math.abs(dx) > 40) {
-          goToShowcase(dx < 0 ? showcaseIndex + 1 : showcaseIndex - 1);
-        }
-      };
-
-      viewport.addEventListener('mousedown', onStart);
-      viewport.addEventListener('touchstart', onStart, { passive: true });
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('touchmove', onMove, { passive: true });
-      window.addEventListener('mouseup', onEnd);
-      window.addEventListener('touchend', onEnd, { passive: true });
-
-      // Keyboard support
-      viewport.setAttribute('tabindex', '0');
-      viewport.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') goToShowcase(showcaseIndex - 1);
-        if (e.key === 'ArrowRight') goToShowcase(showcaseIndex + 1);
-      });
     }
 
     function resetVisibleCount() {
@@ -3805,25 +2817,17 @@ height: 40vh;
 
     document.addEventListener('DOMContentLoaded', async () => {
       // Pull in anything uploaded via admin.html — always newest-first.
-      // Retries help when Vercel Blob or the serverless function is cold/warming up.
+      // The ?t= cache-buster forces phones/incognito to always ask the
+      // server fresh instead of reusing a stale cached response.
       try {
-        const uploaded = await fetchThumbnailsWithRetry(4);
-        if (uploaded.length) {
-          thumbnailData = [...uploaded, ...thumbnailData];
+        const res = await fetch('/api/thumbnails?t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const uploaded = await res.json();
+          if (Array.isArray(uploaded) && uploaded.length) {
+            thumbnailData = [...uploaded, ...thumbnailData];
+          }
         }
       } catch (_) { /* offline or not deployed yet — ignore */ }
-
-      // Merge uploaded before/after pairs into showcase (newest first)
-      thumbnailData.forEach((t) => {
-        if (t.beforeSrc && t.src) {
-          beforeAfterShowcase.unshift({
-            before: t.beforeSrc,
-            after: t.src,
-            title: t.title,
-            category: t.category,
-          });
-        }
-      });
 
       // Keep the first 5 rows (4 columns × 5 rows = 20) in stable order so
       // recent uploads are never shuffled away from the top. Only the
@@ -3840,7 +2844,6 @@ height: 40vh;
       resetVisibleCount();
       initNavbar();
       initMobileNav();
-      renderBeforeAfterShowcase();
       renderGallery();
       renderReviews();
       initGalleryFilters();
@@ -3853,7 +2856,6 @@ height: 40vh;
       initLightbox();
       initBrushCursor();
       initSeeThumbnails();
-      initSocialOrbit();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
@@ -4020,44 +3022,21 @@ height: 40vh;
       lightboxImages = [];
 
       toShow.forEach((thumb, index) => {
-        lightboxImages.push({
-          src: thumb.src,
-          title: thumb.title,
-          beforeSrc: thumb.beforeSrc || null,
-        });
+        lightboxImages.push({ src: thumb.src, title: thumb.title });
 
         const item = document.createElement('div');
         item.className = 'gallery-item reveal visible';
         item.setAttribute('data-index', index);
 
-        const skeleton = document.createElement('div');
-        skeleton.className = 'img-skeleton';
-        skeleton.setAttribute('aria-hidden', 'true');
-
-        const img = document.createElement('img');
-        img.className = 'gallery-item-img';
-        img.alt = thumb.title;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        attachImageRetry(img, thumb.src, { skeleton });
-
-        const overlay = document.createElement('div');
-        overlay.className = 'item-overlay';
-        overlay.innerHTML = `
-          <div>
-            <span class="overlay-cat">${escapeHTML(thumb.category)}</span>
-            <div class="overlay-text">${escapeHTML(thumb.title)}</div>
-          </div>
-        `;
-
-        item.appendChild(skeleton);
-        item.appendChild(img);
-        item.appendChild(overlay);
-
-        // Before/After sliders are intentionally NOT shown in the main grid
-        // (All/Gaming/Tech/Social) — only the dedicated Before/After showcase
-        // section below shows the comparison slider. The grid always shows
-        // a plain, fast-loading thumbnail so mobile cards never render blank.
+        item.innerHTML = `
+              <img src="${thumb.src}" alt="${thumb.title}" loading="lazy" decoding="async" />
+              <div class="item-overlay">
+                <div>
+                  <span class="overlay-cat">${thumb.category}</span>
+                  <div class="overlay-text">${thumb.title}</div>
+                </div>
+              </div>
+            `;
 
         item.addEventListener('click', () => openLightbox(index));
         fragment.appendChild(item);
@@ -4167,36 +3146,11 @@ height: 40vh;
     function updateLightboxImage() {
       const img = document.getElementById('lightboxImg');
       const caption = document.getElementById('lightboxCaption');
-      const wrap = document.getElementById('lightboxImgWrap');
-      const baHost = document.getElementById('lightboxBa');
-      if (!img || !wrap) return;
-
+      if (!img) return;
       const data = lightboxImages[lightboxIndex];
-
-      if (data.beforeSrc) {
-        wrap.classList.add('is-ba-mode');
-        baHost.style.display = 'block';
-        baHost.setAttribute('aria-hidden', 'false');
-        baHost.innerHTML = '';
-        delete baHost.dataset.baInit;
-        const slider = buildBeforeAfterSlider(data.beforeSrc, data.src, 'ba-slider--lightbox');
-        baHost.appendChild(slider);
-        if (caption) caption.textContent = data.title + ' — drag to compare';
-        img.removeAttribute('src');
-        return;
-      }
-
-      wrap.classList.remove('is-ba-mode');
-      baHost.style.display = 'none';
-      baHost.setAttribute('aria-hidden', 'true');
-      baHost.innerHTML = '';
-
       img.style.opacity = '0';
-      attachImageRetry(img, data.src, {
-        maxRetries: 4,
-        onLoad: () => { img.style.opacity = '1'; },
-        onFail: () => { img.style.opacity = '0.4'; },
-      });
+      img.onload = () => { img.style.opacity = '1'; };
+      img.src = data.src;
       img.alt = data.title;
       img.style.filter = 'none';
       if (caption) caption.textContent = data.title;
@@ -4425,7 +3379,7 @@ height: 40vh;
 
       document.documentElement.addEventListener('mouseenter', show);
 
-      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger, .orbit-stage';
+      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger';
       document.addEventListener('mouseover', e => {
         if (e.target.closest(interactive)) cursor.classList.add('hovering');
       });
@@ -4435,199 +3389,6 @@ height: 40vh;
 
       document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
       document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
-    }
-
-    function initSocialOrbit() {
-      const stage = document.getElementById('orbitStage');
-      const track = document.getElementById('orbitTrack');
-      if (!stage) return;
-
-      const icons = Array.from(stage.querySelectorAll('.orbit-icon'));
-      if (!icons.length) return;
-
-      const COUNT = icons.length;
-      const STEP_DEG = 360 / COUNT;
-      const MIN_SCALE = 0.55, MAX_SCALE = 1.18;
-      const SCALE_MID = (MAX_SCALE + MIN_SCALE) / 2;
-      const SCALE_AMP = (MAX_SCALE - MIN_SCALE) / 2;
-      const MIN_OPACITY = 0.82, MAX_OPACITY = 1;
-      const OPACITY_MID = (MAX_OPACITY + MIN_OPACITY) / 2;
-      const OPACITY_AMP = (MAX_OPACITY - MIN_OPACITY) / 2;
-      const DRAG_SENSITIVITY = 0.32; // degrees rotated per pixel of drag
-      const CLICK_THRESHOLD = 6; // px of movement before a press counts as a drag, not a click
-      const FRICTION = 0.97; // momentum decay per ~16.7ms frame — higher = longer glide
-      const MOMENTUM_MIN = 0.002; // deg/ms — below this, momentum is considered settled
-      const MOMENTUM_CAP = 0.65; // deg/ms — caps an unrealistically fast flick
-      const VELOCITY_WINDOW_MS = 100; // how far back we look to read release speed
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const AUTO_SPEED = reduceMotion ? 0 : 0.0055; // deg/ms ambient drift (~5deg/s, full loop ~65s)
-
-      let centerX = 0, centerY = 0, radiusX = 0, radiusY = 0, iconBase = 60;
-      let baseAngle = 0;
-      let momentumVelocity = 0;
-      let isDragging = false, dragStartX = 0, dragStartAngle = 0, lastX = 0, dragDistance = 0;
-      let moveSamples = [];
-      let justDragged = false;
-      let keyboardFocused = false;
-      let rafId = null, lastFrameTime = 0;
-      let sectionVisible = true;
-
-      function measure() {
-        const w = stage.clientWidth;
-        const h = stage.clientHeight;
-        centerX = w / 2;
-        centerY = h / 2;
-
-        iconBase = Math.max(40, Math.min(88, h * 0.30));
-        const maxIconHalf = (iconBase * MAX_SCALE) / 2; // largest icon sits at the front (top/bottom axis)
-        const midIconHalf = (iconBase * SCALE_MID) / 2;  // side icons sit at mid-scale (left/right axis)
-
-        // Radius is derived FROM the icon's own footprint, so the largest icon
-        // is mathematically guaranteed to stay inside the stage at any breakpoint.
-        radiusY = Math.max(0, (h / 2) - maxIconHalf) * 0.94;
-        radiusX = Math.max(0, (w / 2) - midIconHalf) * 0.96;
-
-        if (track) {
-          track.style.width = (radiusX * 2) + 'px';
-          track.style.height = (radiusY * 2) + 'px';
-          track.style.left = centerX + 'px';
-          track.style.top = centerY + 'px';
-          track.style.transform = 'translate(-50%, -50%)';
-        }
-      }
-
-      function render() {
-        const rad = baseAngle * Math.PI / 180;
-        for (let i = 0; i < COUNT; i++) {
-          const theta = rad + (i * STEP_DEG * Math.PI / 180);
-          const cosT = Math.cos(theta);
-          const sinT = Math.sin(theta);
-          const x = centerX + radiusX * sinT;
-          const y = centerY + radiusY * cosT;
-          const scale = SCALE_MID + SCALE_AMP * cosT;
-          const size = iconBase * scale;
-
-          const el = icons[i];
-          el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-          el.style.width = size + 'px';
-          el.style.height = size + 'px';
-          el.style.fontSize = Math.round(size * 0.42) + 'px';
-          el.style.opacity = OPACITY_MID + OPACITY_AMP * cosT;
-          el.style.zIndex = Math.round(500 + 500 * cosT);
-        }
-      }
-
-      function tick(now) {
-        const dt = lastFrameTime ? Math.min(48, now - lastFrameTime) : 16;
-        lastFrameTime = now;
-
-        if (!isDragging && !keyboardFocused) {
-          if (Math.abs(momentumVelocity) > MOMENTUM_MIN) {
-            baseAngle += momentumVelocity * dt;
-            momentumVelocity *= Math.pow(FRICTION, dt / 16.67);
-          } else if (!document.body.classList.contains('menu-open')) {
-            momentumVelocity = 0;
-            baseAngle -= AUTO_SPEED * dt;
-          }
-        }
-
-        render();
-        rafId = sectionVisible ? requestAnimationFrame(tick) : null;
-      }
-
-      function startLoop() {
-        if (rafId == null) {
-          lastFrameTime = 0;
-          rafId = requestAnimationFrame(tick);
-        }
-      }
-
-      function onPointerDown(e) {
-        if (e.button !== undefined && e.button !== 0) return;
-        isDragging = true;
-        dragDistance = 0;
-        justDragged = false;
-        dragStartX = e.clientX;
-        lastX = e.clientX;
-        dragStartAngle = baseAngle;
-        momentumVelocity = 0;
-        moveSamples = [{ t: performance.now(), x: e.clientX }];
-        stage.classList.add('dragging');
-        // Track on window (not via setPointerCapture) so movement is caught even if the
-        // pointer leaves the stage mid-drag, while leaving native click targeting untouched.
-        window.addEventListener('pointermove', onPointerMove);
-        window.addEventListener('pointerup', onPointerUp);
-        window.addEventListener('pointercancel', onPointerUp);
-      }
-
-      function onPointerMove(e) {
-        if (!isDragging) return;
-        const now = performance.now();
-        baseAngle = dragStartAngle + (e.clientX - dragStartX) * DRAG_SENSITIVITY;
-        dragDistance += Math.abs(e.clientX - lastX);
-        lastX = e.clientX;
-
-        moveSamples.push({ t: now, x: e.clientX });
-        while (moveSamples.length > 2 && now - moveSamples[0].t > VELOCITY_WINDOW_MS) {
-          moveSamples.shift();
-        }
-      }
-
-      function onPointerUp() {
-        if (!isDragging) return;
-        isDragging = false;
-        stage.classList.remove('dragging');
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerup', onPointerUp);
-        window.removeEventListener('pointercancel', onPointerUp);
-        if (dragDistance > CLICK_THRESHOLD) justDragged = true;
-
-        // Read speed from the last ~100ms of motion, not just the final frame — this is what
-        // makes a real flick (drag, then speed up right as you let go) carry through correctly.
-        if (moveSamples.length >= 2) {
-          const first = moveSamples[0];
-          const last = moveSamples[moveSamples.length - 1];
-          const dt = Math.max(1, last.t - first.t);
-          const dx = last.x - first.x;
-          momentumVelocity = Math.max(-MOMENTUM_CAP, Math.min(MOMENTUM_CAP, (dx * DRAG_SENSITIVITY) / dt));
-        } else {
-          momentumVelocity = 0;
-        }
-      }
-
-      stage.addEventListener('pointerdown', onPointerDown);
-      stage.addEventListener('dragstart', e => e.preventDefault());
-
-      stage.addEventListener('click', e => {
-        if (justDragged) {
-          e.preventDefault();
-          justDragged = false;
-        }
-      });
-
-      stage.addEventListener('focusin', () => { keyboardFocused = true; });
-      stage.addEventListener('focusout', () => { keyboardFocused = false; });
-
-      window.addEventListener('resize', debounce(measure, 200));
-
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            sectionVisible = entry.isIntersecting;
-            if (sectionVisible) {
-              measure(); // re-measure in case content-visibility:auto kept this at 0 until now
-              startLoop();
-            }
-          });
-        }, { threshold: 0.01 });
-        io.observe(stage);
-      }
-
-      measure();
-      stage.classList.add('orbit-ready');
-      render();
-      requestAnimationFrame(() => { if (track) track.classList.add('orbit-track-visible'); });
-      startLoop();
     }
 
     function initContactForm() {
