@@ -19,6 +19,11 @@ export default async function handler(req, res) {
   try {
     const data = await readThumbnails(3);
     const target = data.find((t) => t.id === id);
+
+    if (!target) {
+      return res.status(404).json({ error: 'That thumbnail no longer exists (already deleted?).' });
+    }
+
     const remaining = data.filter((t) => t.id !== id);
     await writeThumbnails(remaining);
 
