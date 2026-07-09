@@ -1,28 +1,5 @@
-import { put, list, del } from '@vercel/blob';
-
-const DATA_PATH = 'data/thumbnails.json';
-
-async function readData() {
-  const { blobs } = await list({ prefix: DATA_PATH, limit: 10 });
-  const match = blobs.find((b) => b.pathname === DATA_PATH);
-  if (!match) return [];
-  // Vercel Blob's CDN can take up to ~60s to propagate an overwrite. A
-  // unique query param forces a fresh fetch instead of a stale cached one.
-  const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-}
-
-async function writeData(data) {
-  await put(DATA_PATH, JSON.stringify(data), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    cacheControlMaxAge: 60, // 60s is Vercel Blob's documented minimum
-  });
-}
+import { del } from '@vercel/blob';
+import { readThumbnails, writeThumbnails } from './lib/thumbnails-data.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -40,14 +17,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const data = await readData();
+    const data = await readThumbnails(3);
     const target = data.find((t) => t.id === id);
     const remaining = data.filter((t) => t.id !== id);
-    await writeData(remaining);
+    await writeThumbnails(remaining);
 
-    if (target && target.src && target.src.includes('blob.vercel-storage.com')) {
+    const blobUrls = [target?.src, target?.beforeSrc].filter(
+      (url) => url && url.includes('blob.vercel-storage.com')
+    );
+
+    for (const url of blobUrls) {
       try {
-        await del(target.src);
+        await del(url);
       } catch (e) {
         console.error('Failed to delete blob image (data was still removed):', e);
       }
