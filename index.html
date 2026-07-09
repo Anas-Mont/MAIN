@@ -1372,35 +1372,6 @@ height: 40vh;
       color: var(--neon);
     }
 
-    .social-links-row {
-      display: flex;
-      gap: 2px;
-      margin-top: 28px;
-    }
-
-    .social-link {
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-3);
-      font-size: 1rem;
-      transition: all 0.3s var(--ease);
-    }
-
-    .social-link:hover {
-      background: var(--neon);
-      border-color: var(--neon);
-      color: var(--black);
-    }
-
-    .social-link svg {
-      width: 16px;
-      height: 16px;
-    }
-
     .contact-form-card {
       padding: 40px;
       background: var(--dark);
@@ -2181,6 +2152,142 @@ height: 40vh;
       transition-duration: 0.25s !important;
       animation-duration: 0.25s !important;
     }
+
+    /* ---------- SOCIAL ORBIT SECTION ---------- */
+    .orbit-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 20px auto 0;
+    }
+
+    .orbit-stage {
+      position: relative;
+      width: 100%;
+      height: clamp(210px, 32vw, 400px);
+      touch-action: pan-y;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      /* fallback layout in case JS hasn't run yet */
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .orbit-track {
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.7s var(--ease);
+    }
+
+    .orbit-track.orbit-track-visible {
+      opacity: 1;
+    }
+
+    .orbit-icon {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.3s var(--ease);
+      flex-shrink: 0;
+    }
+
+    .orbit-stage.orbit-ready {
+      display: block;
+    }
+
+    .orbit-stage.orbit-ready .orbit-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      will-change: transform, opacity;
+    }
+
+    .orbit-stage.dragging,
+    .orbit-stage.dragging .orbit-icon {
+      transition: none;
+    }
+
+    .orbit-icon:hover,
+    .orbit-icon:focus-visible {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 3px var(--neon-dim);
+    }
+
+    .orbit-icon:focus-visible {
+      outline: 2px solid var(--neon);
+      outline-offset: 3px;
+    }
+
+    .orbit-icon i {
+      font-size: 1em;
+      line-height: 1;
+    }
+
+    .orbit-icon svg {
+      width: 1em;
+      height: 1em;
+      fill: currentColor;
+      display: block;
+    }
+
+    .orbit-icon--youtube {
+      background: #ff0000;
+    }
+
+    .orbit-icon--github {
+      background: #17181c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .orbit-icon--discord {
+      background: #5865f2;
+    }
+
+    .orbit-icon--x {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .orbit-icon--instagram {
+      background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+    }
+
+    .orbit-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .orbit-wrap {
+        margin-top: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .orbit-icon {
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -2194,6 +2301,7 @@ height: 40vh;
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#social">Social</a></li>
         <li><a href="#comments">Comments</a></li>
         <li><a href="#" class="nav-cta open-contact-modal">Let's Talk</a></li>
       </ul>
@@ -2482,27 +2590,6 @@ height: 40vh;
             <div class="ci-icon"><i class="fas fa-globe"></i></div>
             <span>Available Worldwide</span>
           </div>
-
-          <div class="social-links-row">
-            <a href="https://www.youtube.com/@Montagespctips" target="_blank" class="social-link" title="YouTube">
-              <i class="fab fa-youtube"></i>
-            </a>
-            <a href="https://github.com/Anas-Mont" target="_blank" class="social-link" title="GitHub">
-              <i class="fab fa-github"></i>
-            </a>
-            <a href="https://discord.com/users/1253956146566533203" target="_blank" class="social-link" title="Discord">
-              <i class="fab fa-discord"></i>
-            </a>
-            <a href="https://x.com/AYANOKOJI0099" target="_blank" class="social-link" title="X (Twitter)">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/ayanokoji0009" target="_blank" class="social-link" title="Instagram">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </div>
         </div>
 
         <div class="contact-form-card reveal reveal-delay-2">
@@ -2537,6 +2624,49 @@ height: 40vh;
             </button>
           </form>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL ═══ -->
+  <section id="social" class="section social-orbit-section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Connect</span>
+        <h2 class="section-heading">STAY <span class="neon">SOCIAL</span></h2>
+        <p class="section-desc">Client work, behind-the-scenes, and the occasional meme — pick a platform.</p>
+      </div>
+
+      <div class="orbit-wrap reveal reveal-delay-1">
+        <div class="orbit-stage" id="orbitStage" role="group" aria-label="Social media links">
+          <div class="orbit-track" id="orbitTrack" aria-hidden="true"></div>
+
+          <a href="https://www.youtube.com/@Montagespctips" target="_blank" rel="noopener"
+            class="orbit-icon orbit-icon--youtube" title="YouTube" aria-label="YouTube — opens in a new tab">
+            <i class="fas fa-play"></i>
+          </a>
+          <a href="https://github.com/Anas-Mont" target="_blank" rel="noopener" class="orbit-icon orbit-icon--github"
+            title="GitHub" aria-label="GitHub — opens in a new tab">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="https://discord.com/users/1253956146566533203" target="_blank" rel="noopener"
+            class="orbit-icon orbit-icon--discord" title="Discord" aria-label="Discord — opens in a new tab">
+            <i class="fab fa-discord"></i>
+          </a>
+          <a href="https://x.com/AYANOKOJI0099" target="_blank" rel="noopener" class="orbit-icon orbit-icon--x"
+            title="X (Twitter)" aria-label="X, formerly Twitter — opens in a new tab">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/ayanokoji0009" target="_blank" rel="noopener"
+            class="orbit-icon orbit-icon--instagram" title="Instagram" aria-label="Instagram — opens in a new tab">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+
+        <p class="orbit-hint">↔ Drag the ring, or just let it roll</p>
       </div>
     </div>
   </section>
@@ -2856,6 +2986,7 @@ height: 40vh;
       initLightbox();
       initBrushCursor();
       initSeeThumbnails();
+      initSocialOrbit();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
@@ -3379,7 +3510,7 @@ height: 40vh;
 
       document.documentElement.addEventListener('mouseenter', show);
 
-      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger';
+      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger, .orbit-stage';
       document.addEventListener('mouseover', e => {
         if (e.target.closest(interactive)) cursor.classList.add('hovering');
       });
@@ -3389,6 +3520,199 @@ height: 40vh;
 
       document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
       document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+    }
+
+    function initSocialOrbit() {
+      const stage = document.getElementById('orbitStage');
+      const track = document.getElementById('orbitTrack');
+      if (!stage) return;
+
+      const icons = Array.from(stage.querySelectorAll('.orbit-icon'));
+      if (!icons.length) return;
+
+      const COUNT = icons.length;
+      const STEP_DEG = 360 / COUNT;
+      const MIN_SCALE = 0.55, MAX_SCALE = 1.18;
+      const SCALE_MID = (MAX_SCALE + MIN_SCALE) / 2;
+      const SCALE_AMP = (MAX_SCALE - MIN_SCALE) / 2;
+      const MIN_OPACITY = 0.82, MAX_OPACITY = 1;
+      const OPACITY_MID = (MAX_OPACITY + MIN_OPACITY) / 2;
+      const OPACITY_AMP = (MAX_OPACITY - MIN_OPACITY) / 2;
+      const DRAG_SENSITIVITY = 0.32; // degrees rotated per pixel of drag
+      const CLICK_THRESHOLD = 6; // px of movement before a press counts as a drag, not a click
+      const FRICTION = 0.97; // momentum decay per ~16.7ms frame — higher = longer glide
+      const MOMENTUM_MIN = 0.002; // deg/ms — below this, momentum is considered settled
+      const MOMENTUM_CAP = 0.65; // deg/ms — caps an unrealistically fast flick
+      const VELOCITY_WINDOW_MS = 100; // how far back we look to read release speed
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const AUTO_SPEED = reduceMotion ? 0 : 0.0055; // deg/ms ambient drift (~5deg/s, full loop ~65s)
+
+      let centerX = 0, centerY = 0, radiusX = 0, radiusY = 0, iconBase = 60;
+      let baseAngle = 0;
+      let momentumVelocity = 0;
+      let isDragging = false, dragStartX = 0, dragStartAngle = 0, lastX = 0, dragDistance = 0;
+      let moveSamples = [];
+      let justDragged = false;
+      let keyboardFocused = false;
+      let rafId = null, lastFrameTime = 0;
+      let sectionVisible = true;
+
+      function measure() {
+        const w = stage.clientWidth;
+        const h = stage.clientHeight;
+        centerX = w / 2;
+        centerY = h / 2;
+
+        iconBase = Math.max(40, Math.min(88, h * 0.30));
+        const maxIconHalf = (iconBase * MAX_SCALE) / 2; // largest icon sits at the front (top/bottom axis)
+        const midIconHalf = (iconBase * SCALE_MID) / 2;  // side icons sit at mid-scale (left/right axis)
+
+        // Radius is derived FROM the icon's own footprint, so the largest icon
+        // is mathematically guaranteed to stay inside the stage at any breakpoint.
+        radiusY = Math.max(0, (h / 2) - maxIconHalf) * 0.94;
+        radiusX = Math.max(0, (w / 2) - midIconHalf) * 0.96;
+
+        if (track) {
+          track.style.width = (radiusX * 2) + 'px';
+          track.style.height = (radiusY * 2) + 'px';
+          track.style.left = centerX + 'px';
+          track.style.top = centerY + 'px';
+          track.style.transform = 'translate(-50%, -50%)';
+        }
+      }
+
+      function render() {
+        const rad = baseAngle * Math.PI / 180;
+        for (let i = 0; i < COUNT; i++) {
+          const theta = rad + (i * STEP_DEG * Math.PI / 180);
+          const cosT = Math.cos(theta);
+          const sinT = Math.sin(theta);
+          const x = centerX + radiusX * sinT;
+          const y = centerY + radiusY * cosT;
+          const scale = SCALE_MID + SCALE_AMP * cosT;
+          const size = iconBase * scale;
+
+          const el = icons[i];
+          el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+          el.style.width = size + 'px';
+          el.style.height = size + 'px';
+          el.style.fontSize = Math.round(size * 0.42) + 'px';
+          el.style.opacity = OPACITY_MID + OPACITY_AMP * cosT;
+          el.style.zIndex = Math.round(500 + 500 * cosT);
+        }
+      }
+
+      function tick(now) {
+        const dt = lastFrameTime ? Math.min(48, now - lastFrameTime) : 16;
+        lastFrameTime = now;
+
+        if (!isDragging && !keyboardFocused) {
+          if (Math.abs(momentumVelocity) > MOMENTUM_MIN) {
+            baseAngle += momentumVelocity * dt;
+            momentumVelocity *= Math.pow(FRICTION, dt / 16.67);
+          } else if (!document.body.classList.contains('menu-open')) {
+            momentumVelocity = 0;
+            baseAngle -= AUTO_SPEED * dt;
+          }
+        }
+
+        render();
+        rafId = sectionVisible ? requestAnimationFrame(tick) : null;
+      }
+
+      function startLoop() {
+        if (rafId == null) {
+          lastFrameTime = 0;
+          rafId = requestAnimationFrame(tick);
+        }
+      }
+
+      function onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        isDragging = true;
+        dragDistance = 0;
+        justDragged = false;
+        dragStartX = e.clientX;
+        lastX = e.clientX;
+        dragStartAngle = baseAngle;
+        momentumVelocity = 0;
+        moveSamples = [{ t: performance.now(), x: e.clientX }];
+        stage.classList.add('dragging');
+        // Track on window (not via setPointerCapture) so movement is caught even if the
+        // pointer leaves the stage mid-drag, while leaving native click targeting untouched.
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging) return;
+        const now = performance.now();
+        baseAngle = dragStartAngle + (e.clientX - dragStartX) * DRAG_SENSITIVITY;
+        dragDistance += Math.abs(e.clientX - lastX);
+        lastX = e.clientX;
+
+        moveSamples.push({ t: now, x: e.clientX });
+        while (moveSamples.length > 2 && now - moveSamples[0].t > VELOCITY_WINDOW_MS) {
+          moveSamples.shift();
+        }
+      }
+
+      function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        stage.classList.remove('dragging');
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerUp);
+        if (dragDistance > CLICK_THRESHOLD) justDragged = true;
+
+        // Read speed from the last ~100ms of motion, not just the final frame — this is what
+        // makes a real flick (drag, then speed up right as you let go) carry through correctly.
+        if (moveSamples.length >= 2) {
+          const first = moveSamples[0];
+          const last = moveSamples[moveSamples.length - 1];
+          const dt = Math.max(1, last.t - first.t);
+          const dx = last.x - first.x;
+          momentumVelocity = Math.max(-MOMENTUM_CAP, Math.min(MOMENTUM_CAP, (dx * DRAG_SENSITIVITY) / dt));
+        } else {
+          momentumVelocity = 0;
+        }
+      }
+
+      stage.addEventListener('pointerdown', onPointerDown);
+      stage.addEventListener('dragstart', e => e.preventDefault());
+
+      stage.addEventListener('click', e => {
+        if (justDragged) {
+          e.preventDefault();
+          justDragged = false;
+        }
+      });
+
+      stage.addEventListener('focusin', () => { keyboardFocused = true; });
+      stage.addEventListener('focusout', () => { keyboardFocused = false; });
+
+      window.addEventListener('resize', debounce(measure, 200));
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            sectionVisible = entry.isIntersecting;
+            if (sectionVisible) {
+              measure(); // re-measure in case content-visibility:auto kept this at 0 until now
+              startLoop();
+            }
+          });
+        }, { threshold: 0.01 });
+        io.observe(stage);
+      }
+
+      measure();
+      stage.classList.add('orbit-ready');
+      render();
+      requestAnimationFrame(() => { if (track) track.classList.add('orbit-track-visible'); });
+      startLoop();
     }
 
     function initContactForm() {
