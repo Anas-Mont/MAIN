@@ -1432,26 +1432,31 @@ height: 40vh;
       border: none;
     }
 
-    .gallery-item.has-ba .gallery-item-img {
-      opacity: 0;
-      pointer-events: none;
+    /* Single blinking indicator dot — used ONLY on the dedicated Before/After
+       showcase cards (never in the main All/Gaming/Tech/Social grid). Sits in
+       the top-right corner, one per card, and hard-blinks on/off (no smooth
+       fade) like a status light. */
+    .ba-showcase-card {
+      position: relative;
     }
 
-    .gallery-item .ba-badge {
+    .ba-blink-dot {
       position: absolute;
-      top: 8px;
-      right: 8px;
+      top: 10px;
+      right: 10px;
       z-index: 6;
-      padding: 3px 8px;
-      font-family: var(--ff-mono);
-      font-size: 0.55rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: rgba(212, 255, 0, 0.9);
-      color: var(--black);
-      border-radius: 3px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--neon);
+      box-shadow: 0 0 8px rgba(212, 255, 0, 0.9);
       pointer-events: none;
+      animation: baBlinkOnOff 1.2s steps(1, end) infinite;
+    }
+
+    @keyframes baBlinkOnOff {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
     }
 
     .img-skeleton {
@@ -3617,6 +3622,12 @@ height: 40vh;
         `;
         card.appendChild(meta);
 
+        // Single blinking "before/after" indicator dot — top-right corner only.
+        const blinkDot = document.createElement('span');
+        blinkDot.className = 'ba-blink-dot';
+        blinkDot.setAttribute('aria-hidden', 'true');
+        card.appendChild(blinkDot);
+
         // Before / After slider
         const slider = buildBeforeAfterSlider(pair.before, pair.after);
         slider.setAttribute('tabindex', '0');
@@ -4050,7 +4061,7 @@ height: 40vh;
         });
 
         const item = document.createElement('div');
-        item.className = 'gallery-item reveal visible' + (thumb.beforeSrc ? ' has-ba' : '');
+        item.className = 'gallery-item reveal visible';
         item.setAttribute('data-index', index);
 
         const skeleton = document.createElement('div');
@@ -4077,14 +4088,10 @@ height: 40vh;
         item.appendChild(img);
         item.appendChild(overlay);
 
-        if (thumb.beforeSrc) {
-          const badge = document.createElement('span');
-          badge.className = 'ba-badge';
-          badge.textContent = 'Before / After';
-          item.appendChild(badge);
-          const miniSlider = buildBeforeAfterSlider(thumb.beforeSrc, thumb.src, 'ba-slider--card');
-          item.appendChild(miniSlider);
-        }
+        // Before/After sliders are intentionally NOT shown in the main grid
+        // (All/Gaming/Tech/Social) — only the dedicated Before/After showcase
+        // section below shows the comparison slider. The grid always shows
+        // a plain, fast-loading thumbnail so mobile cards never render blank.
 
         item.addEventListener('click', () => openLightbox(index));
         fragment.appendChild(item);
