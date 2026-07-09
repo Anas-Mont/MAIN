@@ -8,6 +8,9 @@
   <title>Admin — Digital Jungle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" href="main logo.png">
+  <link rel="shortcut icon" type="image/png" href="main logo.png">
+  <link rel="apple-touch-icon" href="main logo.png">
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
     rel="stylesheet">
@@ -168,6 +171,40 @@
       margin-bottom: 4px;
     }
 
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .refresh-btn {
+      background: none;
+      color: var(--gray-3);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 0;
+    }
+
+    .refresh-btn:hover { color: var(--neon); }
+
+    .optional-label {
+      font-size: 0.62rem;
+      color: var(--gray-3);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .drop--secondary {
+      margin-top: 10px;
+      padding: 18px;
+    }
+
+    .list-item img.is-loading { opacity: 0.3; }
+    .list-item img.is-loaded { opacity: 1; transition: opacity 0.3s; }
+    .list-item img.img-failed { opacity: 0.35; filter: grayscale(1); }
+
     .lock-btn {
       background: none;
       color: var(--gray-3);
@@ -260,6 +297,16 @@
           <div class="meta-line" id="metaLine"></div>
         </div>
 
+        <label>Before Image <span class="optional-label">(optional — enables before/after slider)</span></label>
+        <div class="drop drop--secondary" id="beforeDropZone">
+          <p id="beforeDropText">Add the original thumbnail for a before/after comparison</p>
+          <input type="file" id="beforeFileInput" accept="image/*">
+        </div>
+        <div id="beforePreview" style="display:none;">
+          <img id="beforePreviewImg" alt="before preview" style="width:100%;display:block;border-radius:8px;border:1px solid var(--border);margin-top:10px;">
+          <div class="meta-line" id="beforeMetaLine"></div>
+        </div>
+
         <label for="titleInput">Title</label>
         <input type="text" id="titleInput" placeholder="e.g. Roblox Update Pt.3" maxlength="120">
 
@@ -275,7 +322,10 @@
       </div>
 
       <div class="card">
-        <h1 style="font-size:1.3rem;">Manage</h1>
+        <div class="panel-head">
+          <h1 style="font-size:1.3rem;">Manage</h1>
+          <button class="refresh-btn" id="refreshListBtn" type="button">Refresh list</button>
+        </div>
         <p class="sub" style="margin-bottom:14px;">Thumbnails added through this page. (The original set baked into the site isn't shown here — edit the code for those, same as before.)</p>
         <div id="listWrap"><div class="empty">Loading…</div></div>
       </div>
@@ -338,6 +388,62 @@
 
     let compressedBase64 = null;
     let compressedType = 'image/jpeg';
+    let beforeCompressedBase64 = null;
+    let beforeCompressedType = 'image/jpeg';
+
+    const beforeDropZone = document.getElementById('beforeDropZone');
+    const beforeFileInput = document.getElementById('beforeFileInput');
+    const beforePreview = document.getElementById('beforePreview');
+    const beforePreviewImg = document.getElementById('beforePreviewImg');
+    const beforeMetaLine = document.getElementById('beforeMetaLine');
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function cacheBustUrl(url, attempt) {
+      if (!url || url.startsWith('data:')) return url;
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}_r=${Date.now()}-${attempt}`;
+    }
+
+    async function fetchThumbnailsWithRetry(maxAttempts = 4) {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const res = await fetch('/api/thumbnails?t=' + Date.now(), {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) return data;
+          }
+        } catch (_) { /* retry */ }
+        if (attempt < maxAttempts - 1) await sleep(500 * (attempt + 1));
+      }
+      return null;
+    }
+
+    function attachImageRetry(img, src, maxRetries = 4) {
+      let attempts = 0;
+      const tryLoad = () => {
+        img.classList.add('is-loading');
+        img.onload = () => {
+          img.classList.remove('is-loading');
+          img.classList.add('is-loaded');
+        };
+        img.onerror = () => {
+          attempts += 1;
+          if (attempts <= maxRetries) {
+            setTimeout(() => { img.src = cacheBustUrl(src, attempts); }, 350 * attempts);
+          } else {
+            img.classList.add('img-failed');
+          }
+        };
+        img.src = attempts === 0 ? src : cacheBustUrl(src, attempts);
+      };
+      tryLoad();
+    }
 
     dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -351,12 +457,43 @@
       if (fileInput.files[0]) handleFile(fileInput.files[0]);
     });
 
-    function handleFile(file) {
-      if (!file.type.startsWith('image/')) return;
+    beforeDropZone.addEventListener('click', () => beforeFileInput.click());
+    beforeDropZone.addEventListener('dragover', (e) => { e.preventDefault(); beforeDropZone.classList.add('dragover'); });
+    beforeDropZone.addEventListener('dragleave', () => beforeDropZone.classList.remove('dragover'));
+    beforeDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      beforeDropZone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], true);
+    });
+    beforeFileInput.addEventListener('change', () => {
+      if (beforeFileInput.files[0]) handleFile(beforeFileInput.files[0], true);
+    });
+
+    function handleFile(file, isBefore = false) {
+      if (!file.type.startsWith('image/')) {
+        uploadStatus.className = 'status err';
+        uploadStatus.textContent = "That doesn't look like an image file.";
+        uploadStatus.style.display = 'block';
+        return;
+      }
       const img = new Image();
       const reader = new FileReader();
       reader.onload = (e) => { img.src = e.target.result; };
+      reader.onerror = () => {
+        uploadStatus.className = 'status err';
+        uploadStatus.textContent = "Couldn't read that file — try again.";
+        uploadStatus.style.display = 'block';
+      };
+      img.onerror = () => {
+        uploadStatus.className = 'status err';
+        uploadStatus.textContent = "Couldn't open this image — some phones save photos as HEIC, which browsers can't read. In your phone's Camera settings, switch photo format to \"Most Compatible\" (JPEG), or just pick a different image.";
+        uploadStatus.style.display = 'block';
+      };
       img.onload = () => {
+        if (!img.naturalWidth || !img.naturalHeight) {
+          img.onerror();
+          return;
+        }
         const maxW = 1280;
         const scale = Math.min(1, maxW / img.width);
         const w = Math.round(img.width * scale);
@@ -365,13 +502,26 @@
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         canvas.toBlob((blob) => {
+          if (!blob || blob.size < 500) {
+            img.onerror();
+            return;
+          }
           const r2 = new FileReader();
           r2.onload = (e2) => {
-            compressedBase64 = e2.target.result;
-            compressedType = 'image/jpeg';
-            previewImg.src = compressedBase64;
-            preview.style.display = 'block';
-            metaLine.textContent = `${w}×${h} · ${(blob.size / 1024).toFixed(0)} KB (compressed from ${(file.size / 1024).toFixed(0)} KB)`;
+            if (isBefore) {
+              beforeCompressedBase64 = e2.target.result;
+              beforeCompressedType = 'image/jpeg';
+              beforePreviewImg.src = beforeCompressedBase64;
+              beforePreview.style.display = 'block';
+              beforeMetaLine.textContent = `${w}×${h} · ${(blob.size / 1024).toFixed(0)} KB (before image)`;
+            } else {
+              compressedBase64 = e2.target.result;
+              compressedType = 'image/jpeg';
+              previewImg.src = compressedBase64;
+              preview.style.display = 'block';
+              metaLine.textContent = `${w}×${h} · ${(blob.size / 1024).toFixed(0)} KB (compressed from ${(file.size / 1024).toFixed(0)} KB)`;
+            }
+            uploadStatus.style.display = 'none';
             checkReady();
           };
           r2.readAsDataURL(blob);
@@ -396,16 +546,22 @@
       uploadStatus.style.display = 'none';
 
       try {
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const payload = {
             password: getPw(),
             title: titleInput.value.trim(),
             category: document.getElementById('catInput').value,
             imageBase64: compressedBase64,
             contentType: compressedType,
-          }),
+          };
+        if (beforeCompressedBase64) {
+          payload.beforeImageBase64 = beforeCompressedBase64;
+          payload.beforeContentType = beforeCompressedType;
+        }
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         });
 
         if (res.status === 401) {
@@ -422,9 +578,12 @@
 
         // reset form
         compressedBase64 = null;
+        beforeCompressedBase64 = null;
         preview.style.display = 'none';
+        beforePreview.style.display = 'none';
         titleInput.value = '';
         fileInput.value = '';
+        beforeFileInput.value = '';
 
         prependToList(data.entry);
       } catch (err) {
@@ -444,15 +603,27 @@
       const div = document.createElement('div');
       div.className = 'list-item';
       div.id = 'item-' + t.id;
-      div.innerHTML = `
-        <img src="${t.src}" alt="">
-        <div class="info">
-          <div class="title">${escapeHtml(t.title)}</div>
-          <div class="cat">${escapeHtml(t.category)}</div>
-        </div>
-        <button class="del-btn" title="Delete">&times;</button>
+
+      const img = document.createElement('img');
+      img.alt = t.title || '';
+      attachImageRetry(img, t.src);
+
+      const info = document.createElement('div');
+      info.className = 'info';
+      info.innerHTML = `
+        <div class="title">${escapeHtml(t.title)}</div>
+        <div class="cat">${escapeHtml(t.category)}${t.beforeSrc ? ' · before/after' : ''}</div>
       `;
-      div.querySelector('.del-btn').addEventListener('click', () => deleteItem(t.id, t.title));
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'del-btn';
+      delBtn.title = 'Delete';
+      delBtn.innerHTML = '&times;';
+      delBtn.addEventListener('click', () => deleteItem(t.id, t.title));
+
+      div.appendChild(img);
+      div.appendChild(info);
+      div.appendChild(delBtn);
       return div;
     }
 
@@ -469,19 +640,22 @@
     }
 
     async function loadList() {
-      try {
-        const res = await fetch('/api/thumbnails', { cache: 'no-store' });
-        const data = await res.json();
-        listWrap.innerHTML = '';
-        if (!data.length) {
-          listWrap.innerHTML = '<div class="empty">Nothing uploaded yet — add your first one above.</div>';
-          return;
-        }
-        data.forEach((t) => listWrap.appendChild(renderItem(t)));
-      } catch (err) {
-        listWrap.innerHTML = '<div class="empty">Couldn\'t load the list.</div>';
+      listWrap.innerHTML = '<div class="empty">Loading…</div>';
+      const data = await fetchThumbnailsWithRetry(4);
+      listWrap.innerHTML = '';
+      if (data === null) {
+        listWrap.innerHTML = '<div class="empty">Couldn\'t load the list — <button type="button" class="refresh-btn" id="retryListBtn">tap to retry</button></div>';
+        document.getElementById('retryListBtn')?.addEventListener('click', loadList);
+        return;
       }
+      if (!data.length) {
+        listWrap.innerHTML = '<div class="empty">Nothing uploaded yet — add your first one above.</div>';
+        return;
+      }
+      data.forEach((t) => listWrap.appendChild(renderItem(t)));
     }
+
+    document.getElementById('refreshListBtn')?.addEventListener('click', loadList);
 
     async function deleteItem(id, title) {
       if (!confirm(`Delete "${title}"? This can't be undone.`)) return;
