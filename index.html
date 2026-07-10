@@ -2288,6 +2288,159 @@ height: 40vh;
         transition: none !important;
       }
     }
+
+    /* ---------- BEFORE / AFTER SLIDER ---------- */
+    .ba-wrap {
+      margin: 8px 0 44px;
+    }
+
+    .ba-eyebrow {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .ba-card {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      touch-action: pan-y;
+    }
+
+    .ba-card.ba-tilt-resetting {
+      transition: transform 0.5s var(--ease);
+    }
+
+    .ba-media {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    .ba-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ba-illustration {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .ba-before {
+      clip-path: inset(0 calc(100% - var(--ba-pos, 50%)) 0 0);
+      transition: clip-path 0.4s var(--ease);
+    }
+
+    .ba-card.ba-dragging .ba-before {
+      transition: none;
+    }
+
+    .ba-tag {
+      position: absolute;
+      top: 14px;
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+    }
+
+    .ba-tag--after {
+      right: 14px;
+      border-color: var(--neon-dim);
+      color: var(--neon);
+    }
+
+    .ba-tag--before {
+      left: 14px;
+    }
+
+    .ba-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--ba-pos, 50%);
+      width: 3px;
+      background: var(--neon);
+      transform: translateX(-50%);
+      transition: left 0.4s var(--ease);
+    }
+
+    .ba-card.ba-dragging .ba-handle {
+      transition: none;
+    }
+
+    .ba-handle-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--neon);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55), 0 0 0 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .ba-handle:focus-visible .ba-handle-knob {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .ba-caption {
+      text-align: center;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      color: var(--gray-3);
+      margin-top: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .ba-wrap {
+        margin: 4px 0 32px;
+      }
+
+      .ba-handle-knob {
+        width: 42px;
+        height: 42px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .ba-before,
+      .ba-handle,
+      .ba-card {
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -2473,6 +2626,33 @@ height: 40vh;
         <span class="section-label">Portfolio</span>
         <h2 class="section-heading">THUMBNAIL <span class="neon">GALLERY</span></h2>
         <p class="section-desc">Eye-catching designs engineered for maximum click-through rates.</p>
+      </div>
+
+      <div class="ba-wrap reveal reveal-delay-1">
+        <p class="ba-eyebrow">See the transformation</p>
+
+        <div class="ba-card" id="baCard">
+          <div class="ba-media">
+            <div class="ba-layer ba-after">
+<img class="ba-illustration" src="client 2.jpg" alt="After redesign">
+              <span class="ba-tag ba-tag--after">After</span>
+            </div>
+
+            <div class="ba-layer ba-before" id="baBefore">
+ <img class="ba-illustration" src="thumbnail 12.jpg" alt="After redesign">
+              <span class="ba-tag ba-tag--before">Before</span>
+            </div>
+          </div>
+
+          <div class="ba-handle" id="baHandle" role="slider" aria-label="Drag to compare before and after"
+            aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+            <div class="ba-handle-knob">
+              <span>&#9666;</span><span>&#9656;</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="ba-caption">Drag the handle to compare — sample shown, swap in your own before/after anytime.</p>
       </div>
 
       <div class="gallery-filters reveal">
@@ -2987,6 +3167,7 @@ height: 40vh;
       initBrushCursor();
       initSeeThumbnails();
       initSocialOrbit();
+      initBeforeAfter();
 
       window.addEventListener('resize', debounce(() => {
         const perPage = getPerPage();
@@ -3510,7 +3691,7 @@ height: 40vh;
 
       document.documentElement.addEventListener('mouseenter', show);
 
-      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger, .orbit-stage';
+      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger, .orbit-stage, .ba-card';
       document.addEventListener('mouseover', e => {
         if (e.target.closest(interactive)) cursor.classList.add('hovering');
       });
@@ -3713,6 +3894,95 @@ height: 40vh;
       render();
       requestAnimationFrame(() => { if (track) track.classList.add('orbit-track-visible'); });
       startLoop();
+    }
+
+    function initBeforeAfter() {
+      const card = document.getElementById('baCard');
+      const handle = document.getElementById('baHandle');
+      const beforeLayer = document.getElementById('baBefore');
+      if (!card || !handle || !beforeLayer) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches && !reduceMotion;
+
+      let pos = 50;
+      let isDragging = false;
+
+      function setPos(p) {
+        pos = Math.max(0, Math.min(100, p));
+        card.style.setProperty('--ba-pos', pos + '%');
+        handle.setAttribute('aria-valuenow', String(Math.round(pos)));
+      }
+
+      function posFromClientX(clientX) {
+        const rect = card.getBoundingClientRect();
+        return ((clientX - rect.left) / rect.width) * 100;
+      }
+
+      function onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        isDragging = true;
+        card.classList.add('ba-dragging');
+        card.classList.remove('ba-tilt-resetting');
+        card.style.transform = ''; // flatten immediately — keeps drag math undistorted by any tilt
+        setPos(posFromClientX(e.clientX));
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging) return;
+        setPos(posFromClientX(e.clientX));
+      }
+
+      function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        card.classList.remove('ba-dragging');
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerUp);
+      }
+
+      card.addEventListener('pointerdown', onPointerDown);
+      card.addEventListener('dragstart', e => e.preventDefault());
+
+      handle.addEventListener('keydown', e => {
+        const step = e.shiftKey ? 12 : 5;
+        if (e.key === 'ArrowLeft') { setPos(pos - step); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { setPos(pos + step); e.preventDefault(); }
+        else if (e.key === 'Home') { setPos(0); e.preventDefault(); }
+        else if (e.key === 'End') { setPos(100); e.preventDefault(); }
+      });
+
+      if (canTilt) {
+        card.addEventListener('mousemove', e => {
+          if (isDragging) return;
+          card.classList.remove('ba-tilt-resetting');
+          const rect = card.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width;
+          const py = (e.clientY - rect.top) / rect.height;
+          const rotateY = (px - 0.5) * 14; // deg
+          const rotateX = (0.5 - py) * 10; // deg
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.classList.add('ba-tilt-resetting');
+          card.style.transform = '';
+        });
+      }
+
+      setPos(50);
+
+      // One-time nudge shortly after load, hinting that the handle is draggable
+      if (!reduceMotion) {
+        setTimeout(() => {
+          if (isDragging) return;
+          setPos(58);
+          setTimeout(() => { if (!isDragging) setPos(50); }, 550);
+        }, 1400);
+      }
     }
 
     function initContactForm() {
