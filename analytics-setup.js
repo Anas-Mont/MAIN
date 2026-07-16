@@ -19,7 +19,7 @@ function getOrSetPersistentUserID() {
   let userId = localStorage.getItem(storageKey);
 
   if (!userId) {
-    // Generate a secure, randomized anonymous ID
+    // Generate a secure, randomized anonymous ID for normal clients
     const randomString = Math.random().toString(36).substring(2, 10);
     userId = 'client_' + Date.now() + '_' + randomString;
     
@@ -51,13 +51,20 @@ gtag('js', new Date());
 // Retrieve the unique ID for this specific visitor (or owner)
 const currentVisitorId = getOrSetPersistentUserID();
 
+// YAHAN MAGIC HAI: Agar ID mein "owner" ka lafz hai, toh debug mode on kar do
+const isOwner = currentVisitorId && currentVisitorId.includes('owner');
+
 // Configure the GA4 tag to attach this user_id to every single event and pageview
 gtag('config', GA_MEASUREMENT_ID, {
   'user_id': currentVisitorId,
+  'debug_mode': isOwner, // Yeh code Google ko batayega ke aapko DebugView mein dikhaye
   'custom_map': {
     'dimension1': 'user_id'
   }
 });
 
-// Log for debugging purposes
+// Log for debugging purposes (Aap apne browser console mein bhi check kar sakte hain)
 console.log('Google Analytics 4 initialized. Assigned Visitor ID:', currentVisitorId);
+if (isOwner) {
+  console.log('Owner mode active! Debug_mode is ON. Events will now show in GA4 DebugView.');
+}
