@@ -361,12 +361,42 @@
       }
     }
 
-    document.getElementById('unlockBtn').addEventListener('click', () => {
+    document.getElementById('unlockBtn').addEventListener('click', async () => {
       const pw = document.getElementById('pwInput').value;
       if (!pw) return;
-      setPw(pw);
+
+      const btn = document.getElementById('unlockBtn');
+      btn.disabled = true;
+      const originalLabel = btn.textContent;
+      btn.textContent = 'Checking…';
       lockStatus.style.display = 'none';
-      showPanel();
+
+      try {
+        // /api/delete checks the password before it checks anything else,
+        // so calling it with no id is a safe way to verify credentials with
+        // zero side effects: 401 = wrong password, anything else = correct.
+        const res = await fetch('/api/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pw }),
+        });
+
+        if (res.status === 401) {
+          clearPw();
+          lockStatus.textContent = 'Wrong password — try again.';
+          lockStatus.style.display = 'block';
+          return;
+        }
+
+        setPw(pw);
+        showPanel();
+      } catch (_) {
+        lockStatus.textContent = 'Could not reach the server — check your connection and try again.';
+        lockStatus.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }
     });
 
     document.getElementById('pwInput').addEventListener('keydown', (e) => {
