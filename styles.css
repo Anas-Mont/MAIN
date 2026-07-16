@@ -1531,11 +1531,24 @@ height: 40vh;
       max-height: 85vh;
       object-fit: contain;
       transform-origin: center;
-      transition: transform 0.3s var(--ease), opacity 0.3s;
+      transition: opacity 0.3s;
       user-select: none;
       -webkit-user-drag: none;
       image-rendering: auto;
       filter: none;
+      touch-action: none;
+    }
+
+    .lightbox-img-wrap img.smooth-zoom {
+      transition: transform 0.25s var(--ease), opacity 0.3s;
+    }
+
+    .lightbox-img-wrap.zoomed img {
+      cursor: grab;
+    }
+
+    .lightbox-img-wrap.zoomed.dragging img {
+      cursor: grabbing;
     }
 
     .lightbox-caption {

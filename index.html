@@ -34,7 +34,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 
 <body>
@@ -568,8 +568,7 @@
   <div class="gallery-zoom-portal" id="galleryZoomPortal" aria-hidden="true"></div>
 
   <!-- ═══ SCRIPTS ═══ -->
-   
-  <script src="main.js?v=7"></script>
+  <script src="main.js?v=10"></script>
 
   <!-- Google Analytics Tracker -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBY0KQQBPM"></script>
@@ -577,12 +576,48 @@
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-MBY0KQQBPM');
+
+    // ── Persistent anonymous visitor ID + owner tagging ──
+    // A long random token here (not a guessable word like "owner_pc") means
+    // reading this script's source doesn't hand anyone a working owner key.
+    // Generate your own real tokens once with:
+    //   crypto.randomUUID()  (paste into the browser console)
+    // and swap OWNER_TOKENS below before deploying.
+    const OWNER_TOKENS = {
+      '12bd3112-5433-4c50-8a18-cecae1f50fff': 'owner_pc',
+      '03028b95-dd41-4f93-b4c3-38675a5b3609': 'owner_mobile',
+    };
+
+    function getOrSetVisitorId() {
+      const storageKey = 'digital_jungle_visitor_id';
+      const urlParams = new URLSearchParams(window.location.search);
+      const setId = urlParams.get('set_id');
+
+      if (setId && OWNER_TOKENS[setId]) {
+        const label = OWNER_TOKENS[setId];
+        localStorage.setItem(storageKey, label);
+        const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        return label;
+      }
+
+      let id = localStorage.getItem(storageKey);
+      if (!id) {
+        id = 'client_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem(storageKey, id);
+      }
+      return id;
+    }
+
+    const visitorId = getOrSetVisitorId();
+    const isOwner = visitorId === 'owner_pc' || visitorId === 'owner_mobile';
+
+    // One single config call — this is the only place GA4 gets initialized.
+    gtag('config', 'G-MBY0KQQBPM', {
+      user_id: visitorId,
+      debug_mode: isOwner,
+    });
   </script>
-  
-  <script src="analytics-setup.js"></script>
-  
-  <!-- Yeh aapki existing main.js file hai -->
-  <script src="main.js"></script>
+
 </body>
 </html>

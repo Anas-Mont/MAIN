@@ -83,10 +83,21 @@
 
     // ─── State ───
     let currentCategory = 'all';
+
+    // Safe wrapper around gtag — some visitors block Google Analytics itself
+    // (same ad-blocker category that blocked the thumbnails earlier), so this
+    // never throws if gtag isn't there.
+    function trackEvent(name, params = {}) {
+      if (typeof gtag === 'function') {
+        gtag('event', name, params);
+      }
+    }
     let visibleCount = 16;
     let lightboxImages = [];
     let lightboxIndex = 0;
     let currentZoom = 1;
+    let panX = 0;
+    let panY = 0;
 
     const DESKTOP_PER_PAGE = 16;
     const MOBILE_PER_PAGE = 10;
@@ -428,6 +439,7 @@
           buttons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           currentCategory = btn.dataset.category;
+          trackEvent('portfolio_filter', { category: currentCategory });
           resetVisibleCount();
           renderGallery();
         });
@@ -451,13 +463,18 @@
       const zoomInBtn = lightbox.querySelector('.zoom-in');
       const zoomOutBtn = lightbox.querySelector('.zoom-out');
       const zoomResetBtn = lightbox.querySelector('.zoom-reset');
+      const imgWrap = lightbox.querySelector('.lightbox-img-wrap');
+      const img = document.getElementById('lightboxImg');
 
       closeBtn?.addEventListener('click', closeLightbox);
       prevBtn?.addEventListener('click', () => navigateLightbox(-1));
       nextBtn?.addEventListener('click', () => navigateLightbox(1));
-      zoomInBtn?.addEventListener('click', () => zoomLightbox(0.25));
-      zoomOutBtn?.addEventListener('click', () => zoomLightbox(-0.25));
-      zoomResetBtn?.addEventListener('click', () => { currentZoom = 1; applyZoom(); });
+      zoomInBtn?.addEventListener('click', () => zoomLightbox(0.25, 0, 0, true));
+      zoomOutBtn?.addEventListener('click', () => zoomLightbox(-0.25, 0, 0, true));
+      zoomResetBtn?.addEventListener('click', () => {
+        currentZoom = 1; panX = 0; panY = 0;
+        applyZoom(true);
+      });
 
       lightbox.addEventListener('click', e => {
         if (e.target === lightbox || e.target.classList.contains('lightbox-img-wrap')) {
@@ -468,25 +485,123 @@
       document.addEventListener('keydown', e => {
         if (!lightbox.classList.contains('active')) return;
         if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowLeft') navigateLightbox(-1);
-        if (e.key === 'ArrowRight') navigateLightbox(1);
-        if (e.key === '+' || e.key === '=') zoomLightbox(0.25);
-        if (e.key === '-') zoomLightbox(-0.25);
+        if (e.key === 'ArrowLeft' && currentZoom <= 1.01) navigateLightbox(-1);
+        if (e.key === 'ArrowRight' && currentZoom <= 1.01) navigateLightbox(1);
+        if (e.key === '+' || e.key === '=') zoomLightbox(0.25, 0, 0, true);
+        if (e.key === '-') zoomLightbox(-0.25, 0, 0, true);
       });
 
-      const imgWrap = lightbox.querySelector('.lightbox-img-wrap');
+      // Wheel zoom, Photoshop-style: zooms toward the cursor position instead
+      // of always snapping back to dead center.
+      let wheelRect = null;
+      imgWrap?.addEventListener('mouseenter', () => { wheelRect = imgWrap.getBoundingClientRect(); });
+      window.addEventListener('resize', () => { wheelRect = null; });
       imgWrap?.addEventListener('wheel', e => {
         e.preventDefault();
-        zoomLightbox(e.deltaY > 0 ? -0.15 : 0.15);
+        const rect = wheelRect || (wheelRect = imgWrap.getBoundingClientRect());
+        const cx = e.clientX - (rect.left + rect.width / 2);
+        const cy = e.clientY - (rect.top + rect.height / 2);
+        zoomLightbox(e.deltaY > 0 ? -0.15 : 0.15, cx, cy, false);
       }, { passive: false });
 
-      // Touch swipe optimizations
+      // ── Drag-to-pan (mouse + single-finger touch, via Pointer Events) ──
+      let isDragging = false;
+      let dragStartX = 0, dragStartY = 0;
+      let panStartX = 0, panStartY = 0;
+      let pendingPan = null;
+      let panRafId = null;
+
+      function writePan() {
+        panRafId = null;
+        if (!pendingPan) return;
+        panX = pendingPan.x;
+        panY = pendingPan.y;
+        pendingPan = null;
+        if (img) img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
+      }
+
+      function queuePan(x, y) {
+        pendingPan = { x, y };
+        if (!panRafId) panRafId = requestAnimationFrame(writePan);
+      }
+
+      img?.addEventListener('pointerdown', e => {
+        if (currentZoom <= 1.01) return; // nothing to pan when not zoomed in
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        panStartX = panX;
+        panStartY = panY;
+        imgWrap.classList.add('dragging');
+        img.setPointerCapture?.(e.pointerId);
+      });
+
+      img?.addEventListener('pointermove', e => {
+        if (!isDragging) return;
+        const { maxX, maxY } = computeMaxPan(img);
+        const nx = Math.max(-maxX, Math.min(maxX, panStartX + (e.clientX - dragStartX)));
+        const ny = Math.max(-maxY, Math.min(maxY, panStartY + (e.clientY - dragStartY)));
+        queuePan(nx, ny);
+      });
+
+      const endDrag = () => { isDragging = false; imgWrap?.classList.remove('dragging'); };
+      img?.addEventListener('pointerup', endDrag);
+      img?.addEventListener('pointercancel', endDrag);
+
+      // ── Pinch-to-zoom (two-finger touch) ──
+      let pinchStartDist = 0;
+      let pinchStartZoom = 1;
+      const touchDist = (touches) => Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+
+      imgWrap?.addEventListener('touchstart', e => {
+        if (e.touches.length === 2) {
+          isDragging = false; // hand off from single-finger pan to pinch
+          pinchStartDist = touchDist(e.touches);
+          pinchStartZoom = currentZoom;
+        } else if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+        }
+      }, { passive: true });
+
+      imgWrap?.addEventListener('touchmove', e => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const ratio = touchDist(e.touches) / pinchStartDist;
+          currentZoom = Math.min(Math.max(pinchStartZoom * ratio, 0.5), 4);
+          clampPan();
+          applyZoom(false);
+        }
+      }, { passive: false });
+
+      // Touch swipe to navigate — only when not zoomed in (otherwise a swipe
+      // should pan the image instead of changing images).
       let touchStartX = 0;
-      imgWrap?.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
       imgWrap?.addEventListener('touchend', e => {
+        if (currentZoom > 1.01 || e.changedTouches.length !== 1) return;
         const diff = touchStartX - e.changedTouches[0].clientX;
         if (Math.abs(diff) > 50) navigateLightbox(diff > 0 ? 1 : -1);
       }, { passive: true });
+    }
+
+    function computeMaxPan(img) {
+      if (!img) return { maxX: 0, maxY: 0 };
+      // offsetWidth/Height reflect the image's un-transformed layout size
+      // (CSS transforms don't affect these), so this is the image's
+      // already-fitted size at zoom 1 — scaling that tells us exactly how
+      // far the image can pan before its edge would clear the frame.
+      const maxX = Math.max(0, (img.offsetWidth * currentZoom - img.offsetWidth) / 2);
+      const maxY = Math.max(0, (img.offsetHeight * currentZoom - img.offsetHeight) / 2);
+      return { maxX, maxY };
+    }
+
+    function clampPan() {
+      const img = document.getElementById('lightboxImg');
+      const { maxX, maxY } = computeMaxPan(img);
+      panX = Math.max(-maxX, Math.min(maxX, panX));
+      panY = Math.max(-maxY, Math.min(maxY, panY));
     }
 
     function openLightbox(index) {
@@ -494,6 +609,8 @@
       if (!lightbox || !lightboxImages.length) return;
       lightboxIndex = index;
       currentZoom = 1;
+      panX = 0;
+      panY = 0;
       updateLightboxImage();
       lightbox.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -509,6 +626,8 @@
     function navigateLightbox(dir) {
       lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
       currentZoom = 1;
+      panX = 0;
+      panY = 0;
       updateLightboxImage();
     }
 
@@ -523,18 +642,36 @@
       img.alt = data.title;
       img.style.filter = 'none';
       if (caption) caption.textContent = data.title;
-      applyZoom();
+      applyZoom(false);
     }
 
-    function zoomLightbox(delta) {
-      currentZoom = Math.min(Math.max(currentZoom + delta, 0.5), 4);
-      applyZoom();
+    // zoomLightbox(delta, cx, cy, smooth) — cx/cy are the zoom-focus point in
+    // pixels relative to the image's own center (0,0 = dead center). Passing
+    // the cursor's offset from center there is what makes zooming feel like
+    // Photoshop: the point under the cursor stays put instead of the whole
+    // image snapping back to center on every scroll.
+    function zoomLightbox(delta, cx = 0, cy = 0, smooth = true) {
+      const oldZoom = currentZoom;
+      const newZoom = Math.min(Math.max(currentZoom + delta, 0.5), 4);
+      if (newZoom === oldZoom) return;
+
+      const ratio = newZoom / oldZoom;
+      panX = cx - (cx - panX) * ratio;
+      panY = cy - (cy - panY) * ratio;
+      currentZoom = newZoom;
+      clampPan();
+      applyZoom(smooth);
     }
 
-    function applyZoom() {
+    function applyZoom(smooth) {
       const img = document.getElementById('lightboxImg');
+      const imgWrap = document.querySelector('.lightbox-img-wrap');
       const zoomLevel = document.getElementById('zoomLevel');
-      if (img) img.style.transform = `scale(${currentZoom})`;
+      if (img) {
+        imgWrap?.classList.toggle('zoomed', currentZoom > 1.01);
+        img.classList.toggle('smooth-zoom', !!smooth);
+        img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentZoom})`;
+      }
       if (zoomLevel) zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
     }
 
@@ -601,6 +738,7 @@
         const stored = JSON.parse(localStorage.getItem('portfolio_reviews') || '[]');
         stored.push({ name, text, stars, role: 'Client' });
         localStorage.setItem('portfolio_reviews', JSON.stringify(stored));
+        trackEvent('review_submit', { stars });
 
         form.reset();
         document.querySelectorAll('.star-rating-input .star').forEach(s => s.classList.remove('active'));
@@ -653,6 +791,7 @@
       document.querySelectorAll('.open-contact-modal').forEach(btn => {
         btn.addEventListener('click', e => {
           e.preventDefault();
+          trackEvent('contact_modal_open', { link_text: btn.textContent.trim() });
           open('', '');
         });
       });
@@ -689,6 +828,10 @@
 
     function sendContactEmail({ name, email, service, subject, message }) {
       const packageLabel = getServiceLabel(service);
+      trackEvent('contact_form_submit', {
+        service_package: service || 'unspecified',
+        service_label: packageLabel,
+      });
       const bodyText = `Name: ${name}\nEmail: ${email}\nSelected Package/Budget: ${packageLabel}\n\nMessage:\n${message}`;
       const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
@@ -950,6 +1093,7 @@
         return ((clientX - rect.left) / rect.width) * 100;
       }
 
+      let hasTrackedDrag = false;
       function onPointerDown(e) {
         if (e.button !== undefined && e.button !== 0) return;
         isDragging = true;
@@ -958,6 +1102,7 @@
         card.classList.remove('ba-tilt-resetting');
         card.style.transform = ''; // flatten immediately — keeps drag math undistorted by any tilt
         setPosImmediate(posFromClientX(e.clientX));
+        if (!hasTrackedDrag) { hasTrackedDrag = true; trackEvent('before_after_engage'); }
         window.addEventListener('pointermove', onPointerMove);
         window.addEventListener('pointerup', onPointerUp);
         window.addEventListener('pointercancel', onPointerUp);
