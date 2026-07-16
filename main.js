@@ -375,6 +375,22 @@
               </div>
             `;
 
+        // Resilient loading: a failed image (slow blob storage, a stale URL, a
+        // hiccup mid-upload) should never sit there broken for a visitor or
+        // client to see. Retry once with a cache-buster; if it still fails,
+        // quietly drop the card instead of showing a broken-image icon.
+        const imgEl = item.querySelector('img');
+        let retried = false;
+        imgEl.addEventListener('error', () => {
+          if (!retried) {
+            retried = true;
+            const sep = thumb.src.includes('?') ? '&' : '?';
+            imgEl.src = thumb.src + sep + 'retry=' + Date.now();
+          } else {
+            item.remove();
+          }
+        });
+
         item.addEventListener('click', () => openLightbox(index));
         fragment.appendChild(item);
       });
