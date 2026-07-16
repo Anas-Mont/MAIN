@@ -337,6 +337,16 @@
 
   <script>
     const PW_KEY = 'djAdminPassword';
+
+    // Ad blockers commonly block *.public.blob.vercel-storage.com wholesale —
+    // route previews through our own domain so they render regardless.
+    function proxyBlobUrl(src) {
+      if (src && src.includes('.public.blob.vercel-storage.com/')) {
+        return '/api/image?url=' + encodeURIComponent(src);
+      }
+      return src;
+    }
+
     const lockScreen = document.getElementById('lockScreen');
     const panel = document.getElementById('panel');
     const lockStatus = document.getElementById('lockStatus');
@@ -636,7 +646,7 @@
 
       const img = document.createElement('img');
       img.alt = t.title || '';
-      attachImageRetry(img, t.src);
+      attachImageRetry(img, proxyBlobUrl(t.src));
 
       const info = document.createElement('div');
       info.className = 'info';

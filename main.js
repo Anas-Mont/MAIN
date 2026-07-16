@@ -179,7 +179,18 @@
           if (res.ok) {
             const uploaded = await res.json();
             if (Array.isArray(uploaded) && uploaded.length) {
-              thumbnailData = [...uploaded, ...thumbnailData];
+              // Blob storage URLs go through our own /api/image proxy — many
+              // ad blockers block *.public.blob.vercel-storage.com wholesale
+              // (it's a shared domain some spam projects have abused), which
+              // would otherwise silently break thumbnails for real visitors.
+              const proxied = uploaded.map(t => {
+                const rewrite = (src) => (src && src.includes('.public.blob.vercel-storage.com/'))
+                  ? '/api/image?url=' + encodeURIComponent(src)
+                  : src;
+                return { ...t, src: rewrite(t.src), beforeSrc: rewrite(t.beforeSrc) };
+              });
+
+              thumbnailData = [...proxied, ...thumbnailData];
 
               // Keep the first 5 rows (4 columns × 5 rows = 20) in stable order so
               // recent uploads are never shuffled away from the top. Only the
