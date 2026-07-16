@@ -158,7 +158,6 @@
       initScrollReveal();
       initSmoothScroll();
       initLightbox();
-      initBrushCursor();
       initSeeThumbnails();
       initSocialOrbit();
       initBeforeAfter();
@@ -680,53 +679,6 @@
         case 'custom': return 'Long-term Creator Partnership';
         default: return 'General Request / Unspecified';
       }
-    }
-
-    function initBrushCursor() {
-      const cursor = document.getElementById('brushCursor');
-      if (!cursor || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-      let x = -100;
-      let y = -100;
-      let rafId = null;
-      let visible = false;
-
-      const move = () => {
-        cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-        rafId = null;
-      };
-
-      const show = () => {
-        if (!visible) {
-          visible = true;
-          cursor.classList.add('visible');
-        }
-      };
-
-      document.addEventListener('mousemove', e => {
-        x = e.clientX;
-        y = e.clientY;
-        show();
-        if (!rafId) rafId = requestAnimationFrame(move);
-      }, { passive: true });
-
-      document.documentElement.addEventListener('mouseleave', () => {
-        visible = false;
-        cursor.classList.remove('visible');
-      });
-
-      document.documentElement.addEventListener('mouseenter', show);
-
-      const interactive = 'a, button, .gallery-item, .filter-btn, input, select, textarea, .star, .open-contact-modal, .hamburger, .orbit-stage, .ba-card';
-      document.addEventListener('mouseover', e => {
-        if (e.target.closest(interactive)) cursor.classList.add('hovering');
-      });
-      document.addEventListener('mouseout', e => {
-        if (e.target.closest(interactive)) cursor.classList.remove('hovering');
-      });
-
-      document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-      document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
     }
 
     function initSocialOrbit() {
