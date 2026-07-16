@@ -738,7 +738,7 @@
       const OPACITY_AMP = (MAX_OPACITY - MIN_OPACITY) / 2;
       const DRAG_SENSITIVITY = 0.32; // degrees rotated per pixel of drag
       const CLICK_THRESHOLD = 6; // px of movement before a press counts as a drag, not a click
-      const FRICTION = 0.97; // momentum decay per ~16.7ms frame — higher = longer glide
+      const FRICTION = 0.975; // momentum decay per ~16.7ms frame — higher = longer glide
       const MOMENTUM_MIN = 0.002; // deg/ms — below this, momentum is considered settled
       const MOMENTUM_CAP = 0.65; // deg/ms — caps an unrealistically fast flick
       const VELOCITY_WINDOW_MS = 100; // how far back we look to read release speed
@@ -924,25 +924,47 @@
 
       let pos = 50;
       let isDragging = false;
+      let cachedRect = null;
+      let pendingPos = null;
+      let posRafId = null;
+      let pendingTilt = null;
+      let tiltRafId = null;
+
+      function writePos() {
+        posRafId = null;
+        if (pendingPos == null) return;
+        pos = pendingPos;
+        pendingPos = null;
+        card.style.setProperty('--ba-pos', pos + '%');
+        handle.setAttribute('aria-valuenow', String(Math.round(pos)));
+      }
 
       function setPos(p) {
+        pendingPos = Math.max(0, Math.min(100, p));
+        if (!posRafId) posRafId = requestAnimationFrame(writePos);
+      }
+
+      // setPosImmediate skips the rAF batch — used for keyboard nav and initial paint,
+      // where there's no rapid-fire event stream to throttle.
+      function setPosImmediate(p) {
         pos = Math.max(0, Math.min(100, p));
         card.style.setProperty('--ba-pos', pos + '%');
         handle.setAttribute('aria-valuenow', String(Math.round(pos)));
       }
 
       function posFromClientX(clientX) {
-        const rect = card.getBoundingClientRect();
+        const rect = cachedRect || card.getBoundingClientRect();
         return ((clientX - rect.left) / rect.width) * 100;
       }
 
       function onPointerDown(e) {
         if (e.button !== undefined && e.button !== 0) return;
         isDragging = true;
+        cachedRect = card.getBoundingClientRect(); // measure once per drag, not per move
         card.classList.add('ba-dragging');
         card.classList.remove('ba-tilt-resetting');
         card.style.transform = ''; // flatten immediately — keeps drag math undistorted by any tilt
-        setPos(posFromClientX(e.clientX));
+        setPosImmediate(posFromClientX(e.clientX));
         window.addEventListener('pointermove', onPointerMove);
         window.addEventListener('pointerup', onPointerUp);
         window.addEventListener('pointercancel', onPointerUp);
@@ -956,6 +978,7 @@
       function onPointerUp() {
         if (!isDragging) return;
         isDragging = false;
+        cachedRect = null;
         card.classList.remove('ba-dragging');
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
@@ -967,37 +990,49 @@
 
       handle.addEventListener('keydown', e => {
         const step = e.shiftKey ? 12 : 5;
-        if (e.key === 'ArrowLeft') { setPos(pos - step); e.preventDefault(); }
-        else if (e.key === 'ArrowRight') { setPos(pos + step); e.preventDefault(); }
-        else if (e.key === 'Home') { setPos(0); e.preventDefault(); }
-        else if (e.key === 'End') { setPos(100); e.preventDefault(); }
+        if (e.key === 'ArrowLeft') { setPosImmediate(pos - step); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { setPosImmediate(pos + step); e.preventDefault(); }
+        else if (e.key === 'Home') { setPosImmediate(0); e.preventDefault(); }
+        else if (e.key === 'End') { setPosImmediate(100); e.preventDefault(); }
       });
 
+      function writeTilt() {
+        tiltRafId = null;
+        if (!pendingTilt) return;
+        const { rotateX, rotateY } = pendingTilt;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      }
+
       if (canTilt) {
+        let tiltRect = null;
+        card.addEventListener('mouseenter', () => { tiltRect = card.getBoundingClientRect(); });
         card.addEventListener('mousemove', e => {
           if (isDragging) return;
           card.classList.remove('ba-tilt-resetting');
-          const rect = card.getBoundingClientRect();
+          const rect = tiltRect || (tiltRect = card.getBoundingClientRect());
           const px = (e.clientX - rect.left) / rect.width;
           const py = (e.clientY - rect.top) / rect.height;
-          const rotateY = (px - 0.5) * 14; // deg
-          const rotateX = (0.5 - py) * 10; // deg
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+          pendingTilt = {
+            rotateY: (px - 0.5) * 14, // deg
+            rotateX: (0.5 - py) * 10, // deg
+          };
+          if (!tiltRafId) tiltRafId = requestAnimationFrame(writeTilt);
         });
         card.addEventListener('mouseleave', () => {
+          tiltRect = null;
           card.classList.add('ba-tilt-resetting');
           card.style.transform = '';
         });
       }
 
-      setPos(50);
+      setPosImmediate(50);
 
       // One-time nudge shortly after load, hinting that the handle is draggable
       if (!reduceMotion) {
         setTimeout(() => {
           if (isDragging) return;
-          setPos(58);
-          setTimeout(() => { if (!isDragging) setPos(50); }, 550);
+          setPosImmediate(58);
+          setTimeout(() => { if (!isDragging) setPosImmediate(50); }, 550);
         }, 1400);
       }
     }

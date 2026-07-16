@@ -384,7 +384,7 @@ if (Test-Path -LiteralPath 'thumbnail 12.jpg') {
     $skipped++
 }
 if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_.png') {
-    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_.png' -NewName 'Sketches/hero-sketch-1.png'
+    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_.png' -NewName 'hero-sketch-1.png'
     Write-Host "  Renamed: Sketches/Gemini_Generated_Image_.png" -ForegroundColor Green
     $renamed++
 } else {
@@ -392,7 +392,7 @@ if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_.png') {
     $skipped++
 }
 if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (1).png') {
-    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (1).png' -NewName 'Sketches/hero-sketch-2.png'
+    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (1).png' -NewName 'hero-sketch-2.png'
     Write-Host "  Renamed: Sketches/Gemini_Generated_Image_ (1).png" -ForegroundColor Green
     $renamed++
 } else {
@@ -400,7 +400,7 @@ if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (1).png') {
     $skipped++
 }
 if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (2).png') {
-    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (2).png' -NewName 'Sketches/hero-sketch-3.png'
+    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (2).png' -NewName 'hero-sketch-3.png'
     Write-Host "  Renamed: Sketches/Gemini_Generated_Image_ (2).png" -ForegroundColor Green
     $renamed++
 } else {
@@ -408,7 +408,7 @@ if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (2).png') {
     $skipped++
 }
 if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (3).png') {
-    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (3).png' -NewName 'Sketches/hero-sketch-4.png'
+    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (3).png' -NewName 'hero-sketch-4.png'
     Write-Host "  Renamed: Sketches/Gemini_Generated_Image_ (3).png" -ForegroundColor Green
     $renamed++
 } else {
@@ -416,7 +416,7 @@ if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (3).png') {
     $skipped++
 }
 if (Test-Path -LiteralPath 'Sketches/Gemini_Generated_Image_ (4).png') {
-    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (4).png' -NewName 'Sketches/hero-sketch-5.png'
+    Rename-Item -LiteralPath 'Sketches/Gemini_Generated_Image_ (4).png' -NewName 'hero-sketch-5.png'
     Write-Host "  Renamed: Sketches/Gemini_Generated_Image_ (4).png" -ForegroundColor Green
     $renamed++
 } else {
