@@ -375,17 +375,22 @@
               </div>
             `;
 
-        // Resilient loading: a failed image (slow blob storage, a stale URL, a
-        // hiccup mid-upload) should never sit there broken for a visitor or
-        // client to see. Retry once with a cache-buster; if it still fails,
-        // quietly drop the card instead of showing a broken-image icon.
+        // Resilient loading: a failed image (blob storage propagation lag, a
+        // burst of simultaneous requests on page load, a network hiccup)
+        // should never sit there broken for a visitor or client to see.
+        // Retry with increasing backoff — most transient failures clear up
+        // within a couple seconds — and only drop the card as a last resort.
         const imgEl = item.querySelector('img');
-        let retried = false;
+        const RETRY_DELAYS = [600, 1200, 2200]; // ms — 3 retries before giving up
+        let attempt = 0;
         imgEl.addEventListener('error', () => {
-          if (!retried) {
-            retried = true;
-            const sep = thumb.src.includes('?') ? '&' : '?';
-            imgEl.src = thumb.src + sep + 'retry=' + Date.now();
+          if (attempt < RETRY_DELAYS.length) {
+            const delay = RETRY_DELAYS[attempt];
+            attempt++;
+            setTimeout(() => {
+              const sep = thumb.src.includes('?') ? '&' : '?';
+              imgEl.src = thumb.src + sep + 'retry=' + Date.now();
+            }, delay);
           } else {
             item.remove();
           }
