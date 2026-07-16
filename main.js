@@ -5,52 +5,52 @@
     // Anything uploaded through admin.html gets fetched from /api/thumbnails
     // and merged in front of this list automatically — no code edits needed.
     let thumbnailData = [
-      { src: 'client 2.jpg', title: 'Client Work 2', category: 'social' },
-      { src: 'Roblox 12.webp', title: 'Roblox', category: 'gaming' },
-      { src: 'MSI Claw 8.jpg', title: 'MSI Claw Review', category: 'tech' },
-      { src: 'part 1 thumbnail 2.png', title: 'Gaming Series Pt.1', category: 'gaming' },
-      { src: 'Cycle sample  1022 copy.jpg', title: 'Cycle Sample', category: 'social' },
-      { src: 'Roblox.webp', title: 'Roblox', category: 'gaming' },
-      { src: 'claude fail copy.jpg', title: 'Claude AI Fail', category: 'tech' },
-      { src: 'FARLIGHT copy_compressed.png', title: 'Farlight 84', category: 'gaming' },
-      { src: 'flat lay style copy.jpg', title: 'Flat Lay Style', category: 'tech' },
-      { src: 'QBZ new copy_compressed.png', title: 'QBZ New Skin', category: 'gaming' },
-      { src: 'ZERO STASH 1_compressed.png', title: 'Zero Stash', category: 'gaming' },
-      { src: 'enternal QBZ copy_compressed.png', title: 'Eternal QBZ', category: 'gaming' },
-      { src: 'new gun 2 copy.jpg', title: 'New Gun Skin', category: 'gaming' },
-      { src: 'new gun skin 3 copy_compressed.png', title: 'Gun Skin Collection', category: 'gaming' },
-      { src: 'm1887 skin copy.jpg', title: 'M1887 Skin', category: 'gaming' },
-      { src: 'kar981 copy.png', title: 'Kar98 Highlight', category: 'gaming' },
-      { src: 'uzi copy.jpg', title: 'Uzi Special', category: 'gaming' },
-      { src: 'practice copy_compressed.png', title: 'Practice Mode', category: 'gaming' },
-      { src: 'vlcsnap-2025-02-07-22h28m37s077 copy.png', title: 'Gameplay Capture', category: 'gaming' },
-      { src: 'Intel - Arc B580.jpg', title: 'Intel Arc B580', category: 'tech' },
-      { src: 'Keyboard.jpg', title: 'Keyboard Review', category: 'tech' },
-      { src: 'chromebook vs laptop copy.jpg', title: 'Chromebook vs Laptop', category: 'tech' },
-      { src: 'huawei matebook 14 copy.jpg', title: 'Huawei MateBook 14', category: 'tech' },
-      { src: 'speaker.jpg', title: 'Speaker Review', category: 'tech' },
-      { src: 'shoes.jpg', title: 'Product Showcase', category: 'tech' },
-      { src: 'flat one copy.jpg', title: 'Flat Design', category: 'tech' },
-      { src: 'thumbnail prompt copy.jpg', title: 'Thumbnail Prompt', category: 'tech' },
-      { src: 'Worth Every Penny.jpg', title: 'Worth Every Penny', category: 'social' },
-      { src: 'Traveling Gears copy.jpg', title: 'Traveling Gears', category: 'social' },
-      { src: 'Samcux sample 1321 copy.jpg', title: 'Samcux Sample', category: 'social' },
-      { src: 'new one audio-Recovered copy.jpg', title: 'Audio Thumbnail', category: 'social' },
-      { src: 'talha copy_compressed.jpg', title: 'Client Work — Talha', category: 'social' },
-      { src: 'new client 2 copy.jpg', title: 'Client Redesign', category: 'social' },
-      { src: 'new client 4 copy.jpg', title: 'Client Work 4', category: 'social' },
-      { src: 'new client 5 copy.jpg', title: 'Client Work 5', category: 'social' },
-      { src: 'new client 10 copy.jpg', title: 'Client Work 10', category: 'social' },
-      { src: 'new client 11 22 copy.jpg', title: 'Client Work 11', category: 'social' },
-      { src: 'new 10 copy_compressed.png', title: 'Design Concept', category: 'social' },
-      { src: 'new 1.jpg', title: 'Fresh Design', category: 'social' },
-      { src: 'Untitled-galssy copy.jpg', title: 'Glassy Style', category: 'social' },
+      { src: 'client-work-social-thumbnail.jpg', title: 'Client Work 2', category: 'social' },
+      { src: 'roblox-gaming-thumbnail-2.webp', title: 'Roblox', category: 'gaming' },
+      { src: 'msi-claw-8-tech-review.jpg', title: 'MSI Claw Review', category: 'tech' },
+      { src: 'gaming-series-part-1-thumbnail.png', title: 'Gaming Series Pt.1', category: 'gaming' },
+      { src: 'cycle-sample-social-thumbnail.jpg', title: 'Cycle Sample', category: 'social' },
+      { src: 'roblox-gaming-thumbnail.webp', title: 'Roblox', category: 'gaming' },
+      { src: 'claude-ai-fail-tech-thumbnail.jpg', title: 'Claude AI Fail', category: 'tech' },
+      { src: 'farlight-84-gaming-thumbnail.png', title: 'Farlight 84', category: 'gaming' },
+      { src: 'flat-lay-style-tech-thumbnail.jpg', title: 'Flat Lay Style', category: 'tech' },
+      { src: 'qbz-new-skin-gaming-thumbnail.png', title: 'QBZ New Skin', category: 'gaming' },
+      { src: 'zero-stash-gaming-thumbnail.png', title: 'Zero Stash', category: 'gaming' },
+      { src: 'eternal-qbz-gaming-thumbnail.png', title: 'Eternal QBZ', category: 'gaming' },
+      { src: 'new-gun-skin-gaming-thumbnail.jpg', title: 'New Gun Skin', category: 'gaming' },
+      { src: 'gun-skin-collection-gaming-thumbnail.png', title: 'Gun Skin Collection', category: 'gaming' },
+      { src: 'm1887-skin-gaming-thumbnail.jpg', title: 'M1887 Skin', category: 'gaming' },
+      { src: 'kar98-highlight-gaming-thumbnail.png', title: 'Kar98 Highlight', category: 'gaming' },
+      { src: 'uzi-special-gaming-thumbnail.jpg', title: 'Uzi Special', category: 'gaming' },
+      { src: 'practice-mode-gaming-thumbnail.png', title: 'Practice Mode', category: 'gaming' },
+      { src: 'gameplay-capture-gaming-thumbnail.png', title: 'Gameplay Capture', category: 'gaming' },
+      { src: 'intel-arc-b580-tech-review.jpg', title: 'Intel Arc B580', category: 'tech' },
+      { src: 'keyboard-review-tech-thumbnail.jpg', title: 'Keyboard Review', category: 'tech' },
+      { src: 'chromebook-vs-laptop-tech-thumbnail.jpg', title: 'Chromebook vs Laptop', category: 'tech' },
+      { src: 'huawei-matebook-14-tech-thumbnail.jpg', title: 'Huawei MateBook 14', category: 'tech' },
+      { src: 'speaker-review-tech-thumbnail.jpg', title: 'Speaker Review', category: 'tech' },
+      { src: 'product-showcase-tech-thumbnail.jpg', title: 'Product Showcase', category: 'tech' },
+      { src: 'flat-design-tech-thumbnail.jpg', title: 'Flat Design', category: 'tech' },
+      { src: 'thumbnail-prompt-tech-thumbnail.jpg', title: 'Thumbnail Prompt', category: 'tech' },
+      { src: 'worth-every-penny-social-thumbnail.jpg', title: 'Worth Every Penny', category: 'social' },
+      { src: 'traveling-gears-social-thumbnail.jpg', title: 'Traveling Gears', category: 'social' },
+      { src: 'samcux-sample-social-thumbnail.jpg', title: 'Samcux Sample', category: 'social' },
+      { src: 'audio-social-thumbnail.jpg', title: 'Audio Thumbnail', category: 'social' },
+      { src: 'client-work-talha-social-thumbnail.jpg', title: 'Client Work — Talha', category: 'social' },
+      { src: 'client-redesign-2-social-thumbnail.jpg', title: 'Client Redesign', category: 'social' },
+      { src: 'client-work-4-social-thumbnail.jpg', title: 'Client Work 4', category: 'social' },
+      { src: 'client-work-5-social-thumbnail.jpg', title: 'Client Work 5', category: 'social' },
+      { src: 'client-work-10-social-thumbnail.jpg', title: 'Client Work 10', category: 'social' },
+      { src: 'client-work-11-social-thumbnail.jpg', title: 'Client Work 11', category: 'social' },
+      { src: 'design-concept-social-thumbnail.png', title: 'Design Concept', category: 'social' },
+      { src: 'fresh-design-social-thumbnail.jpg', title: 'Fresh Design', category: 'social' },
+      { src: 'glassy-style-social-thumbnail.jpg', title: 'Glassy Style', category: 'social' },
 
       // Added — newly confirmed files already in the project folder
-      { src: 'hahahahahaha.png', title: 'Gaming Moment', category: 'gaming' },
-      { src: 'talha.png', title: 'Talha Project', category: 'gaming' },
-      { src: 'main1.png', title: 'Main Thumbnail', category: 'gaming' },
-      { src: 'main4 copy.png', title: 'Main Series 4', category: 'gaming' },
+      { src: 'gaming-moment-thumbnail.png', title: 'Gaming Moment', category: 'gaming' },
+      { src: 'talha-project-gaming-thumbnail.png', title: 'Talha Project', category: 'gaming' },
+      { src: 'main-thumbnail-gaming.png', title: 'Main Thumbnail', category: 'gaming' },
+      { src: 'main-series-4-gaming-thumbnail.png', title: 'Main Series 4', category: 'gaming' },
     ];
 
     // ─── Reviews Data ───
@@ -1097,7 +1097,7 @@
           if (window.commentNotifications && typeof window.commentNotifications.showNotification === 'function') {
             window.commentNotifications.showNotification(message, isReply ? 'reply' : 'comment');
           } else if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Comments', { body: message, icon: 'MAIN/favicon.png' });
+            new Notification('Comments', { body: message, icon: 'digital-jungle-logo.png' });
           }
         } catch (_) { }
       }];
@@ -1286,9 +1286,9 @@
         try {
           if (!('Notification' in window) || Notification.permission !== 'granted') return false;
           var reg = await (navigator.serviceWorker && navigator.serviceWorker.getRegistration());
-          var opts = { body: msg, icon: 'MAIN/favicon.png', tag: 'disqus-comment', renotify: true, data: { url: location.origin + location.pathname + '#comments' } };
+          var opts = { body: msg, icon: 'digital-jungle-logo.png', tag: 'disqus-comment', renotify: true, data: { url: location.origin + location.pathname + '#comments' } };
           if (reg && reg.showNotification) { await reg.showNotification('Comments', opts); return true; }
-          new Notification('Comments', { body: msg, icon: 'MAIN/favicon.png' }); return true;
+          new Notification('Comments', { body: msg, icon: 'digital-jungle-logo.png' }); return true;
         } catch (_) { return false; }
       }
       indicateInNav() {
