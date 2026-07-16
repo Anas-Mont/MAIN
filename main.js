@@ -142,32 +142,9 @@
       document.body.style.overflow = '';
     };
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Pull in anything uploaded via admin.html — always newest-first.
-      // The ?t= cache-buster forces phones/incognito to always ask the
-      // server fresh instead of reusing a stale cached response.
-      try {
-        const res = await fetch('/api/thumbnails?t=' + Date.now(), { cache: 'no-store' });
-        if (res.ok) {
-          const uploaded = await res.json();
-          if (Array.isArray(uploaded) && uploaded.length) {
-            thumbnailData = [...uploaded, ...thumbnailData];
-          }
-        }
-      } catch (_) { /* offline or not deployed yet — ignore */ }
-
-      // Keep the first 5 rows (4 columns × 5 rows = 20) in stable order so
-      // recent uploads are never shuffled away from the top. Only the
-      // thumbnails after that get randomized, for variety on repeat visits.
-      const PINNED_COUNT = 20;
-      const pinned = thumbnailData.slice(0, PINNED_COUNT);
-      const rest = thumbnailData.slice(PINNED_COUNT);
-      for (let i = rest.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [rest[i], rest[j]] = [rest[j], rest[i]];
-      }
-      thumbnailData = [...pinned, ...rest];
-
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render immediately with the local thumbnail set — nothing on the page
+      // (including the cursor, nav, filters) should ever wait on a network call.
       resetVisibleCount();
       initNavbar();
       initMobileNav();
@@ -191,6 +168,38 @@
         if (visibleCount < perPage) visibleCount = perPage;
         renderGallery();
       }, 200));
+
+      // Pull in anything uploaded via admin.html — always newest-first.
+      // This runs independently in the background; slow or failed networks
+      // no longer block the rest of the page from being usable.
+      // The ?t= cache-buster forces phones/incognito to always ask the
+      // server fresh instead of reusing a stale cached response.
+      (async () => {
+        try {
+          const res = await fetch('/api/thumbnails?t=' + Date.now(), { cache: 'no-store' });
+          if (res.ok) {
+            const uploaded = await res.json();
+            if (Array.isArray(uploaded) && uploaded.length) {
+              thumbnailData = [...uploaded, ...thumbnailData];
+
+              // Keep the first 5 rows (4 columns × 5 rows = 20) in stable order so
+              // recent uploads are never shuffled away from the top. Only the
+              // thumbnails after that get randomized, for variety on repeat visits.
+              const PINNED_COUNT = 20;
+              const pinned = thumbnailData.slice(0, PINNED_COUNT);
+              const rest = thumbnailData.slice(PINNED_COUNT);
+              for (let i = rest.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [rest[i], rest[j]] = [rest[j], rest[i]];
+              }
+              thumbnailData = [...pinned, ...rest];
+
+              resetVisibleCount();
+              renderGallery();
+            }
+          }
+        } catch (_) { /* offline or not deployed yet — ignore */ }
+      })();
     });
 
     function initNavbar() {
