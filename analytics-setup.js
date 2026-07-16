@@ -31,7 +31,7 @@ function getOrSetPersistentUserID() {
 }
 
 // Replace this string with your actual GA4 Measurement ID
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; 
+const GA_MEASUREMENT_ID = 'G-MBY0KQQBPM'; 
 
 // We inject the script into the document dynamically
 const script = document.createElement('script');
