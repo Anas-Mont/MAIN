@@ -405,18 +405,35 @@
         const imgEl = item.querySelector('img');
         const RETRY_DELAYS = [600, 1200, 2200]; // ms — 3 retries before giving up
         let attempt = 0;
-        imgEl.addEventListener('error', () => {
+        let settled = false;
+
+        function retryOrRemove() {
+          if (settled) return;
           if (attempt < RETRY_DELAYS.length) {
             const delay = RETRY_DELAYS[attempt];
             attempt++;
             setTimeout(() => {
+              if (settled) return;
               const sep = thumb.src.includes('?') ? '&' : '?';
               imgEl.src = thumb.src + sep + 'retry=' + Date.now();
             }, delay);
           } else {
+            settled = true;
             item.remove();
           }
-        });
+        }
+
+        imgEl.addEventListener('load', () => { settled = true; });
+        imgEl.addEventListener('error', retryOrRemove);
+
+        // Backstop: a hung request (slow serverless response, a connection
+        // that never cleanly fires 'error') would otherwise sit there empty
+        // forever, since nothing ever triggers a retry. Force a check.
+        setTimeout(() => {
+          if (!settled && (!imgEl.complete || imgEl.naturalWidth === 0)) {
+            retryOrRemove();
+          }
+        }, 5000);
 
         item.addEventListener('click', () => openLightbox(index));
         fragment.appendChild(item);
