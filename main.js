@@ -387,8 +387,16 @@
         item.className = 'gallery-item reveal visible';
         item.setAttribute('data-index', index);
 
+        // The first couple of rows are visible the instant the page loads —
+        // loading them "lazy" (deprioritized, discovery delayed until the
+        // browser gets around to it) is the opposite of what a fast grid
+        // should do. Only thumbnails actually below the fold get lazy-loaded.
+        const isAboveFold = index < 8;
+        const loadingAttr = isAboveFold ? 'eager' : 'lazy';
+        const priorityAttr = isAboveFold ? 'fetchpriority="high"' : '';
+
         item.innerHTML = `
-              <img src="${thumb.src}" alt="${thumb.title}" loading="lazy" decoding="async" />
+              <img src="${thumb.src}" alt="${thumb.title}" loading="${loadingAttr}" ${priorityAttr} decoding="async" />
               <div class="item-overlay">
                 <div>
                   <span class="overlay-cat">${thumb.category}</span>
@@ -402,7 +410,7 @@
         // should never sit there broken for a visitor or client to see.
         // Retry with increasing backoff — most transient failures clear up
         // within a couple seconds — and only drop the card as a last resort.
-        const imgEl = item.querySelector('img');
+        let imgEl = item.querySelector('img');
         const RETRY_DELAYS = [600, 1200, 2200]; // ms — 3 retries before giving up
         let attempt = 0;
         let settled = false;
@@ -419,8 +427,39 @@
             }, delay);
           } else {
             settled = true;
-            item.remove();
+            showRetryCard();
           }
+        }
+
+        function showRetryCard() {
+          item.classList.add('gallery-item-failed');
+          item.innerHTML = `
+                <button type="button" class="retry-card-btn" aria-label="Retry loading this thumbnail">
+                  <span class="retry-icon">↻</span>
+                  <span>Tap to retry</span>
+                </button>
+              `;
+          item.querySelector('.retry-card-btn').addEventListener('click', evt => {
+            evt.stopPropagation();
+            item.classList.remove('gallery-item-failed');
+            item.innerHTML = `
+                  <img src="${thumb.src}" alt="${thumb.title}" loading="eager" decoding="async" />
+                  <div class="item-overlay">
+                    <div>
+                      <span class="overlay-cat">${thumb.category}</span>
+                      <div class="overlay-text">${thumb.title}</div>
+                    </div>
+                  </div>
+                `;
+            settled = false;
+            attempt = 0;
+            imgEl = item.querySelector('img');
+            imgEl.addEventListener('load', () => { settled = true; });
+            imgEl.addEventListener('error', retryOrRemove);
+            setTimeout(() => {
+              if (!settled && (!imgEl.complete || imgEl.naturalWidth === 0)) retryOrRemove();
+            }, 5000);
+          });
         }
 
         imgEl.addEventListener('load', () => { settled = true; });

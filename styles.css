@@ -958,6 +958,41 @@ height: 40vh;
       transform: scale(1.04);
     }
 
+    .gallery-item-failed {
+      cursor: default;
+    }
+
+    .retry-card-btn {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--gray-3);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(11px, 1vw, 13px);
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .retry-card-btn:hover {
+      color: var(--neon);
+    }
+
+    .retry-icon {
+      font-size: 1.6em;
+      transition: transform 0.3s var(--ease);
+    }
+
+    .retry-card-btn:hover .retry-icon {
+      transform: rotate(180deg);
+    }
+
     .gallery-item .item-overlay {
       position: absolute;
       inset: 0;
