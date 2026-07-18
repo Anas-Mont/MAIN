@@ -162,10 +162,8 @@
       renderGallery();
       renderReviews();
       initGalleryFilters();
-      initStarRating();
       initContactForm();
       initContactModal();
-      initReviewForm();
       initScrollReveal();
       initSmoothScroll();
       initLightbox();
@@ -735,10 +733,7 @@
       const list = document.getElementById('reviewsList');
       if (!list) return;
 
-      const stored = JSON.parse(localStorage.getItem('portfolio_reviews') || '[]');
-      const allReviews = [...reviewsData, ...stored];
-
-      list.innerHTML = allReviews.map(r => `
+      list.innerHTML = reviewsData.map(r => `
             <div class="review-card reveal visible">
               <div class="review-header">
                 <div class="review-avatar">${r.name.charAt(0)}</div>
@@ -755,52 +750,6 @@
           `).join('');
 
       initScrollReveal();
-    }
-
-    function initStarRating() {
-      const stars = document.querySelectorAll('.star-rating-input .star');
-      let selectedRating = 0;
-
-      stars.forEach(star => {
-        star.addEventListener('mouseenter', () => {
-          const val = parseInt(star.dataset.rating);
-          stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.rating) <= val));
-        });
-        star.addEventListener('click', () => {
-          selectedRating = parseInt(star.dataset.rating);
-          stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.rating) <= selectedRating));
-        });
-      });
-
-      document.querySelector('.star-rating-input')?.addEventListener('mouseleave', () => {
-        stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.rating) <= selectedRating));
-      });
-
-      window.getSelectedRating = () => selectedRating;
-    }
-
-    function initReviewForm() {
-      const form = document.getElementById('reviewForm');
-      if (!form) return;
-
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        const name = document.getElementById('reviewerName')?.value.trim();
-        const text = document.getElementById('reviewText')?.value.trim();
-        const stars = window.getSelectedRating?.() || 5;
-
-        if (!name || !text) { showToast('Please fill in all fields', 'error'); return; }
-
-        const stored = JSON.parse(localStorage.getItem('portfolio_reviews') || '[]');
-        stored.push({ name, text, stars, role: 'Client' });
-        localStorage.setItem('portfolio_reviews', JSON.stringify(stored));
-        trackEvent('review_submit', { stars });
-
-        form.reset();
-        document.querySelectorAll('.star-rating-input .star').forEach(s => s.classList.remove('active'));
-        renderReviews();
-        showToast('Thank you for your review!', 'success');
-      });
     }
 
     function initContactModal() {
