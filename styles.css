@@ -243,7 +243,7 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (hover: none), (pointer: coarse), (max-width: 768px) {
       .navbar {
         top: auto;
         bottom: max(16px, env(safe-area-inset-bottom, 16px));

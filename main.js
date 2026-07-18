@@ -250,6 +250,11 @@ const DESKTOP_PER_PAGE = 16;
 const MOBILE_PER_PAGE = 10;
 const MOBILE_BREAKPOINT = 768;
 
+// "Mobile nav mode" = narrow screen OR no true mouse hover capability (touch
+// tablets included) — shared so every place that needs this check agrees.
+const isMobileNav = () => window.innerWidth <= MOBILE_BREAKPOINT ||
+  !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 function getPerPage() {
   return window.innerWidth <= MOBILE_BREAKPOINT ? MOBILE_PER_PAGE : DESKTOP_PER_PAGE;
 }
@@ -423,8 +428,6 @@ function initMobileNav() {
 
   if (!navPill || !navLinks) return;
 
-  const isMobileNav = () => window.innerWidth <= MOBILE_BREAKPOINT;
-
   const close = () => {
     navPill.classList.remove('mobile-open');
     if (backdrop) {
@@ -462,7 +465,7 @@ function initMobileNav() {
 
   navPill.addEventListener('click', e => {
     if (!isMobileNav()) return;
-    if (e.target.closest('.nav-cta') || e.target.closest('.nav-links a') || e.target.closest('.nav-mobile-toggle')) return;
+    if (e.target.closest('.nav-cta') || e.target.closest('.nav-links a') || e.target.closest('.nav-mobile-toggle') || e.target.closest('.nav-pill-brand')) return;
     e.preventDefault();
     toggle();
   });
@@ -497,6 +500,10 @@ function initSmoothScroll() {
     link.addEventListener('click', e => {
       const id = link.getAttribute('href');
       if (id === '#' || link.classList.contains('open-contact-modal')) return;
+      // The brand link doubles as the mobile nav toggle — on mobile it should
+      // only open/close the menu, never scroll home. That's fully handled by
+      // the dedicated handler in initMobileNav, so skip this one here.
+      if (link.id === 'navPillBrand' && isMobileNav()) return;
       const target = document.querySelector(id);
       if (target) {
         e.preventDefault();
