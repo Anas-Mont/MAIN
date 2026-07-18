@@ -1048,42 +1048,75 @@ height: 40vh;
       color: var(--neon);
     }
 
-    /* ═══ HOW I WORK — PROCESS FLOW ═══ */
-    .process-flow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: nowrap;
-      gap: 0;
-      margin-top: 70px;
-      overflow-x: auto;
-      overflow-y: visible;
-      padding: 40px 10px 20px;
-      -webkit-overflow-scrolling: touch;
+    /* ═══ HOW I WORK — BRANCHING PROCESS TREE (desktop) ═══ */
+    .process-tree {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2.5 / 1;
+      margin-top: 90px;
     }
 
-    .process-step {
-      position: relative;
+    .process-tree-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .process-tree-lines line {
+      stroke: var(--gray-4);
+      stroke-width: 1.5;
+    }
+
+    .tree-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      flex-shrink: 0;
       outline: none;
       cursor: default;
     }
 
+    .tree-label {
+      margin-top: 8px;
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--gray-2);
+      white-space: nowrap;
+      transition: color 0.3s ease;
+    }
+
+    .tree-node:hover .tree-label,
+    .tree-node:focus .tree-label,
+    .tree-node:focus-visible .tree-label {
+      color: var(--neon);
+    }
+
     .process-circle {
-      width: clamp(64px, 7vw, 92px);
-      height: clamp(64px, 7vw, 92px);
+      width: clamp(52px, 5.4vw, 68px);
+      height: clamp(52px, 5.4vw, 68px);
       border-radius: 50%;
       background: var(--dark-2);
       border: 1.5px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
       color: var(--neon);
       transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+    }
+
+    .process-circle-sm {
+      width: clamp(38px, 3.8vw, 50px);
+      height: clamp(38px, 3.8vw, 50px);
+      font-size: clamp(0.8rem, 1.1vw, 1rem);
     }
 
     .process-circle-photo {
@@ -1097,44 +1130,40 @@ height: 40vh;
       object-fit: cover;
     }
 
-    .process-step:hover .process-circle,
-    .process-step:focus .process-circle,
-    .process-step:focus-visible .process-circle {
+    .process-circle-image {
+      width: clamp(90px, 9.5vw, 120px);
+      height: clamp(56px, 6vw, 74px);
+      border-radius: 8px;
+      overflow: hidden;
+      border-color: rgba(212, 255, 0, 0.35);
+    }
+
+    .process-circle-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tree-node:hover .process-circle,
+    .tree-node:focus .process-circle,
+    .tree-node:focus-visible .process-circle {
       border-color: var(--neon);
-      box-shadow: 0 0 26px rgba(212, 255, 0, 0.28);
+      box-shadow: 0 0 20px rgba(212, 255, 0, 0.25);
       transform: scale(1.08);
-    }
-
-    .process-label {
-      margin-top: 14px;
-      font-family: var(--ff-mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--gray-2);
-      white-space: nowrap;
-      transition: color 0.3s ease;
-    }
-
-    .process-step:hover .process-label,
-    .process-step:focus .process-label,
-    .process-step:focus-visible .process-label {
-      color: var(--neon);
     }
 
     .process-detail {
       position: absolute;
-      bottom: calc(100% + 14px);
+      bottom: calc(100% + 12px);
       left: 50%;
       transform: translate(-50%, 8px);
-      width: 200px;
-      padding: 12px 14px;
+      width: 180px;
+      padding: 10px 12px;
       background: var(--dark-3);
       border: 1px solid var(--border);
       color: var(--gray-2);
-      font-size: 0.78rem;
-      line-height: 1.5;
+      font-size: 0.74rem;
+      line-height: 1.45;
       text-align: center;
       opacity: 0;
       pointer-events: none;
@@ -1152,56 +1181,75 @@ height: 40vh;
       border-top-color: var(--dark-3);
     }
 
-    .process-step:hover .process-detail,
-    .process-step:focus .process-detail,
-    .process-step:focus-visible .process-detail {
+    .tree-node:hover .process-detail,
+    .tree-node:focus .process-detail,
+    .tree-node:focus-visible .process-detail {
       opacity: 1;
       transform: translate(-50%, 0);
     }
 
-    .process-line {
-      flex: 0 0 clamp(30px, 4vw, 70px);
-      height: 2px;
-      background: linear-gradient(90deg, var(--border), var(--gray-4), var(--border));
-      margin: 0 -2px;
+    /* ═══ Mobile fallback: simplified vertical sequence ═══ */
+    .process-flow-mobile {
+      display: none;
     }
 
     @media (max-width: 900px) {
-      .process-flow {
-        flex-direction: column;
-        overflow: visible;
-        padding: 40px 20px 0;
-      }
-
-      .process-line {
-        flex: 0 0 32px;
-        width: 2px;
-        height: 32px;
-        background: linear-gradient(180deg, var(--border), var(--gray-4), var(--border));
-        margin: 0;
-      }
-
-      .process-detail {
-        position: static;
-        transform: none;
-        width: min(260px, 80vw);
-        margin-top: 10px;
-        max-height: 0;
-        padding: 0 14px;
-        overflow: hidden;
-        transition: max-height 0.3s var(--ease), opacity 0.3s var(--ease), padding 0.3s var(--ease);
-      }
-
-      .process-detail::after {
+      .process-tree {
         display: none;
       }
 
-      .process-step:hover .process-detail,
-      .process-step:focus .process-detail,
-      .process-step:focus-visible .process-detail {
-        max-height: 140px;
-        padding: 12px 14px;
-        transform: none;
+      .process-flow-mobile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 50px 20px 0;
+        gap: 40px;
+      }
+
+      .process-flow-mobile .process-step {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        outline: none;
+      }
+
+      .process-flow-mobile .process-step:not(:first-child)::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 40px;
+        background: linear-gradient(180deg, var(--border), var(--gray-4), var(--border));
+      }
+
+      .process-flow-mobile .process-circle-image {
+        width: min(240px, 70vw);
+        height: min(150px, 44vw);
+        border-radius: 10px;
+      }
+
+      .process-flow-mobile .process-label {
+        margin-top: 12px;
+        font-family: var(--ff-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--gray-2);
+      }
+
+      .process-flow-mobile .process-step:hover .process-circle,
+      .process-flow-mobile .process-step:focus .process-circle {
+        border-color: var(--neon);
+        box-shadow: 0 0 20px rgba(212, 255, 0, 0.25);
+      }
+
+      .process-flow-mobile .process-step:hover .process-label,
+      .process-flow-mobile .process-step:focus .process-label {
+        color: var(--neon);
       }
     }
 
@@ -1334,6 +1382,48 @@ height: 40vh;
       background-repeat: no-repeat;
       background-position: right 14px center;
       padding-right: 36px;
+    }
+
+    /* ═══ Premium form: progress bar + live validation states ═══ */
+    .form-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .form-progress-track {
+      flex: 1;
+      height: 4px;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .form-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--neon);
+      border-radius: 2px;
+      transition: width 0.3s var(--ease);
+    }
+
+    .form-progress-label {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      color: var(--gray-3);
+      white-space: nowrap;
+    }
+
+    .form-group input.field-valid,
+    .form-group textarea.field-valid {
+      border-color: rgba(212, 255, 0, 0.5);
+    }
+
+    .form-group input.field-invalid,
+    .form-group textarea.field-invalid {
+      border-color: rgba(255, 90, 90, 0.6);
     }
 
     .form-group select option {
