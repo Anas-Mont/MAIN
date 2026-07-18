@@ -1304,7 +1304,6 @@
 
 // ─── Disqus Thread Deferred Script Loading ───
     var disqus_shortname = 'thumbnailportfolio';
-    window.DISQUS_PUBLIC_API_KEY = window.DISQUS_PUBLIC_API_KEY || 'VrPcBUfszCtJbD3t5qctKcZ4XT9LQYUCTagFhRA5D1jdw6XEFwRLDKTVxEsYqWJp';
 
     var disqus_config = function () {
       this.page.url = window.location.href;
@@ -1401,14 +1400,12 @@
     }
 
     class CommentNotificationSystem {
-      constructor() { this.lastKnownPostId = null; this.init(); }
+      constructor() { this.init(); }
       init() {
         this.createNotificationContainer();
         this.setupNotificationPermissionUI();
-        this.setupManualButton();
         this.listenForDisqusEvents();
         this.startReplyChecking();
-        this.startPollingForRemoteComments();
       }
       createNotificationContainer() {
         if (!document.getElementById('comment-notifications')) {
@@ -1443,11 +1440,6 @@
           try { var r = await Notification.requestPermission(); update(); if (r === 'granted') self.showNotification('Notifications enabled.', 'comment'); } catch (_) { update(); }
         });
       }
-      setupManualButton() {
-        var self = this;
-        var b = document.getElementById('checkNewCommentsNow');
-        if (b) b.addEventListener('click', function () { self.pollDisqusOnce && self.pollDisqusOnce(); });
-      }
       listenForDisqusEvents() {
         var self = this;
         window.addEventListener('message', function (e) {
@@ -1462,33 +1454,6 @@
         if (dt) {
           new MutationObserver(function (m) { m.forEach(function (mu) { if (mu.type === 'childList') setTimeout(function () { self.checkForNewReplies(); }, 1000); }); }).observe(dt, { childList: true, subtree: true });
         }
-      }
-      startPollingForRemoteComments() {
-        try {
-          var key = window.DISQUS_PUBLIC_API_KEY || ''; if (!key) return;
-          var forum = window.disqus_shortname || 'thumbnailportfolio';
-          var ident = window.location.pathname;
-          var self = this;
-          var doPoll = function () {
-            var cb = '__dsq_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-            var url = 'https://disqus.com/api/3.0/threads/listPosts.json?forum=' + encodeURIComponent(forum) + '&thread:ident=' + encodeURIComponent(ident) + '&order=desc&limit=1&api_key=' + encodeURIComponent(key) + '&callback=' + cb;
-            var s = document.createElement('script'); s.src = url; s.async = true;
-            window[cb] = function (res) {
-              try {
-                var posts = res && res.response ? res.response : [];
-                if (posts.length > 0) {
-                  var id = posts[0].id || null;
-                  if (!self.lastKnownPostId) self.lastKnownPostId = id;
-                  else if (id && id !== self.lastKnownPostId) { self.lastKnownPostId = id; var isR = !!posts[0].parent; self.showNotification(isR ? 'New reply!' : 'New comment!', isR ? 'reply' : 'comment'); }
-                }
-              } catch (_) { } finally { try { delete window[cb]; } catch (_) { } if (s && s.parentNode) s.parentNode.removeChild(s); }
-            };
-            document.body.appendChild(s);
-          };
-          this.pollDisqusOnce = doPoll;
-          setTimeout(doPoll, 5000);
-          setInterval(doPoll, 20000);
-        } catch (_) { }
       }
       handleNewComment(data) {
         try { if (document.visibilityState === 'visible' && document.hasFocus()) return; } catch (_) { }
