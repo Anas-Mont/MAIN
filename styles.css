@@ -262,9 +262,49 @@
         display: none;
       }
 
+      .nav-pill.mobile-open .nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        max-width: none;
+        width: max-content;
+        min-width: 168px;
+        opacity: 0;
+        overflow: visible;
+        background: var(--dark-2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 8px;
+        gap: 2px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        transform: translateX(-50%) translateY(8px) scale(0.92);
+        animation: navPillPopIn 0.28s var(--ease) forwards;
+      }
+
+      .nav-pill.mobile-open .nav-links a {
+        padding: 10px 14px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .nav-pill.mobile-open .nav-links a:hover,
+      .nav-pill.mobile-open .nav-links a.active {
+        background: rgba(212, 255, 0, 0.08);
+      }
+
       .nav-cta {
         padding: 10px 18px !important;
         font-size: 0.68rem;
+      }
+    }
+
+    @keyframes navPillPopIn {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
       }
     }
 
@@ -1951,6 +1991,8 @@ height: 40vh;
       max-width: 520px;
       max-height: 90vh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
       background: var(--dark-2);
       border: 1px solid var(--border);
       padding: 40px 32px;
@@ -2016,13 +2058,25 @@ height: 40vh;
       }
 
       .contact-modal-box {
-        padding: 28px 20px;
+        padding: 24px 18px;
         max-height: 92vh;
         border-radius: 12px 12px 0 0;
       }
 
+      .contact-modal-header {
+        margin-bottom: 18px;
+      }
+
       .contact-modal-header h3 {
         font-size: 1.6rem;
+      }
+
+      .contact-modal .form-group {
+        margin-bottom: 9px;
+      }
+
+      .contact-modal .form-progress {
+        margin-bottom: 12px;
       }
     }
 

@@ -433,7 +433,6 @@ function initMobileNav() {
     }
     if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('nav-mobile-open');
-    document.body.style.overflow = '';
   };
 
   const open = () => {
@@ -444,7 +443,6 @@ function initMobileNav() {
     }
     if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
     document.body.classList.add('nav-mobile-open');
-    document.body.style.overflow = 'hidden';
   };
 
   const toggle = () => {
@@ -470,6 +468,14 @@ function initMobileNav() {
   });
 
   backdrop?.addEventListener('click', close);
+
+  // Tap anywhere outside the pill to dismiss it — there was previously no
+  // way to close this except tapping the pill itself again or a nav link.
+  document.addEventListener('click', e => {
+    if (isMobileNav() && navPill.classList.contains('mobile-open') && !navPill.contains(e.target)) {
+      close();
+    }
+  });
 
   navLinks.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
