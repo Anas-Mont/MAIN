@@ -110,51 +110,88 @@
       padding: 0 32px;
     }
 
+    /* ---------- FLOATING PILL NAVBAR ----------
+       Default: small pill (avatar + name + CTA), no links.
+       Desktop hover: pill "biggens" and links fade/slide in.
+       Mobile: small pill only, pinned to the bottom of the screen. */
     .navbar {
       position: fixed;
-      top: 0;
+      top: 18px;
       left: 0;
       right: 0;
       z-index: 1120;
-      padding: 0 32px;
-      height: 60px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .nav-pill {
+      position: relative;
       display: flex;
       align-items: center;
-      transition: background 0.4s var(--ease), border-color 0.4s var(--ease);
+      pointer-events: auto;
+      border-radius: 999px;
+      padding: 6px;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(rgba(9, 9, 9, 1), rgba(9, 9, 9, 1)) padding-box,
+        linear-gradient(180deg, #000000 0%, rgb(212, 255, 0) 100%) border-box;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+      transform-origin: top center;
     }
 
-    .navbar.scrolled {
-      background: rgba(0, 0, 0, 0.96);
-      border-bottom: 1px solid var(--border);
+    .nav-pill-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 14px 4px 4px;
+      flex-shrink: 0;
     }
 
-    .nav-inner {
-      max-width: var(--container);
-      margin: 0 auto;
+    .nav-pill-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.6px solid transparent;
+      background:
+        linear-gradient(#000, #000) padding-box,
+        linear-gradient(225deg, rgb(212, 255, 0) 10%, #000000 100%) border-box;
+    }
+
+    .nav-pill-avatar img {
       width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      height: 100%;
+      object-fit: cover;
     }
 
-    .nav-brand {
-      font-family: var(--ff-display);
-      font-size: 1.3rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
+    .nav-pill-name {
+      font-family: var(--ff-body);
+      font-weight: 700;
+      font-size: 1.05rem;
       color: var(--white);
+      white-space: nowrap;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.65);
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 2px;
       list-style: none;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: max-width 0.5s var(--ease), opacity 0.3s ease, margin 0.5s var(--ease);
     }
 
     .nav-links a {
       padding: 8px 14px;
-      font-size: 0.72rem;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 1.5px;
@@ -172,9 +209,17 @@
       background: var(--neon) !important;
       color: var(--black) !important;
       font-weight: 700 !important;
-      border-radius: 4px !important;
-      padding: 8px 18px !important;
+      border-radius: 999px !important;
+      padding: 11px 22px !important;
+      font-family: var(--ff-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       transition: all 0.3s var(--ease) !important;
+      flex-shrink: 0;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
     }
 
     .nav-cta:hover {
@@ -182,146 +227,55 @@
       transform: translateY(-1px);
     }
 
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      background: none;
-      border: none;
-      padding: 8px;
-      z-index: 1130;
-      position: relative;
-      cursor: pointer;
-    }
+    /* Expand + "biggen" on hover — only on devices that truly support hover,
+       so a tap on mobile never leaves it stuck open. */
+    @media (hover: hover) and (pointer: fine) {
+      .nav-pill:hover {
+        transform: scale(1.045);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+      }
 
-    .hamburger span {
-      width: 28px;
-      height: 2px;
-      background: var(--neon);
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      transform-origin: center;
-    }
-
-    .hamburger.active span:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .hamburger.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .hamburger.active span:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
+      .nav-pill:hover .nav-links {
+        max-width: 640px;
+        opacity: 1;
+        margin: 0 4px;
+        transition: max-width 0.55s var(--ease), opacity 0.4s var(--ease) 0.08s, margin 0.55s var(--ease);
+      }
     }
 
     @media (max-width: 768px) {
-      .hamburger {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
+      .navbar {
+        top: auto;
+        bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      }
+
+      .nav-pill {
+        transform: none !important;
+        box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6);
+      }
+
+      .nav-pill-name {
+        font-size: 0.95rem;
       }
 
       .nav-links {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: min(300px, 85vw);
-        height: 100vh;
-        height: 100dvh;
-        flex-direction: column;
-        background: #000000;
-        padding: 88px 28px 32px;
-        gap: 0;
-        align-items: stretch;
-        transform: translateX(105%);
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 1125;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        border-left: 1px solid var(--border);
-        pointer-events: none;
-      }
-
-      .nav-links.open {
-        transform: translateX(0);
-        pointer-events: auto;
-      }
-
-      .nav-links li {
-        opacity: 0;
-        transform: translateX(12px);
-        transition: opacity 0.28s var(--ease), transform 0.28s var(--ease);
-      }
-
-      .nav-links.open li {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .nav-links.open li:nth-child(1) {
-        transition-delay: 0.04s;
-      }
-
-      .nav-links.open li:nth-child(2) {
-        transition-delay: 0.07s;
-      }
-
-      .nav-links.open li:nth-child(3) {
-        transition-delay: 0.1s;
-      }
-
-      .nav-links.open li:nth-child(4) {
-        transition-delay: 0.13s;
-      }
-
-      .nav-links.open li:nth-child(5) {
-        transition-delay: 0.16s;
-      }
-
-      .nav-links.open li:nth-child(6) {
-        transition-delay: 0.19s;
-      }
-
-      .nav-links a {
-        padding: 18px 0;
-        font-size: 1rem;
-        letter-spacing: 2px;
-        border-bottom: 1px solid var(--border);
-        width: 100%;
-        display: block;
-        position: relative;
-        z-index: 1;
-        -webkit-tap-highlight-color: transparent;
+        display: none;
       }
 
       .nav-cta {
-        margin-top: 24px !important;
-        display: inline-flex !important;
-        width: 100% !important;
-        justify-content: center !important;
-        border-bottom: none !important;
-        padding: 14px 18px !important;
-        pointer-events: auto !important;
+        padding: 10px 18px !important;
+        font-size: 0.68rem;
       }
     }
 
-    .mobile-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      z-index: 1115;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
+    @media (max-width: 360px) {
+      .nav-pill-name {
+        display: none;
+      }
 
-    .mobile-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+      .nav-pill-brand {
+        padding-right: 8px;
+      }
     }
 
     .hero {
@@ -1790,20 +1744,6 @@ height: 40vh;
       gap: 2px;
     }
 
-    .floating-hire {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 999;
-    }
-
-    @media (max-width: 768px) {
-      .floating-hire {
-        display: block;
-      }
-    }
-
     .reveal {
       opacity: 0;
       transform: translate3d(0, 15px, 0);
@@ -2192,7 +2132,6 @@ height: 40vh;
 
       .navbar,
       .lightbox,
-      .floating-hire,
       .marquee {
         display: none !important;
       }

@@ -40,24 +40,25 @@
 
 <body>
 
-  <!-- ═══ NAVIGATION ═══ -->
+  <!-- ═══ NAVIGATION — floating pill, expands on hover (desktop), pinned to bottom on mobile ═══ -->
   <nav class="navbar" id="navbar">
-    <div class="nav-inner">
-      <a href="#home" class="nav-brand">MOHAMMED ANAS</a>
+    <div class="nav-pill" id="navPill">
+      <a href="#home" class="nav-pill-brand">
+        <span class="nav-pill-avatar">
+          <img src="mohammed-anas-process-photo.jpg" alt="Mohammed Anas" width="44" height="44" loading="eager" fetchpriority="high" decoding="async">
+        </span>
+        <span class="nav-pill-name">M.Anas</span>
+      </a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#social">Social</a></li>
         <li><a href="#comments">Comments</a></li>
-        <li><a href="#" class="nav-cta open-contact-modal">Let's Talk</a></li>
       </ul>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="#" class="nav-cta open-contact-modal">Let's Talk</a>
     </div>
   </nav>
-  <div class="mobile-overlay" id="mobileOverlay"></div>
 
   <!-- ═══ HERO ═══ -->
   <section id="home" class="hero">
@@ -556,11 +557,6 @@
       <span id="zoomLevel">100%</span>
       <small>Mouse wheel or +/- keys to zoom</small>
     </div>
-  </div>
-
-  <!-- Floating Hire (mobile) -->
-  <div class="floating-hire">
-    <button type="button" class="btn btn-primary open-contact-modal">Let's Talk</button>
   </div>
 
   <!-- ═══ CONTACT MODAL ═══ -->
