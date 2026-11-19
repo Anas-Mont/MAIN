@@ -1,4 +1,4 @@
-    /* ============================================
+/* ============================================
            MOHAMMED ANAS — Thumbnail Designer Portfolio
            BOLD EDITORIAL THEME — Black + Neon Yellow
            ============================================ */
@@ -22,21 +22,21 @@
     }
 
     :root {
-      --black: #000000;
-      --dark: #0a0a0a;
-      --dark-2: #111111;
-      --dark-3: #181818;
-      --dark-4: #222222;
-      --neon: #d4ff00;
-      --neon-dim: rgba(212, 255, 0, 0.15);
-      --neon-glow: rgba(212, 255, 0, 0.4);
-      --white: #ffffff;
-      --gray-1: #f0f0f0;
-      --gray-2: #aaaaaa;
-      --gray-3: #777777;
-      --gray-4: #444444;
-      --gray-5: #2a2a2a;
-      --border: rgba(255, 255, 255, 0.08);
+      --black: #FFFFFF;
+      --dark: #F5F5F5;
+      --dark-2: #EFEFEF;
+      --dark-3: #FFFFFF;
+      --dark-4: #E8E8E8;
+      --neon: #111111;
+      --neon-dim: rgba(17, 17, 17, 0.08);
+      --neon-glow: rgba(17, 17, 17, 0.25);
+      --white: #111111;
+      --gray-1: #F5F5F5;
+      --gray-2: #666666;
+      --gray-3: #888888;
+      --gray-4: #AAAAAA;
+      --gray-5: #DDDDDD;
+      --border: #DDDDDD;
 
       --ff-display: 'Bebas Neue', 'Impact', sans-serif;
       --ff-body: 'Space Grotesk', 'Inter', sans-serif;
@@ -134,8 +134,8 @@
       padding: 6px;
       border: 1.5px solid transparent;
       background:
-        linear-gradient(rgba(9, 9, 9, 1), rgba(9, 9, 9, 1)) padding-box,
-        linear-gradient(180deg, #000000 0%, rgb(212, 255, 0) 100%) border-box;
+        linear-gradient(#FFFFFF, #FFFFFF) padding-box,
+        linear-gradient(180deg, #DDDDDD 0%, #111111 100%) border-box;
       box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
       transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
       transform-origin: top center;
@@ -157,8 +157,8 @@
       flex-shrink: 0;
       border: 1.6px solid transparent;
       background:
-        linear-gradient(#000, #000) padding-box,
-        linear-gradient(225deg, rgb(212, 255, 0) 10%, #000000 100%) border-box;
+        linear-gradient(#FFFFFF, #FFFFFF) padding-box,
+        linear-gradient(225deg, #111111 10%, #DDDDDD 100%) border-box;
     }
 
     .nav-pill-avatar img {
@@ -292,7 +292,7 @@
 
       .nav-pill.mobile-open .nav-links a:hover,
       .nav-pill.mobile-open .nav-links a.active {
-        background: rgba(212, 255, 0, 0.08);
+        background: rgba(17, 17, 17, 0.06);
       }
 
       .nav-cta {
@@ -337,7 +337,7 @@
     /* ─── HERO PROFILE PHOTO (landscape 4K image) ─── */
     .hero-photo {
       position: absolute;
-      opacity: 0.7;
+      opacity: 0.9;
       right: 230px;
       top: 0;
       bottom: 0;
@@ -355,9 +355,10 @@
     .hero-photo img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      /* Push focus to face (left-centre of landscape image) */
-      object-position: 18% center;
+      /* Cutout (transparent PNG): show the whole person, no cropping */
+      object-fit: contain;
+      /* Float the person toward the right edge, away from the hero text */
+      object-position: 90% right center;
       display: block;
       user-select: none;
       -webkit-user-drag: none;
@@ -367,7 +368,7 @@
     @media (min-width: 1400px) {
       .hero-photo {
         height: 650px;
-        opacity: 0.7;
+        opacity: 0.9;
         top: 40px;
         right: 230px;
         width: 62%;
@@ -383,7 +384,7 @@
         width: 55%;
         right: 230px;
     
-        opacity: 0.8;
+        opacity: 0.9;
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
         mask-image: linear-gradient(to right, transparent 0%, black 35%);
         height: 90vh;
@@ -394,7 +395,7 @@
     @media (max-width: 1024px) and (min-width: 769px) {
       .hero-photo {
         width: 52%;
-        opacity: 0.8;
+        opacity: 0.9;
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
         mask-image: linear-gradient(to right, transparent 0%, black 35%);
         height: 90vh;
@@ -409,7 +410,7 @@ width: 100%;
         height: 50vh;
         top: 130px;
         bottom: auto;
-        opacity: 0.8;
+        opacity: 0.9;
         left: 7vh;
         /* Fade bottom so text stays readable */
         -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
@@ -417,7 +418,7 @@ width: 100%;
       }
 
       .hero-photo img {
-        object-position: 18% 28%;
+        object-position: center top;
       }
     }
 
@@ -427,13 +428,13 @@ width: 100%;
 height: 40vh;
         top: 160px;
         /* height: 50vh; */
-        opacity: 0.8;
+        opacity: 0.9;
         left: 7vh;
       }
 
 
       .hero-photo img {
-        object-position: 18% 25%;
+        object-position: center top;
       }
     }
 
@@ -443,7 +444,7 @@ height: 40vh;
   height: 40vh;
         top: 160px;
         /* height: 50vh; */
-        opacity: 0.8;
+        opacity: 0.9;
         left: 2vh;
       }
     }
@@ -937,8 +938,8 @@ height: 40vh;
 
     .gallery-item:hover {
       transform: translateY(-4px);
-      border-color: rgba(212, 255, 0, 0.35);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 255, 0, 0.1);
+      border-color: rgba(17, 17, 17, 0.35);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(17, 17, 17, 0.1);
     }
 
     .gallery-item img {
@@ -1019,7 +1020,7 @@ height: 40vh;
     .overlay-text {
       font-family: var(--ff-body);
       font-size: 0.85rem;
-      color: var(--white);
+      color: #FFFFFF;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
@@ -1078,14 +1079,15 @@ height: 40vh;
     }
 
     .btn-secondary {
-      background: transparent;
-      color: var(--white);
-      border: 1px solid var(--gray-5);
+      background: #444444;
+      color: #FFFFFF;
+      border: 1px solid #444444;
     }
 
     .btn-secondary:hover {
-      border-color: var(--neon);
-      color: var(--neon);
+      background: #333333;
+      border-color: #333333;
+      color: #FFFFFF;
     }
 
     /* ═══ HOW I WORK — BRANCHING PROCESS TREE (desktop) ═══ */
@@ -1175,7 +1177,7 @@ height: 40vh;
       height: clamp(56px, 6vw, 74px);
       border-radius: 8px;
       overflow: hidden;
-      border-color: rgba(212, 255, 0, 0.35);
+      border-color: rgba(17, 17, 17, 0.35);
     }
 
     .process-circle-image img {
@@ -1188,7 +1190,7 @@ height: 40vh;
     .tree-node:focus .process-circle,
     .tree-node:focus-visible .process-circle {
       border-color: var(--neon);
-      box-shadow: 0 0 20px rgba(212, 255, 0, 0.25);
+      box-shadow: 0 0 20px rgba(17, 17, 17, 0.25);
       transform: scale(1.08);
     }
 
@@ -1284,7 +1286,7 @@ height: 40vh;
       .process-flow-mobile .process-step:hover .process-circle,
       .process-flow-mobile .process-step:focus .process-circle {
         border-color: var(--neon);
-        box-shadow: 0 0 20px rgba(212, 255, 0, 0.25);
+        box-shadow: 0 0 20px rgba(17, 17, 17, 0.25);
       }
 
       .process-flow-mobile .process-step:hover .process-label,
@@ -1327,7 +1329,7 @@ height: 40vh;
     .review-card:hover {
       transform: translateX(6px);
       background: var(--dark-2);
-      border-color: rgba(212, 255, 0, 0.25);
+      border-color: rgba(17, 17, 17, 0.25);
     }
 
     .review-header {
@@ -1418,7 +1420,7 @@ height: 40vh;
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4ff00' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23111111' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
       background-repeat: no-repeat;
       background-position: right 14px center;
       padding-right: 36px;
@@ -1458,7 +1460,7 @@ height: 40vh;
 
     .form-group input.field-valid,
     .form-group textarea.field-valid {
-      border-color: rgba(212, 255, 0, 0.5);
+      border-color: rgba(17, 17, 17, 0.5);
     }
 
     .form-group input.field-invalid,
@@ -1737,7 +1739,7 @@ height: 40vh;
       right: 24px;
       background: var(--dark-3);
       border: 1px solid var(--border);
-      color: #fff;
+      color: #666666;
       width: 44px;
       height: 44px;
       font-size: 1.4rem;
@@ -1809,7 +1811,7 @@ height: 40vh;
       height: 50px;
       background: var(--dark-3);
       border: 1px solid var(--border);
-      color: #fff;
+      color: #666666;
       font-size: 1.2rem;
       display: flex;
       align-items: center;
@@ -1844,7 +1846,7 @@ height: 40vh;
     .lightbox-zoom-controls button {
       background: var(--dark-3);
       border: 1px solid var(--border);
-      color: #fff;
+      color: #666666;
       width: 36px;
       height: 36px;
       display: flex;
@@ -2331,7 +2333,7 @@ height: 40vh;
 
     .orbit-track {
       position: absolute;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(17, 17, 17, 0.14);
       border-radius: 50%;
       pointer-events: none;
       opacity: 0;
@@ -2518,8 +2520,9 @@ height: 40vh;
 
     .ba-tag--after {
       right: 14px;
-      border-color: var(--neon-dim);
-      color: var(--neon);
+      background: #111111;
+      border-color: #111111;
+      color: #FFFFFF;
     }
 
     .ba-tag--before {
@@ -2550,7 +2553,7 @@ height: 40vh;
       height: 48px;
       border-radius: 50%;
       background: var(--neon);
-      color: #000;
+      color: #FFFFFF;
       display: flex;
       align-items: center;
       justify-content: center;
