@@ -358,7 +358,7 @@
       /* Cutout (transparent PNG): show the whole person, no cropping */
       object-fit: contain;
       /* Float the person toward the right edge, away from the hero text */
-      object-position: right center;
+      object-position:  80% right center;
       display: block;
       user-select: none;
       -webkit-user-drag: none;
@@ -368,7 +368,7 @@
     @media (min-width: 1400px) {
       .hero-photo {
         height: 650px;
-        opacity: 0.7;
+        opacity: 0.8;
         top: 40px;
         right: 230px;
         width: 62%;
