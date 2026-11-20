@@ -1482,9 +1482,25 @@ function loadDisqus() {
   var df = document.getElementById('disqus-fallback');
   if (!dt || !dl || !df) return;
 
+  // Reset to the loading state every time we (re)try.
   dl.style.display = 'flex';
   df.style.display = 'none';
   dt.style.display = 'none';
+
+  // Watchdog: Disqus calls disqus_config.callbacks.onReady when it has actually
+  // rendered the thread (onReady hides the spinner and reveals #disqus_thread).
+  // If onReady never fires within 12s (script loaded but Disqus failed to render
+  // — e.g. the site domain isn't in the forum's trusted domains, or Disqus is
+  // blocked), reveal the fallback so the section is never left blank.
+  clearTimeout(window._disqusWatchdog);
+  window._disqusWatchdog = setTimeout(function () {
+    if (dt.style.display !== 'block') {
+      dl.style.display = 'none';
+      dt.style.display = 'none';
+      df.style.display = 'block';
+      toggleCommentActions(false);
+    }
+  }, 12000);
 
   try {
     if (window.DISQUS) {
@@ -1495,8 +1511,7 @@ function loadDisqus() {
           this.page.title = document.title;
         }
       });
-      dl.style.display = 'none';
-      dt.style.display = 'block';
+      // Don't reveal the thread here — wait for onReady (watchdog covers failure).
       return;
     }
 
@@ -1508,14 +1523,18 @@ function loadDisqus() {
     s.id = 'dsq-embed-s';
     s.setAttribute('data-timestamp', +new Date());
     s.async = true;
-    s.onload = function () { dl.style.display = 'none'; dt.style.display = 'block'; toggleCommentActions(true); };
-    s.onerror = function () { dl.style.display = 'none'; df.style.display = 'block'; toggleCommentActions(false); };
+    // embed.js loaded ≠ Disqus rendered. Keep the spinner visible; Disqus's
+    // onReady callback reveals the thread. onerror -> fallback immediately.
+    s.onload = function () { toggleCommentActions(true); };
+    s.onerror = function () {
+      clearTimeout(window._disqusWatchdog);
+      dl.style.display = 'none'; df.style.display = 'block'; toggleCommentActions(false);
+    };
     (document.head || document.body).appendChild(s);
-
-    setTimeout(function () {
-      if (dl.style.display !== 'none') { dl.style.display = 'none'; df.style.display = 'block'; toggleCommentActions(false); }
-    }, 8000);
-  } catch (e) { dl.style.display = 'none'; df.style.display = 'block'; toggleCommentActions(false); }
+  } catch (e) {
+    clearTimeout(window._disqusWatchdog);
+    dl.style.display = 'none'; df.style.display = 'block'; toggleCommentActions(false);
+  }
 }
 
 function toggleCommentActions(show) {

@@ -1,4 +1,4 @@
-/* ============================================
+   /* ============================================
            MOHAMMED ANAS — Thumbnail Designer Portfolio
            BOLD EDITORIAL THEME — Black + Neon Yellow
            ============================================ */
@@ -337,7 +337,7 @@
     /* ─── HERO PROFILE PHOTO (landscape 4K image) ─── */
     .hero-photo {
       position: absolute;
-      opacity: 0.9;
+      opacity: 0.7;
       right: 230px;
       top: 0;
       bottom: 0;
@@ -358,7 +358,7 @@
       /* Cutout (transparent PNG): show the whole person, no cropping */
       object-fit: contain;
       /* Float the person toward the right edge, away from the hero text */
-      object-position: 90% right center;
+      object-position: right center;
       display: block;
       user-select: none;
       -webkit-user-drag: none;
@@ -368,7 +368,7 @@
     @media (min-width: 1400px) {
       .hero-photo {
         height: 650px;
-        opacity: 0.9;
+        opacity: 0.7;
         top: 40px;
         right: 230px;
         width: 62%;
@@ -384,7 +384,7 @@
         width: 55%;
         right: 230px;
     
-        opacity: 0.9;
+        opacity: 0.8;
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
         mask-image: linear-gradient(to right, transparent 0%, black 35%);
         height: 90vh;
@@ -395,7 +395,7 @@
     @media (max-width: 1024px) and (min-width: 769px) {
       .hero-photo {
         width: 52%;
-        opacity: 0.9;
+        opacity: 0.8;
         -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
         mask-image: linear-gradient(to right, transparent 0%, black 35%);
         height: 90vh;
@@ -410,7 +410,7 @@ width: 100%;
         height: 50vh;
         top: 130px;
         bottom: auto;
-        opacity: 0.9;
+        opacity: 0.8;
         left: 7vh;
         /* Fade bottom so text stays readable */
         -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
@@ -428,7 +428,7 @@ width: 100%;
 height: 40vh;
         top: 160px;
         /* height: 50vh; */
-        opacity: 0.9;
+        opacity: 0.8;
         left: 7vh;
       }
 
@@ -444,7 +444,7 @@ height: 40vh;
   height: 40vh;
         top: 160px;
         /* height: 50vh; */
-        opacity: 0.9;
+        opacity: 0.8;
         left: 2vh;
       }
     }
@@ -1588,6 +1588,16 @@ height: 40vh;
       padding: 48px;
       border: 1px solid var(--border);
       background: var(--dark);
+    }
+
+    /* The comments card must always be visible. It normally uses the scroll
+       reveal animation (.reveal -> opacity:0 until .visible), but Disqus loads
+       asynchronously and can shift the page layout mid-scroll, which leaves the
+       card stuck at opacity:0 (an invisible gap). Force it on so the heading,
+       notification button and the Disqus box / fallback are always shown. */
+    .comments-card.reveal {
+      opacity: 1 !important;
+      transform: none !important;
     }
 
     .comment-actions {
