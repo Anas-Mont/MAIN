@@ -1450,33 +1450,55 @@ function showToast(message, type = 'info') {
 // ─── Disqus Thread Deferred Script Loading ───
 var disqus_shortname = 'thumbnailportfolio';
 
-var disqus_config = function () {
+// Shared: reveal the rendered thread. Called by onReady AND by the
+// MutationObserver in loadDisqus, whichever fires first.
+function disqusThreadReveal() {
+  try {
+    var dl = document.getElementById('disqus-loading');
+    var dt = document.getElementById('disqus_thread');
+    if (dl) dl.style.display = 'none';
+    if (dt) dt.style.display = 'block';
+    if (window._disqusWatchdog) { clearTimeout(window._disqusWatchdog); window._disqusWatchdog = null; }
+    toggleCommentActions(true);
+  } catch (_) { }
+}
+
+// Shared: new-comment notification hook.
+function disqusOnNewComment(comment) {
+  try {
+    var isReply = !!(comment && comment.parent);
+    var message = isReply ? 'Someone replied to a comment!' : 'New comment posted!';
+    if (window.commentNotifications && typeof window.commentNotifications.showNotification === 'function') {
+      window.commentNotifications.showNotification(message, isReply ? 'reply' : 'comment');
+    } else if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Comments', { body: message, icon: 'digital-jungle-logo.png' });
+    }
+  } catch (_) { }
+}
+
+// Applied BOTH to the first embed.js load AND to every DISQUS.reset() retry,
+// so the onReady reveal callback is never lost (a reset without it left the
+// spinner running until the watchdog showed the "Try again" fallback).
+function applyDisqusConfig() {
   this.page.url = window.location.href;
   this.page.identifier = window.location.pathname;
   this.page.title = document.title;
   this.callbacks = this.callbacks || {};
-  this.callbacks.onReady = [function () {
-    try {
-      var dl = document.getElementById('disqus-loading');
-      var dt = document.getElementById('disqus_thread');
-      if (dl) dl.style.display = 'none';
-      if (dt) dt.style.display = 'block';
-    } catch (_) { }
-  }];
-  this.callbacks.onNewComment = [function (comment) {
-    try {
-      var isReply = !!comment.parent;
-      var message = isReply ? 'Someone replied to a comment!' : 'New comment posted!';
-      if (window.commentNotifications && typeof window.commentNotifications.showNotification === 'function') {
-        window.commentNotifications.showNotification(message, isReply ? 'reply' : 'comment');
-      } else if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Comments', { body: message, icon: 'digital-jungle-logo.png' });
-      }
-    } catch (_) { }
-  }];
-};
+  this.callbacks.onReady = [function () { disqusThreadReveal(); }];
+  this.callbacks.onNewComment = [function (comment) { disqusOnNewComment(comment); }];
+}
+
+var disqus_config = applyDisqusConfig;
 
 function loadDisqus() {
+  // Auto-load only once. Manual "Try again" clicks always re-run.
+  // (The window-load retry used to inject a second embed.js / call
+  // DISQUS.reset while the first load was still in flight — that restart
+  // is what actually broke the comments load.)
+  if (window._disqusAutoStarted && !window._disqusManualRetry) return;
+  window._disqusAutoStarted = true;
+  window._disqusManualRetry = false;
+
   var dt = document.getElementById('disqus_thread');
   var dl = document.getElementById('disqus-loading');
   var df = document.getElementById('disqus-fallback');
@@ -1487,29 +1509,32 @@ function loadDisqus() {
   df.style.display = 'none';
   dt.style.display = 'none';
 
-  // Watchdog: Disqus calls disqus_config.callbacks.onReady when it has actually
-  // rendered the thread (onReady hides the spinner and reveals #disqus_thread).
-  // If onReady never fires within 12s (script loaded but Disqus failed to render
-  // — e.g. the site domain isn't in the forum's trusted domains, or Disqus is
-  // blocked), reveal the fallback so the section is never left blank.
+  // Belt-and-braces: Disqus's onReady fires the reveal above, but if it
+  // doesn't (ad blockers / odd builds), this observer reveals the thread
+  // the moment Disqus injects its iframe into #disqus_thread.
+  if (!window._disqusMo) {
+    window._disqusMo = new MutationObserver(function () {
+      if (dt.querySelector('iframe')) disqusThreadReveal();
+    });
+    window._disqusMo.observe(dt, { childList: true, subtree: true });
+  }
+
+  // Watchdog: if after 15s neither onReady nor an iframe appeared, show the
+  // "Try again" fallback so the section is never left blank.
   clearTimeout(window._disqusWatchdog);
   window._disqusWatchdog = setTimeout(function () {
-    if (dt.style.display !== 'block') {
+    if (!dt.querySelector('iframe') && dt.style.display !== 'block') {
       dl.style.display = 'none';
       dt.style.display = 'none';
       df.style.display = 'block';
       toggleCommentActions(false);
     }
-  }, 12000);
+  }, 15000);
 
   try {
     if (window.DISQUS) {
       window.DISQUS.reset({
-        reload: true, config: function () {
-          this.page.url = window.location.href;
-          this.page.identifier = window.location.pathname;
-          this.page.title = document.title;
-        }
+        reload: true, config: applyDisqusConfig
       });
       // Don't reveal the thread here — wait for onReady (watchdog covers failure).
       return;
@@ -1542,11 +1567,15 @@ function toggleCommentActions(show) {
   if (actions) actions.style.display = show ? '' : 'none';
 }
 
-document.addEventListener('DOMContentLoaded', function () { setTimeout(loadDisqus, 1000); });
-window.addEventListener('load', function () {
-  var dl = document.getElementById('disqus-loading');
-  if (dl && dl.style.display !== 'none') loadDisqus();
-});
+function retryDisqus() {
+  window._disqusManualRetry = true;
+  loadDisqus();
+}
+
+document.addEventListener('DOMContentLoaded', function () { setTimeout(loadDisqus, 300); });
+// NOTE: no window-load retry. The DOMContentLoaded +300ms start above is
+// already the load; re-calling on window load restarted embed.js mid-flight
+// and broke the comments load ("Try again" fallback).
 
 // ─── Comment Notification System ───
 if ('serviceWorker' in navigator) {
